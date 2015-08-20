@@ -1,6 +1,8 @@
 package at.jku.tk.hiesmair.gv.parlament.analysis.session;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -11,6 +13,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
 
+import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.Session;
 
 public class AustrianParliamentSessionExtractorTest {
@@ -32,6 +35,15 @@ public class AustrianParliamentSessionExtractorTest {
 		assertEquals("SessionNr of Session", 2, session.getSessionNr().intValue());
 		assertEquals("StartDate of Session", "29.10.2013 14:31", dateFormat.format(session.getStartDate()));
 		assertEquals("EndDate of Session", "29.10.2013 14:33", dateFormat.format(session.getEndDate()));
+		
+		assertTrue("politicians of session", session.getPoliticians().size() > 0);
+		for (Politician p : session.getPoliticians()){
+			if (p.getSurName().equals("Kopf")){
+				assertEquals("Karlheinz", p.getFirstName());
+				assertNull(p.getTitle());
+			}
+			System.out.println(p.getSurName());
+		}
 	}
 
 }

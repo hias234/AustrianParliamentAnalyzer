@@ -2,14 +2,20 @@ package at.jku.tk.hiesmair.gv.parlament.analysis.session;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
+import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.Session;
 
 /**
@@ -21,8 +27,11 @@ import at.jku.tk.hiesmair.gv.parlament.entities.Session;
 public class AustrianParliamentSessionExtractor implements SessionExtractor {
 	
 	private static final String DATE_FORMAT_PATTERN = "dd.MM.yyyy HH:mm";
+	
 	protected final Pattern sessionNrPattern;
 	protected final Pattern startEndDatePattern;
+	protected final Pattern namePattern;
+	
 	protected final List<String> monthNames;
 
 	public AustrianParliamentSessionExtractor() {
@@ -30,6 +39,7 @@ public class AustrianParliamentSessionExtractor implements SessionExtractor {
 
 		sessionNrPattern = Pattern.compile("(\\d+)\\.\\sSitzung\\sdes\\sNationalrates");
 		startEndDatePattern = Pattern.compile("\\w+, (\\d+)\\. (\\w+) (\\d{4}):\\s+(\\d+)\\.(\\d+).+ (\\d+)\\.(\\d+).*Uhr");
+		namePattern = Pattern.compile("([^\\s]+\\.)?\\s?([^\\s]+)\\s([^\\s]+)");
 	}
 
 	@Override
@@ -40,6 +50,7 @@ public class AustrianParliamentSessionExtractor implements SessionExtractor {
 		session.setSessionNr(getSessionNr(html));
 		session.setStartDate(getStartDate(html));
 		session.setEndDate(getEndDate(html));
+		session.setPoliticians(getPoliticians(document));
 
 		return session;
 	}
@@ -110,5 +121,29 @@ public class AustrianParliamentSessionExtractor implements SessionExtractor {
 		return null;
 	}
 
+	protected List<Politician> getPoliticians(Document document){
+		Set<Politician> politicians = new HashSet<Politician>();
+		
+		Elements links = document.getElementsByTag("a");
+		for (Element link : links){
+			String href = link.attr("href");
+			if (href.startsWith("/WWER/PAD")){
+				Politician politician = new Politician();
+				
+				String text = link.text();
+				text = text.replaceAll(Character.toString((char) 160), " ");
 
+				Matcher matcher = namePattern.matcher(text);
+				if (matcher.find()){
+					politician.setTitle(matcher.group(1));
+					politician.setFirstName(matcher.group(2));
+					politician.setSurName(matcher.group(3));
+					
+					politicians.add(politician);
+				}
+			}
+		}
+		
+		return new ArrayList<Politician>(politicians);
+	}
 }

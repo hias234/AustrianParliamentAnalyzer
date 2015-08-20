@@ -8,7 +8,7 @@ public class Session {
 	private Integer sessionNr;
 	private Date startDate;
 	private Date endDate;
-	private List<Session> sessions;
+	private List<Politician> politicians;
 
 	public Session() {
 		super();
@@ -45,13 +45,14 @@ public class Session {
 		this.endDate = endDate;
 	}
 
-	public List<Session> getSessions() {
-		return sessions;
+	public List<Politician> getPoliticians() {
+		return politicians;
 	}
 
-	public void setSessions(List<Session> sessions) {
-		this.sessions = sessions;
+	public void setPoliticians(List<Politician> politicians) {
+		this.politicians = politicians;
 	}
 
+	
 	
 }
