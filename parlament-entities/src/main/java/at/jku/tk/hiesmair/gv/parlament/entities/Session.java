@@ -1,12 +1,14 @@
 package at.jku.tk.hiesmair.gv.parlament.entities;
 
 import java.util.Date;
+import java.util.List;
 
 public class Session {
 
 	private Integer sessionNr;
 	private Date startDate;
 	private Date endDate;
+	private List<Session> sessions;
 
 	public Session() {
 		super();
@@ -43,4 +45,13 @@ public class Session {
 		this.endDate = endDate;
 	}
 
+	public List<Session> getSessions() {
+		return sessions;
+	}
+
+	public void setSessions(List<Session> sessions) {
+		this.sessions = sessions;
+	}
+
+	
 }
