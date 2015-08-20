@@ -39,7 +39,7 @@ public class AustrianParliamentSessionExtractor implements SessionExtractor {
 
 		sessionNrPattern = Pattern.compile("(\\d+)\\.\\sSitzung\\sdes\\sNationalrates");
 		startEndDatePattern = Pattern.compile("\\w+, (\\d+)\\. (\\w+) (\\d{4}):\\s+(\\d+)\\.(\\d+).+ (\\d+)\\.(\\d+).*Uhr");
-		namePattern = Pattern.compile("([^\\s]+\\.)?\\s?([^\\s]+)\\s([^\\s]+)");
+		namePattern = Pattern.compile("((?:[^\\s]+\\.\\s)*)([^\\s,]+)\\s([^\\s,]+)");
 	}
 
 	@Override
@@ -135,9 +135,9 @@ public class AustrianParliamentSessionExtractor implements SessionExtractor {
 
 				Matcher matcher = namePattern.matcher(text);
 				if (matcher.find()){
-					politician.setTitle(matcher.group(1));
-					politician.setFirstName(matcher.group(2));
-					politician.setSurName(matcher.group(3));
+					politician.setTitle(matcher.group(1).trim());
+					politician.setFirstName(matcher.group(2).trim());
+					politician.setSurName(matcher.group(3).trim());
 					
 					politicians.add(politician);
 				}

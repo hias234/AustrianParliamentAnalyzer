@@ -69,5 +69,10 @@ public class Politician {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return "Politician [title=" + title + ", firstName=" + firstName + ", surName=" + surName + "]";
+	}
+
 	
 }

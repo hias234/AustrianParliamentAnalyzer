@@ -1,7 +1,6 @@
 package at.jku.tk.hiesmair.gv.parlament.analysis.session;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
@@ -22,7 +21,7 @@ public class AustrianParliamentSessionExtractorTest {
 	
 	@Test
 	public void testGetSession() throws Exception {
-		InputStream testProtocolStream = this.getClass().getClassLoader().getResourceAsStream("protocol_2.html");
+		InputStream testProtocolStream = this.getClass().getClassLoader().getResourceAsStream("protocol_25.html");
 
 		StringWriter writer = new StringWriter();
 		IOUtils.copy(testProtocolStream, writer, "UTF-8");
@@ -32,17 +31,17 @@ public class AustrianParliamentSessionExtractorTest {
 
 		AustrianParliamentSessionExtractor extractor = new AustrianParliamentSessionExtractor();
 		Session session = extractor.getSession(document);
-		assertEquals("SessionNr of Session", 2, session.getSessionNr().intValue());
-		assertEquals("StartDate of Session", "29.10.2013 14:31", dateFormat.format(session.getStartDate()));
-		assertEquals("EndDate of Session", "29.10.2013 14:33", dateFormat.format(session.getEndDate()));
+		assertEquals("SessionNr of Session", 25, session.getSessionNr().intValue());
+		assertEquals("StartDate of Session", "20.05.2014 09:05", dateFormat.format(session.getStartDate()));
+		assertEquals("EndDate of Session", "20.05.2014 22:04", dateFormat.format(session.getEndDate()));
 		
 		assertTrue("politicians of session", session.getPoliticians().size() > 0);
 		for (Politician p : session.getPoliticians()){
 			if (p.getSurName().equals("Kopf")){
 				assertEquals("Karlheinz", p.getFirstName());
-				assertNull(p.getTitle());
+				assertEquals("", p.getTitle());
 			}
-			System.out.println(p.getSurName());
+			System.out.println(p);
 		}
 	}
 
