@@ -15,6 +15,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
 
+import at.jku.tk.hiesmair.gv.parlament.entities.ParliamentData;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.Session;
 
@@ -26,9 +27,10 @@ public class AustrianParliamentSessionExtractorTest {
 	
 	@Test
 	public void testGetSession() throws Exception {
+		ParliamentData data = new ParliamentData();
 
 		AustrianParliamentSessionExtractor extractor = new AustrianParliamentSessionExtractor();
-		Session session = extractor.getSession(getIndex(), getProtocol());
+		Session session = extractor.getSession(getIndex(), getProtocol(), data);
 		
 		assertEquals("SessionNr of Session", 25, session.getSessionNr().intValue());
 		assertEquals("StartDate of Session", "20.05.2014 09:05", dateFormat.format(session.getStartDate()));

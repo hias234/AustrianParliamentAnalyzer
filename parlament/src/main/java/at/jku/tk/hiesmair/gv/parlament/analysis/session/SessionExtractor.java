@@ -2,6 +2,7 @@ package at.jku.tk.hiesmair.gv.parlament.analysis.session;
 
 import org.jsoup.nodes.Document;
 
+import at.jku.tk.hiesmair.gv.parlament.entities.ParliamentData;
 import at.jku.tk.hiesmair.gv.parlament.entities.Session;
 
 /**
@@ -12,6 +13,6 @@ import at.jku.tk.hiesmair.gv.parlament.entities.Session;
  */
 public interface SessionExtractor {
 
-	Session getSession(Document index, Document protocol);
+	Session getSession(Document index, Document protocol, ParliamentData data);
 	
 }

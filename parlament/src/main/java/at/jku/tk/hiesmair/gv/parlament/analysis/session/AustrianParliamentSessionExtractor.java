@@ -15,6 +15,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import at.jku.tk.hiesmair.gv.parlament.Settings;
+import at.jku.tk.hiesmair.gv.parlament.analysis.politician.AustrianParliamentPoliticianExtractor;
+import at.jku.tk.hiesmair.gv.parlament.entities.ParliamentData;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.Session;
 
@@ -25,32 +28,34 @@ import at.jku.tk.hiesmair.gv.parlament.entities.Session;
  *
  */
 public class AustrianParliamentSessionExtractor implements SessionExtractor {
-	
+
 	private static final String DATE_FORMAT_PATTERN = "dd.MM.yyyy HH:mm";
-	
+
 	protected final Pattern sessionNrPattern;
 	protected final Pattern startEndDatePattern;
-	protected final Pattern namePattern;
-	
+
 	protected final List<String> monthNames;
+
+	protected AustrianParliamentPoliticianExtractor politicianExtractor;
 
 	public AustrianParliamentSessionExtractor() {
 		monthNames = Arrays.asList("Jänner", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember");
 
 		sessionNrPattern = Pattern.compile("(\\d+)\\.\\sSitzung\\sdes\\sNationalrates");
 		startEndDatePattern = Pattern.compile("\\w+, (\\d+)\\. (\\w+) (\\d{4}):\\s+(\\d+)\\.(\\d+).+ (\\d+)\\.(\\d+).*Uhr");
-		namePattern = Pattern.compile("((?:[^\\s]+\\.?\\s)*)([^\\s,\\.]+)\\s([^\\s,(\\.]+)");
+
+		politicianExtractor = new AustrianParliamentPoliticianExtractor();
 	}
 
 	@Override
-	public Session getSession(Document index, Document protocol) {
+	public Session getSession(Document index, Document protocol, ParliamentData data) {
 		String protocolHtml = protocol.html();
 
 		Session session = new Session();
 		session.setSessionNr(getSessionNr(protocolHtml));
 		session.setStartDate(getStartDate(protocolHtml));
 		session.setEndDate(getEndDate(protocolHtml));
-		session.setPoliticians(getPoliticians(index, protocol)); 
+		session.setPoliticians(getPoliticians(index, protocol, data));
 
 		return session;
 	}
@@ -121,37 +126,30 @@ public class AustrianParliamentSessionExtractor implements SessionExtractor {
 		return null;
 	}
 
-	protected List<Politician> getPoliticians(Document index, Document protocol){
+	protected List<Politician> getPoliticians(Document index, Document protocol, ParliamentData data) {
 		Set<Politician> politicians = new HashSet<Politician>();
-		politicians.addAll(getPoliticians(index));
-		politicians.addAll(getPoliticians(protocol));
-		
+		politicians.addAll(getPoliticians(index, data));
+		politicians.addAll(getPoliticians(protocol, data));
+
 		return new ArrayList<Politician>(politicians);
 	}
 
-	protected Set<Politician> getPoliticians(Document document) {
+	protected Set<Politician> getPoliticians(Document document, ParliamentData data) {
 		Set<Politician> politicians = new HashSet<Politician>();
-		
-		Elements links = document.getElementsByTag("a");
-		for (Element link : links){
-			String href = link.attr("href");
-			if (href.startsWith("/WWER/PAD")){
-				Politician politician = new Politician();
-				
-				String text = link.text();
-				text = text.replaceAll(Character.toString((char) 160), " ");
 
-				Matcher matcher = namePattern.matcher(text);
-				if (matcher.find()){
-					politician.setTitle(matcher.group(1).trim());
-					politician.setFirstName(matcher.group(2).trim());
-					politician.setSurName(matcher.group(3).trim());
-					
+		Elements links = document.getElementsByTag("a");
+		for (Element link : links) {
+			String href = link.attr("href");
+			if (href.startsWith("/WWER/PAD")) {
+				String url = Settings.BASE_URL + href;
+
+				if (data.getPolitician(url) == null) {
+					Politician politician = politicianExtractor.getPolitician(url, data);
 					politicians.add(politician);
 				}
 			}
 		}
-		
+
 		return politicians;
 	}
 }

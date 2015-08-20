@@ -1,13 +1,25 @@
 package at.jku.tk.hiesmair.gv.parlament.entities;
 
+import java.util.List;
+
 public class Politician {
 
+	private String id;
 	private String title;
 	private String firstName;
 	private String surName;
+	private List<ClubMembership> clubMemberships;
+	
+	
+	
+	public String getId() {
+		return id;
+	}
 
-	
-	
+	public void setId(String id) {
+		this.id = id;
+	}
+
 	public String getTitle() {
 		return title;
 	}
@@ -30,6 +42,16 @@ public class Politician {
 
 	public void setSurName(String surName) {
 		this.surName = surName;
+	}
+	
+	
+
+	public List<ClubMembership> getClubMemberships() {
+		return clubMemberships;
+	}
+
+	public void setClubMemberships(List<ClubMembership> clubMemberships) {
+		this.clubMemberships = clubMemberships;
 	}
 
 	@Override

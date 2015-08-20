@@ -36,4 +36,7 @@ public interface Settings {
 	/** Filepath for local feed */
 	@Deprecated
 	public static final String LOCAL_XML_FILE= "null";
+	
+	/** Base-Url of Austrian Parliament */
+	public static final String BASE_URL = "http://www.parlament.gv.at/";
 }
