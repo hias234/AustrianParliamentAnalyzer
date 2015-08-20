@@ -39,18 +39,18 @@ public class AustrianParliamentSessionExtractor implements SessionExtractor {
 
 		sessionNrPattern = Pattern.compile("(\\d+)\\.\\sSitzung\\sdes\\sNationalrates");
 		startEndDatePattern = Pattern.compile("\\w+, (\\d+)\\. (\\w+) (\\d{4}):\\s+(\\d+)\\.(\\d+).+ (\\d+)\\.(\\d+).*Uhr");
-		namePattern = Pattern.compile("((?:[^\\s]+\\.\\s)*)([^\\s,]+)\\s([^\\s,]+)");
+		namePattern = Pattern.compile("((?:[^\\s]+\\.?\\s)*)([^\\s,\\.]+)\\s([^\\s,(\\.]+)");
 	}
 
 	@Override
-	public Session getSession(Document document) {
-		String html = document.html();
+	public Session getSession(Document index, Document protocol) {
+		String protocolHtml = protocol.html();
 
 		Session session = new Session();
-		session.setSessionNr(getSessionNr(html));
-		session.setStartDate(getStartDate(html));
-		session.setEndDate(getEndDate(html));
-		session.setPoliticians(getPoliticians(document));
+		session.setSessionNr(getSessionNr(protocolHtml));
+		session.setStartDate(getStartDate(protocolHtml));
+		session.setEndDate(getEndDate(protocolHtml));
+		session.setPoliticians(getPoliticians(index, protocol)); 
 
 		return session;
 	}
@@ -58,11 +58,11 @@ public class AustrianParliamentSessionExtractor implements SessionExtractor {
 	/**
 	 * returns the session number extracted from the HTML by regular expression
 	 * 
-	 * @param html
+	 * @param protocolHtml
 	 * @return
 	 */
-	protected Integer getSessionNr(String html) {
-		Matcher matcher = sessionNrPattern.matcher(html);
+	protected Integer getSessionNr(String protocolHtml) {
+		Matcher matcher = sessionNrPattern.matcher(protocolHtml);
 
 		if (matcher.find()) {
 			String sessionNr = matcher.group(1);
@@ -76,8 +76,8 @@ public class AustrianParliamentSessionExtractor implements SessionExtractor {
 		return null;
 	}
 
-	protected Date getStartDate(String html) {
-		Matcher matcher = startEndDatePattern.matcher(html);
+	protected Date getStartDate(String protocolHtml) {
+		Matcher matcher = startEndDatePattern.matcher(protocolHtml);
 		SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT_PATTERN);
 
 		if (matcher.find()) {
@@ -94,8 +94,8 @@ public class AustrianParliamentSessionExtractor implements SessionExtractor {
 		return null;
 	}
 
-	protected Date getEndDate(String html) {
-		Matcher matcher = startEndDatePattern.matcher(html);
+	protected Date getEndDate(String protocolHtml) {
+		Matcher matcher = startEndDatePattern.matcher(protocolHtml);
 		SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT_PATTERN);
 
 		if (matcher.find()) {
@@ -121,7 +121,15 @@ public class AustrianParliamentSessionExtractor implements SessionExtractor {
 		return null;
 	}
 
-	protected List<Politician> getPoliticians(Document document){
+	protected List<Politician> getPoliticians(Document index, Document protocol){
+		Set<Politician> politicians = new HashSet<Politician>();
+		politicians.addAll(getPoliticians(index));
+		politicians.addAll(getPoliticians(protocol));
+		
+		return new ArrayList<Politician>(politicians);
+	}
+
+	protected Set<Politician> getPoliticians(Document document) {
 		Set<Politician> politicians = new HashSet<Politician>();
 		
 		Elements links = document.getElementsByTag("a");
@@ -144,6 +152,6 @@ public class AustrianParliamentSessionExtractor implements SessionExtractor {
 			}
 		}
 		
-		return new ArrayList<Politician>(politicians);
+		return politicians;
 	}
 }

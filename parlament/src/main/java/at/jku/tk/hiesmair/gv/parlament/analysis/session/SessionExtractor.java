@@ -12,6 +12,6 @@ import at.jku.tk.hiesmair.gv.parlament.entities.Session;
  */
 public interface SessionExtractor {
 
-	Session getSession(Document document);
+	Session getSession(Document index, Document protocol);
 	
 }
