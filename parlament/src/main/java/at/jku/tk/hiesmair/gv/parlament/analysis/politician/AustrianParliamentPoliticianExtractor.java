@@ -27,7 +27,7 @@ public class AustrianParliamentPoliticianExtractor implements PoliticianExtracto
 	protected final Pattern mandatePattern;
 
 	public AustrianParliamentPoliticianExtractor() {
-		namePattern = Pattern.compile("((?:[^\\s]+\\.?\\s)*)([^\\s,\\.]+)\\s([^\\s,(\\.]+)");
+		namePattern = Pattern.compile("((?:[^\\s]+\\.?\\s)*)([^\\s,\\.]+(?:\\s.\\.)?)\\s([^\\s,(\\.]+)");
 		mandatePattern = Pattern.compile("([^(,]*)\\([^)]*\\),? ?([^\\s]+)\\s(\\d+\\.\\d+\\.\\d{4})(?: . (\\d+\\.\\d+\\.\\d{4}))?");
 	}
 

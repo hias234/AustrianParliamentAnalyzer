@@ -34,6 +34,13 @@ public class AustrianParliamentPoliticianExtractorTest {
 		
 		assertEquals(1, data.getPoliticians().size());
 		assertTrue(data.getClubs().size() >= 1);
+		
+		p = extractor.getPolitician("http://www.parlament.gv.at//WWER/PAD_61659/index.shtml", data);
+
+		assertEquals("Josef A.", p.getFirstName());
+		assertEquals("Riemer", p.getSurName());
+		assertEquals(1, p.getClubMemberships().size());
+		
 	}
 
 	@Test
