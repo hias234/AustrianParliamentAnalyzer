@@ -81,6 +81,7 @@ public class FeedTest {
 		assertNotNull(protocols);
 		assertTrue(protocols.size() > 0);
 		Protocol p = protocols.get(0);
+		System.out.println(p);
 		assertTrue(p.getFileContent().trim().length() > 0);
 		
 		System.out.println("------------------------------------------------------------------------");

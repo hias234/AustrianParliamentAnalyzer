@@ -1,8 +1,8 @@
 package at.jku.tk.hiesmair.gv.parlament;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -13,7 +13,7 @@ import org.jsoup.select.Elements;
 import org.w3c.dom.DOMException;
 import org.xml.sax.SAXException;
 
-import at.jku.tk.hiesmair.gv.parlament.analysis.IndexDocument;
+import at.jku.tk.hiesmair.gv.parlament.entities.Session;
 import at.jku.tk.hiesmair.gv.parlament.feed.FeedParser;
 import at.jku.tk.hiesmair.gv.parlament.feed.FeedReader;
 import at.jku.tk.hiesmair.gv.parlament.feed.Protocol;
@@ -39,6 +39,7 @@ public class App {
 		FeedReader reader = new FeedReader(25);
 		FeedParser parser = new FeedParser(reader.getFeedContent(), new AustrianParlamentTitleParser());
 		List<Protocol> protocols = parser.getProtocols();
+		List<Session> sessions = new ArrayList<Session>(protocols.size());
 		for(Protocol p:protocols) {
 			System.out.println("Downloading and parsing protocol " + p.getTitle());
 			Document document = p.getDocument().getDocument();
