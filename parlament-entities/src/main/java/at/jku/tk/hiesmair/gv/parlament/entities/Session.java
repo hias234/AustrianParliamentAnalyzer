@@ -53,6 +53,11 @@ public class Session {
 		this.politicians = politicians;
 	}
 
+	@Override
+	public String toString() {
+		return "Session [sessionNr=" + sessionNr + ", startDate=" + startDate + ", endDate=" + endDate + "]";
+	}
+
 	
 	
 }

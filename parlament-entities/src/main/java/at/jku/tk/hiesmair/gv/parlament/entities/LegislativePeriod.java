@@ -22,6 +22,11 @@ public class LegislativePeriod {
 	public void setSessions(List<Session> sessions) {
 		this.sessions = sessions;
 	}
+
+	@Override
+	public String toString() {
+		return "LegislativePeriod [period=" + period + "]";
+	}
 	
 	
 	

@@ -93,8 +93,9 @@ public class Politician {
 
 	@Override
 	public String toString() {
-		return "Politician [title=" + title + ", firstName=" + firstName + ", surName=" + surName + "]";
+		return "Politician [id=" + id + ", title=" + title + ", firstName=" + firstName + ", surName=" + surName + ", clubMemberships (" + clubMemberships.size() + ") =" + clubMemberships + "]";
 	}
 
+	
 	
 }
