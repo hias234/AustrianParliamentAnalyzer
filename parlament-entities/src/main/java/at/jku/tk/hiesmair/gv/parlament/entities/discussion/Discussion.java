@@ -35,7 +35,7 @@ public class Discussion {
 
 	@Override
 	public String toString() {
-		return "Discussion [topic=" + topic + ", type=" + type + ", " + speeches.size() + " Speeches" + "]";
+		return "Discussion [topic=" + topic + ", type=" + type + ", " + speeches.size() + " Speeches=" + speeches + "]";
 	}
 
 }

@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -22,6 +23,8 @@ import at.jku.tk.hiesmair.gv.parlament.entities.ParliamentData;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.Session;
 import at.jku.tk.hiesmair.gv.parlament.entities.discussion.Discussion;
+import at.jku.tk.hiesmair.gv.parlament.entities.discussion.DiscussionSpeech;
+import at.jku.tk.hiesmair.gv.parlament.entities.discussion.SpeechType;
 
 /**
  * Implementation for the Protocols of the Austrian Parliament
@@ -43,12 +46,15 @@ public class AustrianParliamentSessionExtractor implements SessionExtractor {
 	protected AustrianParliamentPoliticianExtractor politicianExtractor;
 
 	public AustrianParliamentSessionExtractor() {
-		monthNames = Arrays.asList("Jänner", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember");
-		topicExceptions = Arrays.asList("Sitzung des Nationalrates", "Sitzungsunterbrechung", "Verhandlungsgegenstände Suchhilfen",
-				"Blockredezeit der Debatte in Minuten", "Blockredezeit der Sitzung in Minuten");
+		monthNames = Arrays.asList("Jänner", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September",
+				"Oktober", "November", "Dezember");
+		topicExceptions = Arrays.asList("Sitzung des Nationalrates", "Sitzungsunterbrechung",
+				"Verhandlungsgegenstände Suchhilfen", "Blockredezeit der Debatte in Minuten",
+				"Blockredezeit der Sitzung in Minuten");
 
 		sessionNrPattern = Pattern.compile("(\\d+)\\.\\sSitzung\\sdes\\sNationalrates");
-		startEndDatePattern = Pattern.compile("\\w+, (\\d+)\\. (\\w+) (\\d{4}):\\s+(\\d+)\\.(\\d+).+ (\\d+)\\.(\\d+).*Uhr");
+		startEndDatePattern = Pattern
+				.compile("\\w+, (\\d+)\\. (\\w+) (\\d{4}):\\s+(\\d+)\\.(\\d+).+ (\\d+)\\.(\\d+).*Uhr");
 		discussionTypePattern = Pattern.compile("Einzelredezeitbeschränkung:\\s+((?:\\d+)|.)\\s+min\\s+(.+)");
 
 		politicianExtractor = new AustrianParliamentPoliticianExtractor();
@@ -125,7 +131,8 @@ public class AustrianParliamentSessionExtractor implements SessionExtractor {
 		return null;
 	}
 
-	protected Date getDate(SimpleDateFormat format, String day, Integer monthIndex, String year, String hourStart, String minuteStart) {
+	protected Date getDate(SimpleDateFormat format, String day, Integer monthIndex, String year, String hourStart,
+			String minuteStart) {
 		try {
 			return format.parse(day + "." + monthIndex + "." + year + " " + hourStart + ":" + minuteStart);
 		} catch (ParseException pe) {
@@ -169,24 +176,80 @@ public class AustrianParliamentSessionExtractor implements SessionExtractor {
 			String text = header.text().replaceAll(Character.toString((char) 160), " ");
 
 			if (isTopicRelevant(text)) {
-				Discussion discussion = new Discussion();
-				discussion.setTopic(text);
+				Discussion discussion = getDiscussion(header, text, data);
 
-				String descriptionText = Jsoup.parse(header.nextSibling().toString()).text().replaceAll(Character.toString((char) 160), " ");
-				Element nextElement = header.nextElementSibling();
-				if (nextElement.tag().toString().equals("a")){
-					descriptionText += " " + nextElement.text().replaceAll(Character.toString((char) 160), " ");
-				}
-				Matcher m  =discussionTypePattern.matcher(descriptionText);
-				if (m.find()){
-					discussion.setType(m.group(2).trim());
-				}
-				
 				discussions.add(discussion);
 			}
 		}
 
 		return discussions;
+	}
+
+	protected Discussion getDiscussion(Element header, String text, ParliamentData data) {
+		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+		
+		Discussion discussion = new Discussion();
+		discussion.setTopic(text);
+
+		String descriptionText = Jsoup.parse(header.nextSibling().toString()).text()
+				.replaceAll(Character.toString((char) 160), " ");
+		Element nextElement = header.nextElementSibling();
+		if (nextElement.tag().toString().equals("a")) {
+			descriptionText += " " + nextElement.text().replaceAll(Character.toString((char) 160), " ");
+		}
+		Matcher m = discussionTypePattern.matcher(descriptionText);
+		if (m.find()) {
+			discussion.setType(m.group(2).trim());
+		}
+
+		for (;nextElement != null && !nextElement.tag().toString().equals("h3")
+				&& !nextElement.tag().toString().equals("table"); nextElement = nextElement.nextElementSibling());
+		if (nextElement != null && nextElement.tag().toString().equals("table")){
+			List<DiscussionSpeech> speeches = new ArrayList<DiscussionSpeech>();
+			
+			Elements rows = nextElement.select("tbody").select("tr");
+			for (Element tr : rows){
+				DiscussionSpeech speech = new DiscussionSpeech();
+				speech.setDiscussion(discussion);
+				
+				Elements tds = tr.select("td");
+				
+				String politicianUrl = Settings.BASE_URL + tds.get(2).select("a").first().attr("href");
+				Politician politician = data.getPolitician(politicianUrl); 
+				if (politician == null){
+					politician = politicianExtractor.getPolitician(politicianUrl, data);
+				}
+				speech.setPolitician(politician);
+				
+				String speechType = tds.get(4).text();
+				speech.setType(SpeechType.getSpeechType(speechType));
+				
+				String start = tds.get(5).text();
+				
+				try {
+					Date startTime = timeFormat.parse(start);
+					speech.setStartTime(startTime);
+					
+					String duration = tds.get(5).text();
+					String[] parts = duration.split(":");
+					Integer minutes = Integer.parseInt(parts[0]);
+					Integer seconds = Integer.parseInt(parts[1]);
+					
+					Calendar endDate = Calendar.getInstance();
+					endDate.setTime(startTime);
+					endDate.add(Calendar.MINUTE, minutes);
+					endDate.add(Calendar.SECOND, seconds);
+					speech.setEndTime(endDate.getTime());
+				} catch (ParseException | NumberFormatException e) {
+				}
+				
+				speeches.add(speech);
+			}
+			
+			discussion.setSpeeches(speeches);
+		}
+
+		return discussion;
 	}
 
 	private boolean isTopicRelevant(String text) {

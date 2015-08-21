@@ -52,4 +52,11 @@ public class DiscussionSpeech {
 		this.type = type;
 	}
 
+	@Override
+	public String toString() {
+		return "DiscussionSpeech [discussion=" + (discussion == null ? "null" : discussion.getTopic()) + ", politician=" + (politician == null ? "null" : politician.getSurName()) + ", startTime=" + startTime
+				+ ", endTime=" + endTime + ", type=" + type + "]";
+	}
+
+	
 }
