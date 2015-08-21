@@ -1,12 +1,13 @@
 package at.jku.tk.hiesmair.gv.parlament.entities.discussion;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Discussion {
 
 	private String topic;
 	private String type;
-	private List<DiscussionSpeech> speeches;
+	private List<DiscussionSpeech> speeches = new ArrayList<DiscussionSpeech>();
 
 	public String getTopic() {
 		return topic;
@@ -30,6 +31,11 @@ public class Discussion {
 
 	public void setSpeeches(List<DiscussionSpeech> speeches) {
 		this.speeches = speeches;
+	}
+
+	@Override
+	public String toString() {
+		return "Discussion [topic=" + topic + ", type=" + type + ", " + speeches.size() + " Speeches" + "]";
 	}
 
 }

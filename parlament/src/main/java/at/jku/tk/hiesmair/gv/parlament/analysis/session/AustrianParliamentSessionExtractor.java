@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -20,6 +21,7 @@ import at.jku.tk.hiesmair.gv.parlament.analysis.politician.AustrianParliamentPol
 import at.jku.tk.hiesmair.gv.parlament.entities.ParliamentData;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.Session;
+import at.jku.tk.hiesmair.gv.parlament.entities.discussion.Discussion;
 
 /**
  * Implementation for the Protocols of the Austrian Parliament
@@ -33,16 +35,21 @@ public class AustrianParliamentSessionExtractor implements SessionExtractor {
 
 	protected final Pattern sessionNrPattern;
 	protected final Pattern startEndDatePattern;
+	protected final Pattern discussionTypePattern;
 
 	protected final List<String> monthNames;
+	protected final List<String> topicExceptions;
 
 	protected AustrianParliamentPoliticianExtractor politicianExtractor;
 
 	public AustrianParliamentSessionExtractor() {
 		monthNames = Arrays.asList("Jänner", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember");
+		topicExceptions = Arrays.asList("Sitzung des Nationalrates", "Sitzungsunterbrechung", "Verhandlungsgegenstände Suchhilfen",
+				"Blockredezeit der Debatte in Minuten", "Blockredezeit der Sitzung in Minuten");
 
 		sessionNrPattern = Pattern.compile("(\\d+)\\.\\sSitzung\\sdes\\sNationalrates");
 		startEndDatePattern = Pattern.compile("\\w+, (\\d+)\\. (\\w+) (\\d{4}):\\s+(\\d+)\\.(\\d+).+ (\\d+)\\.(\\d+).*Uhr");
+		discussionTypePattern = Pattern.compile("Einzelredezeitbeschränkung:\\s+((?:\\d+)|.)\\s+min\\s+(.+)");
 
 		politicianExtractor = new AustrianParliamentPoliticianExtractor();
 	}
@@ -56,6 +63,7 @@ public class AustrianParliamentSessionExtractor implements SessionExtractor {
 		session.setStartDate(getStartDate(protocolHtml));
 		session.setEndDate(getEndDate(protocolHtml));
 		session.setPoliticians(getPoliticians(index, protocol, data));
+		session.setDiscussions(getDiscussions(index, data));
 
 		return session;
 	}
@@ -151,5 +159,37 @@ public class AustrianParliamentSessionExtractor implements SessionExtractor {
 		}
 
 		return politicians;
+	}
+
+	protected List<Discussion> getDiscussions(Document index, ParliamentData data) {
+		List<Discussion> discussions = new ArrayList<Discussion>();
+
+		Elements headers = index.select("h3");
+		for (Element header : headers) {
+			String text = header.text().replaceAll(Character.toString((char) 160), " ");
+
+			if (isTopicRelevant(text)) {
+				Discussion discussion = new Discussion();
+				discussion.setTopic(text);
+
+				String descriptionText = Jsoup.parse(header.nextSibling().toString()).text().replaceAll(Character.toString((char) 160), " ");
+				Element nextElement = header.nextElementSibling();
+				if (nextElement.tag().toString().equals("a")){
+					descriptionText += " " + nextElement.text().replaceAll(Character.toString((char) 160), " ");
+				}
+				Matcher m  =discussionTypePattern.matcher(descriptionText);
+				if (m.find()){
+					discussion.setType(m.group(2).trim());
+				}
+				
+				discussions.add(discussion);
+			}
+		}
+
+		return discussions;
+	}
+
+	private boolean isTopicRelevant(String text) {
+		return !topicExceptions.stream().anyMatch(te -> text.contains(te));
 	}
 }
