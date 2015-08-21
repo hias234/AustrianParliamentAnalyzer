@@ -1,4 +1,6 @@
-package at.jku.tk.hiesmair.gv.parlament.extractor.feed.parser;
+package at.jku.tk.hiesmair.gv.parlament.period.extractor.feed.parser;
+
+import at.jku.tk.hiesmair.gv.parlament.feed.parser.title.TitleParser;
 
 /**
  * Correctly parses the title tag from the Austrian parliament 
@@ -6,7 +8,7 @@ package at.jku.tk.hiesmair.gv.parlament.extractor.feed.parser;
  * @author matthias
  *
  */
-public class AustrianParlamentTitleParser implements TitleParser {
+public class SessionTitleParser implements TitleParser {
 
 	@Override
 	public String parse(String input) {

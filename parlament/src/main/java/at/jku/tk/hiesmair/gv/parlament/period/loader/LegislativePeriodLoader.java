@@ -1,4 +1,4 @@
-package at.jku.tk.hiesmair.gv.parlament.loader;
+package at.jku.tk.hiesmair.gv.parlament.period.loader;
 
 import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
 

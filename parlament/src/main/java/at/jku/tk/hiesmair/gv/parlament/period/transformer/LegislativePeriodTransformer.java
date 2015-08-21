@@ -1,6 +1,5 @@
-package at.jku.tk.hiesmair.gv.parlament.transformer;
+package at.jku.tk.hiesmair.gv.parlament.period.transformer;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,8 +8,14 @@ import org.jsoup.nodes.Document;
 import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parlament.entities.ParliamentData;
 import at.jku.tk.hiesmair.gv.parlament.entities.Session;
-import at.jku.tk.hiesmair.gv.parlament.extractor.feed.Protocol;
+import at.jku.tk.hiesmair.gv.parlament.period.extractor.feed.ProtocolFeedItem;
 
+/**
+ * Transforms the protocols of a period into a period object.
+ * 
+ * @author Markus
+ *
+ */
 public class LegislativePeriodTransformer {
 
 	protected SessionTransformer sessionTransformer;
@@ -19,8 +24,7 @@ public class LegislativePeriodTransformer {
 		sessionTransformer = new SessionTransformer();
 	}
 
-	public LegislativePeriod getLegislativePeriod(int period, List<Protocol> sessionProtocols) throws IOException,
-			InterruptedException {
+	public LegislativePeriod getLegislativePeriod(int period, List<ProtocolFeedItem> sessionProtocols) throws Exception {
 		ParliamentData data = new ParliamentData();
 
 		List<Session> sessions = getSessions(sessionProtocols, data);
@@ -31,10 +35,10 @@ public class LegislativePeriodTransformer {
 		return legislativePeriod;
 	}
 
-	protected List<Session> getSessions(List<Protocol> sessionProtocols, ParliamentData data) {
+	protected List<Session> getSessions(List<ProtocolFeedItem> sessionProtocols, ParliamentData data) throws Exception {
 		List<Session> sessions = new ArrayList<Session>(sessionProtocols.size());
 
-		for (Protocol sessionProtocol : sessionProtocols) {
+		for (ProtocolFeedItem sessionProtocol : sessionProtocols) {
 			Session session = getSession(sessionProtocol, data);
 			if (session != null) {
 				sessions.add(session);
@@ -43,14 +47,14 @@ public class LegislativePeriodTransformer {
 		return sessions;
 	}
 
-	private Session getSession(Protocol sessionProtocol, ParliamentData data) {
+	private Session getSession(ProtocolFeedItem sessionProtocol, ParliamentData data) throws Exception {
 		Document indexDoc = null;
 		Document protocolDoc = null;
-		
+
 		try {
 			indexDoc = sessionProtocol.getIndexDocument();
 			protocolDoc = sessionProtocol.getProtocolDocument();
-		} catch (IOException e) {
+		} catch (Exception e) {
 		}
 
 		if (indexDoc == null || protocolDoc == null) {

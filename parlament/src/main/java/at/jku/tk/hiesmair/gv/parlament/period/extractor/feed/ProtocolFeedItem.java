@@ -1,9 +1,8 @@
-package at.jku.tk.hiesmair.gv.parlament.extractor.feed;
+package at.jku.tk.hiesmair.gv.parlament.period.extractor.feed;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.net.URL;
 import java.util.Date;
 
@@ -12,65 +11,28 @@ import org.apache.commons.io.IOUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import at.jku.tk.hiesmair.gv.parlament.Settings;
+import at.jku.tk.hiesmair.gv.parlament.feed.parser.FeedItem;
 
 /**
  * Holds all elements of a protocol
  * 
  * @author matthias
  */
-public class Protocol implements Serializable {
+public class ProtocolFeedItem extends FeedItem {
 
-	private static final long serialVersionUID = 4132582481442842541L;
-
-	private URL url;
-
-	private String title;
-
-	private Date pubDate;
-
-	private String description;
-
-	private volatile String indexCacheName;
-
+	private static final String PROTOCOL_CACHE_PREFIX = "protocol_";
+	protected static final String CACHE_PATH = "C:\\parlament\\periods";
+	protected static final String CACHE_PREFIX = "index_";
+	
 	private volatile String protocolCacheName;
-
-	private volatile String indexContent;
-	private volatile Document indexDocument;
 
 	private volatile String protocolContent;
 	private volatile Document protocolDocument;
 
-	/**
-	 * Default constructor
-	 */
-	public Protocol() {
-		this.indexCacheName = null;
-		this.protocolCacheName = null;
-		this.indexContent = null;
-		this.protocolContent = null;
+	public ProtocolFeedItem() {
+		super(CACHE_PATH, CACHE_PREFIX);
 	}
-
-	/**
-	 * Generate the filename for the cache file
-	 * 
-	 * @return
-	 */
-	public String getIndexCacheName() {
-		if (this.indexCacheName == null) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(Settings.CACHE_PATH);
-			if (!Settings.CACHE_PATH.endsWith(File.separator)) {
-				sb.append(File.separatorChar);
-			}
-			sb.append("index_");
-			sb.append(this.title);
-			sb.append(".html");
-			this.indexCacheName = sb.toString();
-		}
-		return this.indexCacheName;
-	}
-
+	
 	/**
 	 * Generate the filename for the cache file
 	 * 
@@ -78,24 +40,9 @@ public class Protocol implements Serializable {
 	 */
 	public String getProtocolCacheName() {
 		if (this.protocolCacheName == null) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(Settings.CACHE_PATH);
-			if (!Settings.CACHE_PATH.endsWith(File.separator)) {
-				sb.append(File.separatorChar);
-			}
-			sb.append("protocol_");
-			sb.append(this.title);
-			sb.append(".html");
-			this.protocolCacheName = sb.toString();
+			this.protocolCacheName = getCacheName(PROTOCOL_CACHE_PREFIX);
 		}
 		return this.protocolCacheName;
-	}
-
-	/**
-	 * @return a {@link File} object that points to the cache file
-	 */
-	public File getIndexCacheFile() {
-		return new File(this.getIndexCacheName());
 	}
 
 	/**
@@ -108,6 +55,7 @@ public class Protocol implements Serializable {
 	/**
 	 * @return checks whether a cache file already exists
 	 */
+	@Override
 	public boolean isCached() {
 		return getIndexCacheFile().exists() && getProtocolCacheFile().exists();
 	}
@@ -117,17 +65,15 @@ public class Protocol implements Serializable {
 	 * 
 	 * @throws IOException
 	 */
-	private void loadFromWeb() throws IOException {
-		// download the index
-		InputStream in = this.url.openStream();
-		this.indexContent = IOUtils.toString(in);
-		FileUtils.writeStringToFile(getIndexCacheFile(), this.indexContent);
+	@Override
+	protected void loadFromWeb() throws IOException {
+		super.loadFromWeb();
 
 		// download the protocol
 		String protocolUrlStr = this.findProtocolUrl();
 		if (protocolUrlStr != null) {
 			URL protocolUrl = new URL(protocolUrlStr);
-			in = protocolUrl.openStream();
+			InputStream in = protocolUrl.openStream();
 			this.protocolContent = IOUtils.toString(in);
 			FileUtils.writeStringToFile(getProtocolCacheFile(), this.protocolContent);
 		}
@@ -138,24 +84,10 @@ public class Protocol implements Serializable {
 	 * 
 	 * @throws IOException
 	 */
-	private void loadFromCache() throws IOException {
-		this.indexContent = FileUtils.readFileToString(getIndexCacheFile());
+	@Override
+	protected void loadFromCache() throws IOException {
+		super.loadFromCache();
 		this.protocolContent = FileUtils.readFileToString(getProtocolCacheFile());
-	}
-
-	/**
-	 * @return the filecontent if not available locally retrieve
-	 * @throws IOException
-	 */
-	public String getIndexContent() throws IOException {
-		if (this.indexContent == null) {
-			if (this.isCached()) {
-				loadFromCache();
-			} else {
-				loadFromWeb();
-			}
-		}
-		return this.indexContent;
 	}
 
 	/**
@@ -171,24 +103,6 @@ public class Protocol implements Serializable {
 			}
 		}
 		return this.protocolContent;
-	}
-
-	/**
-	 * @return a Jsoup parsed document
-	 * @throws IOException
-	 */
-	public Document getIndexDocument() throws IOException {
-		if (indexDocument == null) {
-			indexDocument = createIndexDocument();
-		}
-		return indexDocument;
-	}
-
-	private Document createIndexDocument() throws IOException {
-		if (indexContent == null) {
-			indexContent = getIndexContent();
-		}
-		return Jsoup.parse(indexContent);
 	}
 
 	/**
@@ -228,34 +142,42 @@ public class Protocol implements Serializable {
 
 	// getters and setters
 
+	@Override
 	public URL getUrl() {
 		return url;
 	}
 
+	@Override
 	public void setUrl(URL url) {
 		this.url = url;
 	}
 
+	@Override
 	public String getTitle() {
 		return title;
 	}
 
+	@Override
 	public void setTitle(String title) {
 		this.title = title;
 	}
 
+	@Override
 	public Date getPubDate() {
 		return pubDate;
 	}
 
+	@Override
 	public void setPubDate(Date pubDate) {
 		this.pubDate = pubDate;
 	}
 
+	@Override
 	public String getDescription() {
 		return description;
 	}
 
+	@Override
 	public void setDescription(String description) {
 		this.description = description;
 	}

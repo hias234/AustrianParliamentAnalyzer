@@ -1,14 +1,14 @@
-package at.jku.tk.hiesmair.gv.parlament;
+package at.jku.tk.hiesmair.gv.parlament.period;
 
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
-import at.jku.tk.hiesmair.gv.parlament.extractor.LegislativePeriodExtractor;
-import at.jku.tk.hiesmair.gv.parlament.extractor.feed.Protocol;
-import at.jku.tk.hiesmair.gv.parlament.loader.LegislativePeriodLoader;
-import at.jku.tk.hiesmair.gv.parlament.transformer.LegislativePeriodTransformer;
+import at.jku.tk.hiesmair.gv.parlament.period.extractor.LegislativePeriodExtractor;
+import at.jku.tk.hiesmair.gv.parlament.period.extractor.feed.ProtocolFeedItem;
+import at.jku.tk.hiesmair.gv.parlament.period.loader.LegislativePeriodLoader;
+import at.jku.tk.hiesmair.gv.parlament.period.transformer.LegislativePeriodTransformer;
 
 public class LegislativePeriodEtlJob {
 	
@@ -30,7 +30,7 @@ public class LegislativePeriodEtlJob {
 		logger.info("LegislativePeriodEtlJob started...");
 		
 		logger.debug("extracting...");
-		List<Protocol> extractedData = extractor.extractProtocols(period);
+		List<ProtocolFeedItem> extractedData = extractor.extractProtocols(period);
 		logger.debug("finished extracting, found " + extractedData.size() + " Protocols");
 
 		logger.debug("transforming...");

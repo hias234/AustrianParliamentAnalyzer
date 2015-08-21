@@ -1,7 +1,5 @@
-package at.jku.tk.hiesmair.gv.parlament.transformer;
+package at.jku.tk.hiesmair.gv.parlament.politician.transformer;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -10,8 +8,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.IOUtils;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -20,6 +16,7 @@ import at.jku.tk.hiesmair.gv.parlament.entities.ParliamentData;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.club.ClubMembership;
 import at.jku.tk.hiesmair.gv.parlament.entities.club.ParliamentClub;
+import at.jku.tk.hiesmair.gv.parlament.politician.extractor.feed.PoliticianFeedItem;
 
 public class PoliticianTransformer {
 
@@ -31,16 +28,14 @@ public class PoliticianTransformer {
 		mandatePattern = Pattern.compile("([^(,]*)\\([^)]*\\),? ?([^\\s]+)\\s(\\d+\\.\\d+\\.\\d{4})(?: . (\\d+\\.\\d+\\.\\d{4}))?");
 	}
 
-	public Politician getPolitician(String url, ParliamentData parliamentData) {
-		String fileContent = "";
-		try {
-			fileContent = loadFromWeb(url);
-		} catch (IOException ex) {
-			return null;
-		}
+	public Politician getPolitician(String url, ParliamentData parliamentData) throws Exception {
+		PoliticianFeedItem item = new PoliticianFeedItem();
+		item.setUrl(new URL(url));
 
-		Document document = Jsoup.parse(fileContent);
+		return getPolitician(url, parliamentData, item.getIndexDocument());
+	}
 
+	protected Politician getPolitician(String url, ParliamentData parliamentData, Document document) {
 		Politician politician = new Politician();
 		politician.setId(url);
 		politician.setFirstName(getFirstName(document));
@@ -135,15 +130,4 @@ public class PoliticianTransformer {
 		return memberships;
 	}
 
-	/**
-	 * Retrieve the file content from web
-	 * 
-	 * @throws IOException
-	 */
-	private String loadFromWeb(String url) throws IOException {
-		InputStream in = new URL(url).openStream();
-		String content = IOUtils.toString(in);
-
-		return content;
-	}
 }

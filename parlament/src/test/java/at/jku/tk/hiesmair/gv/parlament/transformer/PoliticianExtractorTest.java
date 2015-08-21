@@ -8,12 +8,12 @@ import org.junit.Test;
 import at.jku.tk.hiesmair.gv.parlament.entities.ParliamentData;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.club.ClubMembership;
-import at.jku.tk.hiesmair.gv.parlament.transformer.PoliticianTransformer;
+import at.jku.tk.hiesmair.gv.parlament.politician.transformer.PoliticianTransformer;
 
 public class PoliticianExtractorTest {
 
 	@Test
-	public void testGetPolitician() {
+	public void testGetPolitician() throws Exception {
 		ParliamentData data = new ParliamentData();
 		
 		PoliticianTransformer extractor = new PoliticianTransformer();

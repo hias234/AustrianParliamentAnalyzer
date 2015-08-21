@@ -8,10 +8,11 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.DOMException;
 import org.xml.sax.SAXException;
 
-import at.jku.tk.hiesmair.gv.parlament.extractor.LegislativePeriodExtractor;
-import at.jku.tk.hiesmair.gv.parlament.extractor.feed.FeedReader;
-import at.jku.tk.hiesmair.gv.parlament.loader.ConsoleLegislativePeriodLoader;
-import at.jku.tk.hiesmair.gv.parlament.transformer.LegislativePeriodTransformer;
+import at.jku.tk.hiesmair.gv.parlament.feed.FeedReader;
+import at.jku.tk.hiesmair.gv.parlament.period.LegislativePeriodEtlJob;
+import at.jku.tk.hiesmair.gv.parlament.period.extractor.LegislativePeriodExtractor;
+import at.jku.tk.hiesmair.gv.parlament.period.loader.ConsoleLegislativePeriodLoader;
+import at.jku.tk.hiesmair.gv.parlament.period.transformer.LegislativePeriodTransformer;
 
 /**
  * Main Application kicking off the analysis process

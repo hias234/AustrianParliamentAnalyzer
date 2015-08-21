@@ -18,7 +18,7 @@ import org.junit.Test;
 import at.jku.tk.hiesmair.gv.parlament.entities.ParliamentData;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.Session;
-import at.jku.tk.hiesmair.gv.parlament.transformer.SessionTransformer;
+import at.jku.tk.hiesmair.gv.parlament.period.transformer.SessionTransformer;
 
 public class SessionExtractorTest {
 

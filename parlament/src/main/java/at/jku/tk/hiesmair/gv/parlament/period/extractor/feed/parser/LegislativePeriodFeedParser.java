@@ -1,4 +1,4 @@
-package at.jku.tk.hiesmair.gv.parlament.extractor.feed;
+package at.jku.tk.hiesmair.gv.parlament.period.extractor.feed.parser;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -18,20 +18,21 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import at.jku.tk.hiesmair.gv.parlament.extractor.feed.parser.TitleParser;
+import at.jku.tk.hiesmair.gv.parlament.feed.parser.title.TitleParser;
+import at.jku.tk.hiesmair.gv.parlament.period.extractor.feed.ProtocolFeedItem;
 
 /**
  * Uses a DOM parser to analyse the feed
  * 
  * @author matthias
  */
-public class FeedParser {
+public class LegislativePeriodFeedParser {
 
 	/** Date-format to parse XML files */
 	public static final String DATE_FORMAT = "d MMM yyyy HH:mm:ss Z";
 	
 	/** A list of all HTML protocols */
-	private List<Protocol> protocols;
+	private List<ProtocolFeedItem> protocols;
 	
 	/** The raw XML document */
 	private String raw;
@@ -47,7 +48,7 @@ public class FeedParser {
 	 * 
 	 * @param raw
 	 */
-	public FeedParser(String raw, TitleParser titleParser) {
+	public LegislativePeriodFeedParser(String raw, TitleParser titleParser) {
 		this.raw = raw;
 		this.titleParser = titleParser;
 		this.protocols = null;
@@ -79,7 +80,7 @@ public class FeedParser {
 		this.sdf = new SimpleDateFormat(DATE_FORMAT);
 		Document doc = getDocument(this.raw);
 		NodeList items = doc.getElementsByTagName("item");
-		this.protocols = new ArrayList<Protocol>();
+		this.protocols = new ArrayList<ProtocolFeedItem>();
 		for(int i=0;i<items.getLength();i++) {
 			parseItem(items.item(i));
 		}
@@ -95,7 +96,7 @@ public class FeedParser {
 	 */
 	private void parseItem(Node item) throws MalformedURLException, DOMException, ParseException {
 		NodeList children = item.getChildNodes();
-		Protocol p = new Protocol();
+		ProtocolFeedItem p = new ProtocolFeedItem();
 		for(int i=0;i<children.getLength();i++) {
 			Node n = children.item(i);
 			if("title".equalsIgnoreCase(n.getNodeName())) {
@@ -121,7 +122,7 @@ public class FeedParser {
 	 * @throws ParseException 
 	 * @throws DOMException 
 	 */
-	public List<Protocol> getProtocols() throws SAXException, IOException, ParserConfigurationException, DOMException, ParseException {
+	public List<ProtocolFeedItem> getProtocols() throws SAXException, IOException, ParserConfigurationException, DOMException, ParseException {
 		if(this.protocols == null) {
 			loadItems();
 		}

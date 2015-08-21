@@ -1,4 +1,4 @@
-package at.jku.tk.hiesmair.gv.parlament.extractor.feed.parser;
+package at.jku.tk.hiesmair.gv.parlament.feed.parser.title;
 
 /**
  * Interface that can be used to parse titles
