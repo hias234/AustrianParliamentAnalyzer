@@ -42,7 +42,7 @@ public class App {
 		List<Session> sessions = new ArrayList<Session>(protocols.size());
 		for(Protocol p:protocols) {
 			System.out.println("Downloading and parsing protocol " + p.getTitle());
-			Document document = p.getDocument().getDocument();
+			Document document = p.getIndexDocument();
 			if(document != null) {
 				Elements select = document.select("h3");
 				for(Element e : select) {

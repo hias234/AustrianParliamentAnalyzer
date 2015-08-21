@@ -18,7 +18,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import at.jku.tk.hiesmair.gv.parlament.Settings;
 import at.jku.tk.hiesmair.gv.parlament.feed.parser.TitleParser;
 
 /**
@@ -28,6 +27,9 @@ import at.jku.tk.hiesmair.gv.parlament.feed.parser.TitleParser;
  */
 public class FeedParser {
 
+	/** Date-format to parse XML files */
+	public static final String DATE_FORMAT = "d MMM yyyy HH:mm:ss Z";
+	
 	/** A list of all HTML protocols */
 	private List<Protocol> protocols;
 	
@@ -74,7 +76,7 @@ public class FeedParser {
 	 * @throws DOMException 
 	 */
 	private void loadItems() throws SAXException, IOException, ParserConfigurationException, DOMException, ParseException {
-		this.sdf = new SimpleDateFormat(Settings.DATE_FORMAT);
+		this.sdf = new SimpleDateFormat(DATE_FORMAT);
 		Document doc = getDocument(this.raw);
 		NodeList items = doc.getElementsByTagName("item");
 		this.protocols = new ArrayList<Protocol>();

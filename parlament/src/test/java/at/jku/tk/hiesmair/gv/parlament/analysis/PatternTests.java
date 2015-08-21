@@ -51,6 +51,9 @@ public class PatternTests {
 			assertEquals("30.10.2006", m.group(3));
 			assertNull(m.group(4));
 		}
+		else{
+			fail();
+		}
 		
 		m = p.matcher("Abgeordnete zum Nationalrat (XXV. GP), STRONACH 29.10.2013 –");
 		if (m.find()) {
@@ -59,6 +62,9 @@ public class PatternTests {
 			assertEquals("STRONACH", m.group(2));
 			assertEquals("29.10.2013", m.group(3));
 			assertNull(m.group(4));
+		}
+		else{
+			fail();
 		}
 		
 		

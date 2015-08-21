@@ -15,7 +15,6 @@ import org.junit.Test;
 import org.w3c.dom.DOMException;
 import org.xml.sax.SAXException;
 
-import at.jku.tk.hiesmair.gv.parlament.Settings;
 import at.jku.tk.hiesmair.gv.parlament.feed.parser.AustrianParlamentTitleParser;
 
 /**
@@ -33,7 +32,7 @@ public class FeedTest {
 		System.out.println("------------------------------------------------------------------------");
 		
 		FeedReader reader = new FeedReader(25);
-		assertEquals(Settings.RSS_FEED_URL.replaceAll(Settings.PERIOD_PATTERN, "XXV"), reader.getUrl().toString());
+		assertEquals(FeedReader.RSS_FEED_URL.replaceAll(FeedReader.PERIOD_PATTERN, "XXV"), reader.getUrl().toString());
 		System.out.println(reader.getUrl().toString());
 		
 		System.out.println("------------------------------------------------------------------------");

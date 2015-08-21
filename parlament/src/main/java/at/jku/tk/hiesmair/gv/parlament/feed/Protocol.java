@@ -9,9 +9,10 @@ import java.util.Date;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import at.jku.tk.hiesmair.gv.parlament.Settings;
-import at.jku.tk.hiesmair.gv.parlament.analysis.IndexDocument;
 
 /**
  * Holds all elements of a protocol
@@ -23,21 +24,23 @@ public class Protocol implements Serializable {
 	private static final long serialVersionUID = 4132582481442842541L;
 
 	private URL url;
-	
+
 	private String title;
-	
+
 	private Date pubDate;
-	
+
 	private String description;
-	
+
 	private volatile String indexCacheName;
-	
+
 	private volatile String protocolCacheName;
-	
+
 	private volatile String indexContent;
-	
+	private volatile Document indexDocument;
+
 	private volatile String protocolContent;
-	
+	private volatile Document protocolDocument;
+
 	/**
 	 * Default constructor
 	 */
@@ -47,17 +50,17 @@ public class Protocol implements Serializable {
 		this.indexContent = null;
 		this.protocolContent = null;
 	}
-	
+
 	/**
 	 * Generate the filename for the cache file
 	 * 
 	 * @return
 	 */
 	public String getIndexCacheName() {
-		if(this.indexCacheName == null) {
+		if (this.indexCacheName == null) {
 			StringBuilder sb = new StringBuilder();
 			sb.append(Settings.CACHE_PATH);
-			if(!Settings.CACHE_PATH.endsWith(File.separator)) {
+			if (!Settings.CACHE_PATH.endsWith(File.separator)) {
 				sb.append(File.separatorChar);
 			}
 			sb.append("index_");
@@ -67,17 +70,17 @@ public class Protocol implements Serializable {
 		}
 		return this.indexCacheName;
 	}
-	
+
 	/**
 	 * Generate the filename for the cache file
 	 * 
 	 * @return
 	 */
 	public String getProtocolCacheName() {
-		if(this.protocolCacheName == null) {
+		if (this.protocolCacheName == null) {
 			StringBuilder sb = new StringBuilder();
 			sb.append(Settings.CACHE_PATH);
-			if(!Settings.CACHE_PATH.endsWith(File.separator)) {
+			if (!Settings.CACHE_PATH.endsWith(File.separator)) {
 				sb.append(File.separatorChar);
 			}
 			sb.append("protocol_");
@@ -87,41 +90,42 @@ public class Protocol implements Serializable {
 		}
 		return this.protocolCacheName;
 	}
-	
+
 	/**
 	 * @return a {@link File} object that points to the cache file
 	 */
 	public File getIndexCacheFile() {
 		return new File(this.getIndexCacheName());
 	}
-	
+
 	/**
 	 * @return a {@link File} object that points to the cache file
 	 */
 	public File getProtocolCacheFile() {
 		return new File(this.getProtocolCacheName());
 	}
-	
+
 	/**
 	 * @return checks whether a cache file already exists
 	 */
 	public boolean isCached() {
 		return getIndexCacheFile().exists() && getProtocolCacheFile().exists();
 	}
-	
+
 	/**
 	 * Retrieve the file content from web and write to cache
-	 * @throws IOException 
+	 * 
+	 * @throws IOException
 	 */
 	private void loadFromWeb() throws IOException {
 		// download the index
 		InputStream in = this.url.openStream();
 		this.indexContent = IOUtils.toString(in);
 		FileUtils.writeStringToFile(getIndexCacheFile(), this.indexContent);
-		
+
 		// download the protocol
 		String protocolUrlStr = this.findProtocolUrl();
-		if(protocolUrlStr != null) {
+		if (protocolUrlStr != null) {
 			URL protocolUrl = new URL(protocolUrlStr);
 			in = protocolUrl.openStream();
 			this.protocolContent = IOUtils.toString(in);
@@ -131,40 +135,68 @@ public class Protocol implements Serializable {
 
 	/**
 	 * Retrieve the file content from cache
-	 * @throws IOException 
+	 * 
+	 * @throws IOException
 	 */
 	private void loadFromCache() throws IOException {
 		this.indexContent = FileUtils.readFileToString(getIndexCacheFile());
 		this.protocolContent = FileUtils.readFileToString(getProtocolCacheFile());
 	}
-	
+
 	/**
-	 * @return the filecontent if not available locally retrieve 
-	 * @throws IOException 
+	 * @return the filecontent if not available locally retrieve
+	 * @throws IOException
 	 */
 	public String getFileContent() throws IOException {
-		if(this.indexContent == null) {
-			if(this.isCached()) {
+		if (this.indexContent == null) {
+			if (this.isCached()) {
 				loadFromCache();
-			}else{
+			} else {
 				loadFromWeb();
 			}
 		}
 		return this.indexContent;
 	}
+
+	/**
+	 * @return a Jsoup parsed document
+	 */
+	public Document getIndexDocument() {
+		if (indexDocument == null) {
+			indexDocument = createIndexDocument();
+		}
+		return indexDocument;
+	}
+
+	private Document createIndexDocument() {
+		if (indexContent == null) {
+			return null;
+		}
+		return Jsoup.parse(indexContent);
+	}
 	
 	/**
 	 * @return a Jsoup parsed document
 	 */
-	public IndexDocument getDocument() {
-		return new IndexDocument(this);
+	public Document getProtocolDocument() {
+		if (protocolDocument == null) {
+			protocolDocument = createProtocolDocument();
+		}
+		return protocolDocument;
 	}
-	
+
+	private Document createProtocolDocument() {
+		if (protocolContent == null) {
+			return null;
+		}
+		return Jsoup.parse(protocolContent);
+	}
+
 	/** find the URL for the actual protocol document */
 	public String findProtocolUrl() {
 		String hostpart = this.url.getProtocol() + "://" + this.url.getHost();
 		int locationProtocolHtml = this.description.indexOf("Protokoll HTML-Format:");
-		if(locationProtocolHtml > 0) {
+		if (locationProtocolHtml > 0) {
 			String hrefPattern = "<a href='";
 			int locationProtocolHref = this.description.indexOf(hrefPattern, locationProtocolHtml);
 			locationProtocolHref += hrefPattern.length();
@@ -173,7 +205,7 @@ public class Protocol implements Serializable {
 		}
 		return null;
 	}
-	
+
 	// getters and setters
 
 	public URL getUrl() {
@@ -210,12 +242,9 @@ public class Protocol implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Protocol [url=" + url + ", title=" + title + ", pubDate="
-				+ pubDate + ", description=" + description
-				+ ", indexCacheName=" + indexCacheName + ", protocolCacheName="
-				+ protocolCacheName + ", indexContent=" + indexContent
-				+ ", protocolContent=" + protocolContent + "]";
+		return "Protocol [url=" + url + ", title=" + title + ", pubDate=" + pubDate + ", description=" + description
+				+ ", indexCacheName=" + indexCacheName + ", protocolCacheName=" + protocolCacheName + ", indexContent="
+				+ indexContent + ", protocolContent=" + protocolContent + "]";
 	}
-	
-	
+
 }
