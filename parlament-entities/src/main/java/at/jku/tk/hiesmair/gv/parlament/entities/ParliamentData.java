@@ -3,6 +3,8 @@ package at.jku.tk.hiesmair.gv.parlament.entities;
 import java.util.HashMap;
 import java.util.Map;
 
+import at.jku.tk.hiesmair.gv.parlament.entities.club.ParliamentClub;
+
 public class ParliamentData {
 	private Map<String, ParliamentClub> clubs = new HashMap<String, ParliamentClub>();
 	private Map<String, Politician> politicians = new HashMap<String, Politician>();

@@ -9,9 +9,9 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 
-import at.jku.tk.hiesmair.gv.parlament.entities.ClubMembership;
 import at.jku.tk.hiesmair.gv.parlament.entities.ParliamentData;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
+import at.jku.tk.hiesmair.gv.parlament.entities.club.ClubMembership;
 
 public class AustrianParliamentPoliticianExtractorTest {
 

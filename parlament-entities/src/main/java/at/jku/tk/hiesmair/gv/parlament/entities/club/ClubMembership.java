@@ -1,6 +1,8 @@
-package at.jku.tk.hiesmair.gv.parlament.entities;
+package at.jku.tk.hiesmair.gv.parlament.entities.club;
 
 import java.util.Date;
+
+import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 
 public class ClubMembership {
 

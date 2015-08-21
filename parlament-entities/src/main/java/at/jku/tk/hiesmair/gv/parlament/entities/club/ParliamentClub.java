@@ -1,4 +1,4 @@
-package at.jku.tk.hiesmair.gv.parlament.entities;
+package at.jku.tk.hiesmair.gv.parlament.entities.club;
 
 public class ParliamentClub {
 	private String shortName;

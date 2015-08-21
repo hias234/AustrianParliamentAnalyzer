@@ -16,10 +16,10 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import at.jku.tk.hiesmair.gv.parlament.entities.ClubMembership;
-import at.jku.tk.hiesmair.gv.parlament.entities.ParliamentClub;
 import at.jku.tk.hiesmair.gv.parlament.entities.ParliamentData;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
+import at.jku.tk.hiesmair.gv.parlament.entities.club.ClubMembership;
+import at.jku.tk.hiesmair.gv.parlament.entities.club.ParliamentClub;
 
 public class AustrianParliamentPoliticianExtractor implements PoliticianExtractor {
 
@@ -48,6 +48,7 @@ public class AustrianParliamentPoliticianExtractor implements PoliticianExtracto
 		politician.setSurName(getSurName(document));
 		politician.setTitle(getTitle(document));
 		politician.setClubMemberships(getClubMemberships(document, politician, parliamentData));
+		
 		parliamentData.putPolitician(politician);
 		
 		return politician;

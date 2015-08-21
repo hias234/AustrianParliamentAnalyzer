@@ -2,6 +2,8 @@ package at.jku.tk.hiesmair.gv.parlament.entities;
 
 import java.util.List;
 
+import at.jku.tk.hiesmair.gv.parlament.entities.club.ClubMembership;
+
 public class Politician {
 
 	private String id;
