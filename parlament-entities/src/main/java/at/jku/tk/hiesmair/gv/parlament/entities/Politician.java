@@ -46,7 +46,10 @@ public class Politician {
 		this.surName = surName;
 	}
 	
-	
+
+	public String getFullName() {
+		return firstName + " " + surName;
+	}
 
 	public List<ClubMembership> getClubMemberships() {
 		return clubMemberships;
@@ -56,6 +59,8 @@ public class Politician {
 		this.clubMemberships = clubMemberships;
 	}
 
+	
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -97,6 +102,7 @@ public class Politician {
 	public String toString() {
 		return "Politician [id=" + id + ", title=" + title + ", firstName=" + firstName + ", surName=" + surName + ", clubMemberships (" + clubMemberships.size() + ") =" + clubMemberships + "]";
 	}
+
 
 	
 	

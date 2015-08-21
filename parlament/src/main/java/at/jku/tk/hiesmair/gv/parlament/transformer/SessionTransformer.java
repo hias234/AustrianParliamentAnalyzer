@@ -42,7 +42,7 @@ public class SessionTransformer {
 	protected final List<String> monthNames;
 	protected final List<String> topicExceptions;
 
-	protected PoliticianTransformer politicianExtractor;
+	protected PoliticianTransformer politicianTransformer;
 
 	public SessionTransformer() {
 		monthNames = Arrays.asList("Jänner", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September",
@@ -56,7 +56,7 @@ public class SessionTransformer {
 				.compile("\\w+, (\\d+)\\. (\\w+) (\\d{4}):\\s+(\\d+)\\.(\\d+).+ (\\d+)\\.(\\d+).*Uhr");
 		discussionTypePattern = Pattern.compile("Einzelredezeitbeschränkung:\\s+((?:\\d+)|.)\\s+min\\s+(.+)");
 
-		politicianExtractor = new PoliticianTransformer();
+		politicianTransformer = new PoliticianTransformer();
 	}
 
 	public Session getSession(Document index, Document protocol, ParliamentData data) {
@@ -157,7 +157,7 @@ public class SessionTransformer {
 				String url = Settings.BASE_URL + href;
 
 				if (data.getPolitician(url) == null) {
-					Politician politician = politicianExtractor.getPolitician(url, data);
+					Politician politician = politicianTransformer.getPolitician(url, data);
 					politicians.add(politician);
 				}
 			}
@@ -215,7 +215,7 @@ public class SessionTransformer {
 				String politicianUrl = Settings.BASE_URL + tds.get(2).select("a").first().attr("href");
 				Politician politician = data.getPolitician(politicianUrl); 
 				if (politician == null){
-					politician = politicianExtractor.getPolitician(politicianUrl, data);
+					politician = politicianTransformer.getPolitician(politicianUrl, data);
 				}
 				speech.setPolitician(politician);
 				
