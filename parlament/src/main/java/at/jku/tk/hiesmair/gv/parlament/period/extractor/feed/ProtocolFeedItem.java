@@ -21,11 +21,10 @@ import at.jku.tk.hiesmair.gv.parlament.feed.parser.FeedItem;
 public class ProtocolFeedItem extends FeedItem {
 
 	private static final String PROTOCOL_CACHE_PREFIX = "protocol_";
-	protected static final String CACHE_PATH = "C:\\parlament\\periods";
+	protected static final String CACHE_PATH = "C:\\Temp\\parlament\\periods";
 	protected static final String CACHE_PREFIX = "index_";
 	
 	private volatile String protocolCacheName;
-
 	private volatile String protocolContent;
 	private volatile Document protocolDocument;
 

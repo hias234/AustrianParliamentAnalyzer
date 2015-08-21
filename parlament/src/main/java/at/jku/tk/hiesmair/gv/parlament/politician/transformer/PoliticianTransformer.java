@@ -1,5 +1,6 @@
 package at.jku.tk.hiesmair.gv.parlament.politician.transformer;
 
+import java.io.IOException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -32,12 +33,14 @@ public class PoliticianTransformer {
 		PoliticianFeedItem item = new PoliticianFeedItem();
 		item.setUrl(new URL(url));
 
-		return getPolitician(url, parliamentData, item.getIndexDocument());
+		return getPolitician(parliamentData, item);
 	}
 
-	protected Politician getPolitician(String url, ParliamentData parliamentData, Document document) {
+	public Politician getPolitician(ParliamentData parliamentData, PoliticianFeedItem feedItem) throws IOException {
+		Document document = feedItem.getIndexDocument();
+		
 		Politician politician = new Politician();
-		politician.setId(url);
+		politician.setId(feedItem.getUrl().toString());
 		politician.setFirstName(getFirstName(document));
 		politician.setSurName(getSurName(document));
 		politician.setTitle(getTitle(document));

@@ -6,7 +6,7 @@ public class PoliticianTitleParser implements TitleParser {
 
 	@Override
 	public String parse(String input) {
-		return input.replaceAll(" ", "_");
+		return input.replaceAll("[ \\.,-]", "");
 	}
 
 }

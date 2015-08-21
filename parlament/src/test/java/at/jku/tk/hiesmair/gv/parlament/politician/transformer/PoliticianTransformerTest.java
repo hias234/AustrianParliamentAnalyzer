@@ -1,4 +1,4 @@
-package at.jku.tk.hiesmair.gv.parlament.transformer;
+package at.jku.tk.hiesmair.gv.parlament.politician.transformer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -10,7 +10,7 @@ import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.club.ClubMembership;
 import at.jku.tk.hiesmair.gv.parlament.politician.transformer.PoliticianTransformer;
 
-public class PoliticianExtractorTest {
+public class PoliticianTransformerTest {
 
 	@Test
 	public void testGetPolitician() throws Exception {
