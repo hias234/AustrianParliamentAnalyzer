@@ -1,4 +1,4 @@
-package at.jku.tk.hiesmair.gv.parlament.analysis.politician;
+package at.jku.tk.hiesmair.gv.parlament.transformer;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,17 +21,16 @@ import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.club.ClubMembership;
 import at.jku.tk.hiesmair.gv.parlament.entities.club.ParliamentClub;
 
-public class AustrianParliamentPoliticianExtractor implements PoliticianExtractor {
+public class PoliticianTransformer {
 
 	protected final Pattern namePattern;
 	protected final Pattern mandatePattern;
 
-	public AustrianParliamentPoliticianExtractor() {
+	public PoliticianTransformer() {
 		namePattern = Pattern.compile("((?:[^\\s]+\\.?\\s)*)([^\\s,\\.]+(?:\\s.\\.)?)\\s([^\\s,(\\.]+)");
 		mandatePattern = Pattern.compile("([^(,]*)\\([^)]*\\),? ?([^\\s]+)\\s(\\d+\\.\\d+\\.\\d{4})(?: . (\\d+\\.\\d+\\.\\d{4}))?");
 	}
 
-	@Override
 	public Politician getPolitician(String url, ParliamentData parliamentData) {
 		String fileContent = "";
 		try {

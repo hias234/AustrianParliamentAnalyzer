@@ -1,4 +1,4 @@
-package at.jku.tk.hiesmair.gv.parlament.analysis.session;
+package at.jku.tk.hiesmair.gv.parlament.transformer;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -18,7 +18,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import at.jku.tk.hiesmair.gv.parlament.Settings;
-import at.jku.tk.hiesmair.gv.parlament.analysis.politician.AustrianParliamentPoliticianExtractor;
 import at.jku.tk.hiesmair.gv.parlament.entities.ParliamentData;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.Session;
@@ -32,7 +31,7 @@ import at.jku.tk.hiesmair.gv.parlament.entities.discussion.SpeechType;
  * @author Markus
  *
  */
-public class AustrianParliamentSessionExtractor implements SessionExtractor {
+public class SessionTransformer {
 
 	private static final String DATE_FORMAT_PATTERN = "dd.MM.yyyy HH:mm";
 
@@ -43,9 +42,9 @@ public class AustrianParliamentSessionExtractor implements SessionExtractor {
 	protected final List<String> monthNames;
 	protected final List<String> topicExceptions;
 
-	protected AustrianParliamentPoliticianExtractor politicianExtractor;
+	protected PoliticianTransformer politicianExtractor;
 
-	public AustrianParliamentSessionExtractor() {
+	public SessionTransformer() {
 		monthNames = Arrays.asList("Jänner", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September",
 				"Oktober", "November", "Dezember");
 		topicExceptions = Arrays.asList("Sitzung des Nationalrates", "Sitzungsunterbrechung",
@@ -57,10 +56,9 @@ public class AustrianParliamentSessionExtractor implements SessionExtractor {
 				.compile("\\w+, (\\d+)\\. (\\w+) (\\d{4}):\\s+(\\d+)\\.(\\d+).+ (\\d+)\\.(\\d+).*Uhr");
 		discussionTypePattern = Pattern.compile("Einzelredezeitbeschränkung:\\s+((?:\\d+)|.)\\s+min\\s+(.+)");
 
-		politicianExtractor = new AustrianParliamentPoliticianExtractor();
+		politicianExtractor = new PoliticianTransformer();
 	}
 
-	@Override
 	public Session getSession(Document index, Document protocol, ParliamentData data) {
 		String protocolHtml = protocol.html();
 

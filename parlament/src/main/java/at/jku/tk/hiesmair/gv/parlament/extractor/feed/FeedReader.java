@@ -1,4 +1,4 @@
-package at.jku.tk.hiesmair.gv.parlament.feed;
+package at.jku.tk.hiesmair.gv.parlament.extractor.feed;
 
 import java.io.IOException;
 import java.io.InputStream;

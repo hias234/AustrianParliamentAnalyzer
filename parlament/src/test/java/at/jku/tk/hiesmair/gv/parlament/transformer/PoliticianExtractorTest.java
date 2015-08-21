@@ -1,4 +1,4 @@
-package at.jku.tk.hiesmair.gv.parlament.analysis.politician;
+package at.jku.tk.hiesmair.gv.parlament.transformer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -8,14 +8,15 @@ import org.junit.Test;
 import at.jku.tk.hiesmair.gv.parlament.entities.ParliamentData;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.club.ClubMembership;
+import at.jku.tk.hiesmair.gv.parlament.transformer.PoliticianTransformer;
 
-public class AustrianParliamentPoliticianExtractorTest {
+public class PoliticianExtractorTest {
 
 	@Test
 	public void testGetPolitician() {
 		ParliamentData data = new ParliamentData();
 		
-		AustrianParliamentPoliticianExtractor extractor = new AustrianParliamentPoliticianExtractor();
+		PoliticianTransformer extractor = new PoliticianTransformer();
 		Politician p = extractor.getPolitician("http://www.parlament.gv.at/WWER/PAD_35468/index.shtml", data);
 
 		assertEquals("Dr.", p.getTitle());

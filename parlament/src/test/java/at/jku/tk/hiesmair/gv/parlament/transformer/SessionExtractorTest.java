@@ -1,4 +1,4 @@
-package at.jku.tk.hiesmair.gv.parlament.analysis.session;
+package at.jku.tk.hiesmair.gv.parlament.transformer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -18,8 +18,9 @@ import org.junit.Test;
 import at.jku.tk.hiesmair.gv.parlament.entities.ParliamentData;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.Session;
+import at.jku.tk.hiesmair.gv.parlament.transformer.SessionTransformer;
 
-public class AustrianParliamentSessionExtractorTest {
+public class SessionExtractorTest {
 
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 
@@ -27,7 +28,7 @@ public class AustrianParliamentSessionExtractorTest {
 	public void testGetSession() throws Exception {
 		ParliamentData data = new ParliamentData();
 
-		AustrianParliamentSessionExtractor extractor = new AustrianParliamentSessionExtractor();
+		SessionTransformer extractor = new SessionTransformer();
 		Session session = extractor.getSession(getIndex(), getProtocol(), data);
 
 		assertEquals("SessionNr of Session", 25, session.getSessionNr().intValue());

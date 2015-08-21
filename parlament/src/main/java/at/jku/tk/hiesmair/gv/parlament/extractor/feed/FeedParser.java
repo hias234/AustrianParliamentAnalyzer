@@ -1,4 +1,4 @@
-package at.jku.tk.hiesmair.gv.parlament.feed;
+package at.jku.tk.hiesmair.gv.parlament.extractor.feed;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -18,7 +18,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import at.jku.tk.hiesmair.gv.parlament.feed.parser.TitleParser;
+import at.jku.tk.hiesmair.gv.parlament.extractor.feed.parser.TitleParser;
 
 /**
  * Uses a DOM parser to analyse the feed

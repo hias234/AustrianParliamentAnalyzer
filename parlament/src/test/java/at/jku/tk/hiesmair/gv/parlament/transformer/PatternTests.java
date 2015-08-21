@@ -1,4 +1,4 @@
-package at.jku.tk.hiesmair.gv.parlament.analysis;
+package at.jku.tk.hiesmair.gv.parlament.transformer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;

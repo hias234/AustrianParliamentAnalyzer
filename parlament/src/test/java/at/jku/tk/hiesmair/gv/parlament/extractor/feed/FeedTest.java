@@ -1,4 +1,4 @@
-package at.jku.tk.hiesmair.gv.parlament.feed;
+package at.jku.tk.hiesmair.gv.parlament.extractor.feed;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -15,7 +15,10 @@ import org.junit.Test;
 import org.w3c.dom.DOMException;
 import org.xml.sax.SAXException;
 
-import at.jku.tk.hiesmair.gv.parlament.feed.parser.AustrianParlamentTitleParser;
+import at.jku.tk.hiesmair.gv.parlament.extractor.feed.FeedParser;
+import at.jku.tk.hiesmair.gv.parlament.extractor.feed.FeedReader;
+import at.jku.tk.hiesmair.gv.parlament.extractor.feed.Protocol;
+import at.jku.tk.hiesmair.gv.parlament.extractor.feed.parser.AustrianParlamentTitleParser;
 
 /**
  * Test retrieval and parsing of feeds

@@ -14,10 +14,10 @@ import org.w3c.dom.DOMException;
 import org.xml.sax.SAXException;
 
 import at.jku.tk.hiesmair.gv.parlament.entities.Session;
-import at.jku.tk.hiesmair.gv.parlament.feed.FeedParser;
-import at.jku.tk.hiesmair.gv.parlament.feed.FeedReader;
-import at.jku.tk.hiesmair.gv.parlament.feed.Protocol;
-import at.jku.tk.hiesmair.gv.parlament.feed.parser.AustrianParlamentTitleParser;
+import at.jku.tk.hiesmair.gv.parlament.extractor.feed.FeedParser;
+import at.jku.tk.hiesmair.gv.parlament.extractor.feed.FeedReader;
+import at.jku.tk.hiesmair.gv.parlament.extractor.feed.Protocol;
+import at.jku.tk.hiesmair.gv.parlament.extractor.feed.parser.AustrianParlamentTitleParser;
 
 /**
  * Main Application kicking off the analysis process

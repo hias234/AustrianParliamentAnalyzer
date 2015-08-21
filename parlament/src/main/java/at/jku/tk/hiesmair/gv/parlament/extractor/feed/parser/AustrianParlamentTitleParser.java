@@ -1,4 +1,4 @@
-package at.jku.tk.hiesmair.gv.parlament.feed.parser;
+package at.jku.tk.hiesmair.gv.parlament.extractor.feed.parser;
 
 /**
  * Correctly parses the title tag from the Austrian parliament 
