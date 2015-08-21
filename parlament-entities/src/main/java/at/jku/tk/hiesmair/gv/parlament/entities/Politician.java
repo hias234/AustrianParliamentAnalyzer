@@ -1,6 +1,8 @@
 package at.jku.tk.hiesmair.gv.parlament.entities;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import at.jku.tk.hiesmair.gv.parlament.entities.club.ClubMembership;
 
@@ -11,9 +13,7 @@ public class Politician {
 	private String firstName;
 	private String surName;
 	private List<ClubMembership> clubMemberships;
-	
-	
-	
+
 	public String getId() {
 		return id;
 	}
@@ -45,7 +45,6 @@ public class Politician {
 	public void setSurName(String surName) {
 		this.surName = surName;
 	}
-	
 
 	public String getFullName() {
 		return firstName + " " + surName;
@@ -58,9 +57,15 @@ public class Politician {
 	public void setClubMemberships(List<ClubMembership> clubMemberships) {
 		this.clubMemberships = clubMemberships;
 	}
+	
+	public ClubMembership getClubMembership(Date date){
+		Optional<ClubMembership> optional = clubMemberships.stream().filter(m -> m.isValidAtDate(date)).findFirst();
+		if (optional.isPresent()){
+			return optional.get();
+		}
+		return null;
+	}
 
-	
-	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -100,10 +105,8 @@ public class Politician {
 
 	@Override
 	public String toString() {
-		return "Politician [id=" + id + ", title=" + title + ", firstName=" + firstName + ", surName=" + surName + ", clubMemberships (" + clubMemberships.size() + ") =" + clubMemberships + "]";
+		return "Politician [id=" + id + ", title=" + title + ", firstName=" + firstName + ", surName=" + surName
+				+ ", clubMemberships (" + clubMemberships.size() + ") =" + clubMemberships + "]";
 	}
 
-
-	
-	
 }

@@ -147,7 +147,7 @@ public class Protocol implements Serializable {
 	 * @return the filecontent if not available locally retrieve
 	 * @throws IOException
 	 */
-	public String getFileContent() throws IOException {
+	public String getIndexContent() throws IOException {
 		if (this.indexContent == null) {
 			if (this.isCached()) {
 				loadFromCache();
@@ -159,37 +159,57 @@ public class Protocol implements Serializable {
 	}
 
 	/**
-	 * @return a Jsoup parsed document
+	 * @return the filecontent if not available locally retrieve
+	 * @throws IOException
 	 */
-	public Document getIndexDocument() {
+	public String getProtocolContent() throws IOException {
+		if (this.indexContent == null) {
+			if (this.isCached()) {
+				loadFromCache();
+			} else {
+				loadFromWeb();
+			}
+		}
+		return this.protocolContent;
+	}
+
+	/**
+	 * @return a Jsoup parsed document
+	 * @throws IOException
+	 */
+	public Document getIndexDocument() throws IOException {
 		if (indexDocument == null) {
 			indexDocument = createIndexDocument();
 		}
 		return indexDocument;
 	}
 
-	private Document createIndexDocument() {
+	private Document createIndexDocument() throws IOException {
 		if (indexContent == null) {
-			return null;
+			indexContent = getIndexContent();
 		}
 		return Jsoup.parse(indexContent);
 	}
-	
+
 	/**
 	 * @return a Jsoup parsed document
+	 * @throws IOException
 	 */
-	public Document getProtocolDocument() {
+	public Document getProtocolDocument() throws IOException {
 		if (protocolDocument == null) {
 			protocolDocument = createProtocolDocument();
 		}
 		return protocolDocument;
 	}
 
-	private Document createProtocolDocument() {
+	private Document createProtocolDocument() throws IOException {
 		if (protocolContent == null) {
-			return null;
+			protocolContent = getProtocolContent();
 		}
-		return Jsoup.parse(protocolContent);
+		if (protocolContent != null) {
+			return Jsoup.parse(protocolContent);
+		}
+		return null;
 	}
 
 	/** find the URL for the actual protocol document */

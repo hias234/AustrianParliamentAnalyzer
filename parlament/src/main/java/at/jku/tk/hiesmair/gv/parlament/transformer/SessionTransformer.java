@@ -185,14 +185,14 @@ public class SessionTransformer {
 
 	protected Discussion getDiscussion(Element header, String text, ParliamentData data) {
 		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-		
+
 		Discussion discussion = new Discussion();
 		discussion.setTopic(text);
 
 		String descriptionText = Jsoup.parse(header.nextSibling().toString()).text()
 				.replaceAll(Character.toString((char) 160), " ");
 		Element nextElement = header.nextElementSibling();
-		if (nextElement.tag().toString().equals("a")) {
+		if (nextElement != null && nextElement.tag().toString().equals("a")) {
 			descriptionText += " " + nextElement.text().replaceAll(Character.toString((char) 160), " ");
 		}
 		Matcher m = discussionTypePattern.matcher(descriptionText);
@@ -200,39 +200,46 @@ public class SessionTransformer {
 			discussion.setType(m.group(2).trim());
 		}
 
-		for (;nextElement != null && !nextElement.tag().toString().equals("h3")
-				&& !nextElement.tag().toString().equals("table"); nextElement = nextElement.nextElementSibling());
-		if (nextElement != null && nextElement.tag().toString().equals("table")){
+		for (; nextElement != null && !nextElement.tag().toString().equals("h3")
+				&& !nextElement.tag().toString().equals("table"); nextElement = nextElement.nextElementSibling())
+			;
+		if (nextElement != null && nextElement.tag().toString().equals("table")) {
 			List<DiscussionSpeech> speeches = new ArrayList<DiscussionSpeech>();
-			
+
 			Elements rows = nextElement.select("tbody").select("tr");
-			for (Element tr : rows){
+			for (Element tr : rows) {
 				DiscussionSpeech speech = new DiscussionSpeech();
 				speech.setDiscussion(discussion);
-				
+
 				Elements tds = tr.select("td");
-				
-				String politicianUrl = Settings.BASE_URL + tds.get(2).select("a").first().attr("href");
-				Politician politician = data.getPolitician(politicianUrl); 
-				if (politician == null){
-					politician = politicianTransformer.getPolitician(politicianUrl, data);
+
+				Element td = tds.get(2);
+				if (td != null) {
+					Elements links = td.select("a");
+					if (links != null && links.size() >= 1) {
+						String politicianUrl = Settings.BASE_URL + links.first().attr("href");
+						Politician politician = data.getPolitician(politicianUrl);
+						if (politician == null) {
+							politician = politicianTransformer.getPolitician(politicianUrl, data);
+						}
+						speech.setPolitician(politician);
+					}
 				}
-				speech.setPolitician(politician);
-				
+
 				String speechType = tds.get(4).text();
 				speech.setType(SpeechType.getSpeechType(speechType));
-				
+
 				String start = tds.get(5).text();
-				
+
 				try {
 					Date startTime = timeFormat.parse(start);
 					speech.setStartTime(startTime);
-					
+
 					String duration = tds.get(5).text();
 					String[] parts = duration.split(":");
 					Integer minutes = Integer.parseInt(parts[0]);
 					Integer seconds = Integer.parseInt(parts[1]);
-					
+
 					Calendar endDate = Calendar.getInstance();
 					endDate.setTime(startTime);
 					endDate.add(Calendar.MINUTE, minutes);
@@ -240,10 +247,10 @@ public class SessionTransformer {
 					speech.setEndTime(endDate.getTime());
 				} catch (ParseException | NumberFormatException e) {
 				}
-				
+
 				speeches.add(speech);
 			}
-			
+
 			discussion.setSpeeches(speeches);
 		}
 

@@ -1,17 +1,19 @@
 package at.jku.tk.hiesmair.gv.parlament.loader;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.Session;
+import at.jku.tk.hiesmair.gv.parlament.entities.club.ClubMembership;
 import at.jku.tk.hiesmair.gv.parlament.entities.discussion.Discussion;
 
 public class ConsoleLegislativePeriodLoader implements LegislativePeriodLoader {
 
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
-	
+
 	@Override
 	public void loadLegislativePeriod(LegislativePeriod period) {
 		printPeriod(period);
@@ -21,30 +23,36 @@ public class ConsoleLegislativePeriodLoader implements LegislativePeriodLoader {
 	protected void printSessions(List<Session> sessions) {
 		System.out.println("Sessions");
 		System.out.println("-------------------------------------------");
-		for (Session session : sessions){
+		for (Session session : sessions) {
 			printSession(session);
 		}
 	}
 
 	protected void printSession(Session session) {
 		System.out.println("Session " + session.getSessionNr());
-		System.out.println(dateFormat.format(session.getStartDate()) + " - " + dateFormat.format(session.getEndDate()));
+		if (session.getStartDate() != null) {
+			System.out.print(dateFormat.format(session.getStartDate()));
+			if (session.getEndDate() != null) {
+				System.out.print(" - " + dateFormat.format(session.getEndDate()));
+			}
+			System.out.println();
+		}
 		System.out.println("-------------------------------------------");
 
 		System.out.print("Participating Politicians: ");
 		printPoliticians(session.getPoliticians());
-		
+
 		System.out.println("Discussions: ");
 		printDiscussions(session.getDiscussions());
-		
+
 		System.out.println("-------------------------------------------");
 	}
 
 	private void printDiscussions(List<Discussion> discussions) {
-		for (Discussion discussion : discussions){
+		for (Discussion discussion : discussions) {
 			printDiscussion(discussion);
 		}
-		
+
 		System.out.println();
 	}
 
@@ -52,10 +60,18 @@ public class ConsoleLegislativePeriodLoader implements LegislativePeriodLoader {
 		System.out.println("Discussion " + discussion.getTopic());
 		System.out.println(discussion.getType());
 		System.out.println(discussion.getSpeeches());
+		System.out.println();
 	}
 
 	protected void printPoliticians(List<Politician> politicians) {
-		politicians.forEach(p -> System.out.print(p.getFullName() + ", "));
+		for (Politician p : politicians) {
+			System.out.println(p.getFullName());
+			ClubMembership curMembership = p.getClubMembership(new Date());
+			if (curMembership != null) {
+				System.out.print(" (" + curMembership.getClub().getShortName() + ")");
+			}
+			System.out.print(", ");
+		}
 		System.out.println();
 		System.out.println();
 	}

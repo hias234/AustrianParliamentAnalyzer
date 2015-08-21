@@ -58,4 +58,8 @@ public class ClubMembership {
 				+ function + "]";
 	}
 
+	public boolean isValidAtDate(Date date) {
+		return date.compareTo(validFrom) >= 0 && (validUntil == null || date.compareTo(validUntil) <= 0);
+	}
+
 }
