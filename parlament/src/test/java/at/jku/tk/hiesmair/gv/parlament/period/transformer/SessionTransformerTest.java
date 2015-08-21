@@ -9,27 +9,40 @@ import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
 
-import at.jku.tk.hiesmair.gv.parlament.entities.ParliamentData;
+import at.jku.tk.hiesmair.gv.parlament.cache.DataCache;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.Session;
-import at.jku.tk.hiesmair.gv.parlament.period.transformer.SessionTransformer;
+import at.jku.tk.hiesmair.gv.parlament.politician.PoliticiansEtlJob;
+import at.jku.tk.hiesmair.gv.parlament.politician.extractor.PoliticiansExtractor;
+import at.jku.tk.hiesmair.gv.parlament.politician.loader.PoliticiansLoader;
+import at.jku.tk.hiesmair.gv.parlament.politician.transformer.PoliticiansTransformer;
 
-public class SessionExtractorTest {
+public class SessionTransformerTest {
 
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 
 	@Test
 	public void testGetSession() throws Exception {
-		ParliamentData data = new ParliamentData();
+		PoliticiansEtlJob politicianJob = new PoliticiansEtlJob(new PoliticiansExtractor(), new PoliticiansTransformer(),
+				new PoliticiansLoader() {
 
+			@Override
+			public void loadPoliticians(List<Politician> politicians) {
+				
+			}
+		});
+		politicianJob.start();
+		assertTrue("politicians in cache", DataCache.getInstance().getPoliticians().size() > 0);
+		
 		SessionTransformer extractor = new SessionTransformer();
-		Session session = extractor.getSession(getIndex(), getProtocol(), data);
+		Session session = extractor.getSession(getIndex(), getProtocol());
 
 		assertEquals("SessionNr of Session", 25, session.getSessionNr().intValue());
 		assertEquals("StartDate of Session", "20.05.2014 09:05", dateFormat.format(session.getStartDate()));

@@ -13,7 +13,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import at.jku.tk.hiesmair.gv.parlament.entities.ParliamentData;
+import at.jku.tk.hiesmair.gv.parlament.cache.DataCache;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.club.ClubMembership;
 import at.jku.tk.hiesmair.gv.parlament.entities.club.ParliamentClub;
@@ -23,30 +23,38 @@ public class PoliticianTransformer {
 
 	protected final Pattern namePattern;
 	protected final Pattern mandatePattern;
+	
+	protected final DataCache cache;
 
 	public PoliticianTransformer() {
 		namePattern = Pattern.compile("((?:[^\\s]+\\.?\\s)*)([^\\s,\\.]+(?:\\s.\\.)?)\\s([^\\s,(\\.]+)");
 		mandatePattern = Pattern.compile("([^(,]*)\\([^)]*\\),? ?([^\\s]+)\\s(\\d+\\.\\d+\\.\\d{4})(?: . (\\d+\\.\\d+\\.\\d{4}))?");
+		
+		cache = DataCache.getInstance();
 	}
 
-	public Politician getPolitician(String url, ParliamentData parliamentData) throws Exception {
+	public Politician getPolitician(String url) throws Exception {
 		PoliticianFeedItem item = new PoliticianFeedItem();
 		item.setUrl(new URL(url));
+		item.setTitle(url.replaceAll("[ \\/\\.\\(\\):]", ""));
 
-		return getPolitician(parliamentData, item);
+		return getPolitician(item);
 	}
 
-	public Politician getPolitician(ParliamentData parliamentData, PoliticianFeedItem feedItem) throws IOException {
+	public Politician getPolitician(PoliticianFeedItem feedItem) throws IOException {
 		Document document = feedItem.getIndexDocument();
-		
+		return getPolitician(feedItem.getUrl().toString(), document);
+	}
+
+	protected Politician getPolitician(String url, Document document) {
 		Politician politician = new Politician();
-		politician.setId(feedItem.getUrl().toString());
+		politician.setId(url.toString());
 		politician.setFirstName(getFirstName(document));
 		politician.setSurName(getSurName(document));
 		politician.setTitle(getTitle(document));
-		politician.setClubMemberships(getClubMemberships(document, politician, parliamentData));
+		politician.setClubMemberships(getClubMemberships(document, politician));
 		
-		parliamentData.putPolitician(politician);
+		cache.putPolitician(politician);
 		
 		return politician;
 	}
@@ -86,7 +94,7 @@ public class PoliticianTransformer {
 		return "";
 	}
 
-	private List<ClubMembership> getClubMemberships(Document document, Politician politician, ParliamentData parliamentData) {
+	private List<ClubMembership> getClubMemberships(Document document, Politician politician) {
 		List<ClubMembership> memberships = new ArrayList<ClubMembership>();
 
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
@@ -105,11 +113,11 @@ public class PoliticianTransformer {
 
 				String clubShortName = m.group(2);
 
-				ParliamentClub club = parliamentData.getClub(clubShortName);
+				ParliamentClub club = cache.getClub(clubShortName);
 				if (club == null) {
 					club = new ParliamentClub();
 					club.setShortName(clubShortName);
-					parliamentData.putClub(club);
+					cache.putClub(club);
 				}
 				membership.setClub(club);
 				membership.setPolitician(politician);

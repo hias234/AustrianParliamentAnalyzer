@@ -6,7 +6,6 @@ import java.util.List;
 import org.jsoup.nodes.Document;
 
 import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
-import at.jku.tk.hiesmair.gv.parlament.entities.ParliamentData;
 import at.jku.tk.hiesmair.gv.parlament.entities.Session;
 import at.jku.tk.hiesmair.gv.parlament.period.extractor.feed.ProtocolFeedItem;
 
@@ -25,9 +24,7 @@ public class LegislativePeriodTransformer {
 	}
 
 	public LegislativePeriod getLegislativePeriod(int period, List<ProtocolFeedItem> sessionProtocols) throws Exception {
-		ParliamentData data = new ParliamentData();
-
-		List<Session> sessions = getSessions(sessionProtocols, data);
+		List<Session> sessions = getSessions(sessionProtocols);
 
 		LegislativePeriod legislativePeriod = new LegislativePeriod();
 		legislativePeriod.setPeriod(period);
@@ -35,11 +32,11 @@ public class LegislativePeriodTransformer {
 		return legislativePeriod;
 	}
 
-	protected List<Session> getSessions(List<ProtocolFeedItem> sessionProtocols, ParliamentData data) throws Exception {
+	protected List<Session> getSessions(List<ProtocolFeedItem> sessionProtocols) throws Exception {
 		List<Session> sessions = new ArrayList<Session>(sessionProtocols.size());
 
 		for (ProtocolFeedItem sessionProtocol : sessionProtocols) {
-			Session session = getSession(sessionProtocol, data);
+			Session session = getSession(sessionProtocol);
 			if (session != null) {
 				sessions.add(session);
 			}
@@ -47,7 +44,7 @@ public class LegislativePeriodTransformer {
 		return sessions;
 	}
 
-	private Session getSession(ProtocolFeedItem sessionProtocol, ParliamentData data) throws Exception {
+	private Session getSession(ProtocolFeedItem sessionProtocol) throws Exception {
 		Document indexDoc = null;
 		Document protocolDoc = null;
 
@@ -61,7 +58,7 @@ public class LegislativePeriodTransformer {
 			return null;
 		}
 
-		return sessionTransformer.getSession(indexDoc, protocolDoc, data);
+		return sessionTransformer.getSession(indexDoc, protocolDoc);
 	}
 
 }

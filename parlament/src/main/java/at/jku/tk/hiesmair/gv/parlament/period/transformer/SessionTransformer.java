@@ -19,7 +19,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import at.jku.tk.hiesmair.gv.parlament.Settings;
-import at.jku.tk.hiesmair.gv.parlament.entities.ParliamentData;
+import at.jku.tk.hiesmair.gv.parlament.cache.DataCache;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.Session;
 import at.jku.tk.hiesmair.gv.parlament.entities.discussion.Discussion;
@@ -48,6 +48,8 @@ public class SessionTransformer {
 
 	protected PoliticianTransformer politicianTransformer;
 
+	protected DataCache cache;
+
 	public SessionTransformer() {
 		monthNames = Arrays.asList("Jänner", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September",
 				"Oktober", "November", "Dezember");
@@ -60,17 +62,18 @@ public class SessionTransformer {
 		discussionTypePattern = Pattern.compile("Einzelredezeitbeschränkung:\\s+((?:\\d+)|.)\\s+min\\s+(.+)");
 
 		politicianTransformer = new PoliticianTransformer();
+		cache = DataCache.getInstance();
 	}
 
-	public Session getSession(Document index, Document protocol, ParliamentData data) throws Exception {
+	public Session getSession(Document index, Document protocol) throws Exception {
 		String protocolHtml = protocol.html();
 
 		Session session = new Session();
 		session.setSessionNr(getSessionNr(protocolHtml));
 		session.setStartDate(getStartDate(protocolHtml));
 		session.setEndDate(getEndDate(protocolHtml));
-		session.setPoliticians(getPoliticians(index, protocol, data));
-		session.setDiscussions(getDiscussions(index, data));
+		session.setPoliticians(getPoliticians(index, protocol));
+		session.setDiscussions(getDiscussions(index));
 
 		return session;
 	}
@@ -146,40 +149,46 @@ public class SessionTransformer {
 		return null;
 	}
 
-	protected List<Politician> getPoliticians(Document index, Document protocol, ParliamentData data) throws Exception {
+	protected List<Politician> getPoliticians(Document index, Document protocol) throws Exception {
 		Set<Politician> politicians = new HashSet<Politician>();
-		politicians.addAll(getPoliticians(index, data));
-		politicians.addAll(getPoliticians(protocol, data));
+		politicians.addAll(getPoliticians(index));
+		politicians.addAll(getPoliticians(protocol));
 
 		return new ArrayList<Politician>(politicians);
 	}
 
-	protected Set<Politician> getPoliticians(Document document, ParliamentData data) throws Exception {
+	protected Set<Politician> getPoliticians(Document document) throws Exception {
 		Set<Politician> politicians = new HashSet<Politician>();
 
 		Elements links = document.getElementsByTag("a");
 		for (Element link : links) {
 			String href = link.attr("href");
-			if (href.startsWith("/WWER/PAD")) {
-				Politician politician = getPolitician(data, href);
-				politicians.add(politician);
+			if (isPoliticianLink(href)) {
+				Politician politician = getPolitician(href);
+				if (politician != null) {
+					politicians.add(politician);
+				}
 			}
 		}
 
 		return politicians;
 	}
 
-	protected Politician getPolitician(ParliamentData data, String href) throws Exception{
+	protected boolean isPoliticianLink(String href) {
+		return href.startsWith("/WWER/PAD");
+	}
+
+	protected Politician getPolitician(String href) throws Exception {
 		String url = Settings.BASE_URL + href;
 
-		Politician politician = data.getPolitician(url);
+		Politician politician = cache.getPolitician(url);
 		if (politician == null) {
-			politician = politicianTransformer.getPolitician(url, data);
+			politician = politicianTransformer.getPolitician(url);
 		}
 		return politician;
 	}
 
-	protected List<Discussion> getDiscussions(Document index, ParliamentData data) throws Exception {
+	protected List<Discussion> getDiscussions(Document index) throws Exception {
 		List<Discussion> discussions = new ArrayList<Discussion>();
 
 		Elements headers = index.select("h3");
@@ -187,7 +196,7 @@ public class SessionTransformer {
 			String text = header.text().replaceAll(Character.toString((char) 160), " ");
 
 			if (isTopicRelevant(text)) {
-				Discussion discussion = getDiscussion(header, text, data);
+				Discussion discussion = getDiscussion(header, text);
 
 				discussions.add(discussion);
 			}
@@ -196,7 +205,7 @@ public class SessionTransformer {
 		return discussions;
 	}
 
-	protected Discussion getDiscussion(Element header, String text, ParliamentData data) throws Exception {
+	protected Discussion getDiscussion(Element header, String text) throws Exception {
 		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
 		Discussion discussion = new Discussion();
@@ -219,13 +228,13 @@ public class SessionTransformer {
 				if (!tds.get(1).text().contains("n. anw.")) {
 					DiscussionSpeech speech = new DiscussionSpeech();
 					speech.setDiscussion(discussion);
-					
+
 					Element td = tds.get(2);
 					if (td != null) {
 						Elements links = td.select("a");
 						if (links != null && links.size() >= 1) {
 							String href = links.first().attr("href");
-							Politician politician = getPolitician(data, href);
+							Politician politician = getPolitician(href);
 							speech.setPolitician(politician);
 						}
 					}

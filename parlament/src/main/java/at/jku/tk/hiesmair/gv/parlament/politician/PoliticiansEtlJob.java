@@ -31,7 +31,7 @@ public class PoliticiansEtlJob {
 
 		logger.debug("extracting...");
 		List<PoliticianFeedItem> extractedData = extractor.getPoliticianFeedItems();
-		logger.debug("finished extracting, found " + extractedData.size() + " Protocols");
+		logger.debug("finished extracting, found " + extractedData.size() + " PoliticianFeeds");
 
 		logger.debug("transforming...");
 		List<Politician> politicians = transformer.getPoliticians(extractedData);

@@ -1,11 +1,24 @@
-package at.jku.tk.hiesmair.gv.parlament.entities;
+package at.jku.tk.hiesmair.gv.parlament.cache;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.club.ParliamentClub;
 
-public class ParliamentData {
+public class DataCache {
+
+	private static DataCache INSTANCE = null;
+	
+	public static DataCache getInstance(){
+		if (INSTANCE == null){
+			INSTANCE = new DataCache();
+		}
+		return INSTANCE;
+	}
+	
+	private DataCache(){}
+	
 	private Map<String, ParliamentClub> clubs = new HashMap<String, ParliamentClub>();
 	private Map<String, Politician> politicians = new HashMap<String, Politician>();
 
