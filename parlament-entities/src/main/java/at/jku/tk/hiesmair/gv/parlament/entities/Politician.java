@@ -12,6 +12,7 @@ public class Politician {
 	private String title;
 	private String firstName;
 	private String surName;
+	private Date birthDate;
 	private List<ClubMembership> clubMemberships;
 
 	public String getId() {
@@ -48,6 +49,14 @@ public class Politician {
 
 	public String getFullName() {
 		return firstName + " " + surName;
+	}
+
+	public Date getBirthDate() {
+		return birthDate;
+	}
+
+	public void setBirthDate(Date birthDate) {
+		this.birthDate = birthDate;
 	}
 
 	public List<ClubMembership> getClubMemberships() {
@@ -94,7 +103,8 @@ public class Politician {
 	@Override
 	public String toString() {
 		return "Politician [id=" + id + ", title=" + title + ", firstName=" + firstName + ", surName=" + surName
-				+ ", clubMemberships (" + clubMemberships.size() + ") =" + clubMemberships + "]";
+				+ ", birthDate=" + birthDate + ", clubMemberships (" + clubMemberships.size() + ") =" + clubMemberships
+				+ "]";
 	}
 
 }

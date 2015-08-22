@@ -5,10 +5,12 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -21,7 +23,12 @@ import at.jku.tk.hiesmair.gv.parlament.politician.extractor.feed.PoliticianFeedI
 
 public class PoliticianTransformer {
 
+	private static final String DATE_PATTERN = "dd.MM.yyyy";
+
+	private static final Logger logger = Logger.getLogger(PoliticianTransformer.class.getSimpleName());
+	
 	protected final Pattern namePattern;
+	protected final Pattern birthDatePattern;
 	protected final Pattern mandatePattern;
 	
 	protected final DataCache cache;
@@ -29,6 +36,7 @@ public class PoliticianTransformer {
 	public PoliticianTransformer() {
 		namePattern = Pattern.compile("((?:[^\\s]+\\.?\\s)*)([^\\s,\\.]+(?:\\s.\\.)?)\\s([^\\s,(\\.]+)");
 		mandatePattern = Pattern.compile("([^(,]*)\\([^)]*\\),? ?([^\\s]+)\\s(\\d+\\.\\d+\\.\\d{4})(?: . (\\d+\\.\\d+\\.\\d{4}))?");
+		birthDatePattern = Pattern.compile("Geb.:\\s(\\d+\\.\\d+\\.\\d{4})");
 		
 		cache = DataCache.getInstance();
 	}
@@ -47,11 +55,14 @@ public class PoliticianTransformer {
 	}
 
 	protected Politician getPolitician(String url, Document document) {
+		String fullText = document.text();
+		
 		Politician politician = new Politician();
 		politician.setId(url.toString());
 		politician.setFirstName(getFirstName(document));
 		politician.setSurName(getSurName(document));
 		politician.setTitle(getTitle(document));
+		politician.setBirthDate(getBirthDate(fullText));
 		politician.setClubMemberships(getClubMemberships(document, politician));
 		
 		cache.putPolitician(politician);
@@ -93,11 +104,29 @@ public class PoliticianTransformer {
 		}
 		return "";
 	}
+	
+	private Date getBirthDate(String fullText){
+		Matcher m = birthDatePattern.matcher(fullText);
+		if (m.find()){
+			String birthDateString = m.group(1);
+			try{
+				SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
+				return dateFormat.parse(birthDateString);
+			}
+			catch(ParseException pe){
+				logger.debug("invalid birthdate");
+			}
+		}
+		
+		logger.debug("birthdate of politician not found");
+		return null;
+	}
+
 
 	private List<ClubMembership> getClubMemberships(Document document, Politician politician) {
 		List<ClubMembership> memberships = new ArrayList<ClubMembership>();
 
-		SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+		SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
 
 		Elements headers = document.getElementsByTag("h4");
 		Element polMandateHeader = headers.stream().filter(h -> h.text().contains("Mandate")).findFirst().get();
