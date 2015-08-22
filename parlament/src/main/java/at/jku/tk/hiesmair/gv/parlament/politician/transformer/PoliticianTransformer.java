@@ -75,6 +75,7 @@ public class PoliticianTransformer {
 		if (m.find()) {
 			return m.group(2).trim();
 		}
+		logger.debug("firstName not found");
 		return "";
 	}
 
@@ -83,6 +84,7 @@ public class PoliticianTransformer {
 		if (m.find()) {
 			return m.group(3).trim();
 		}
+		logger.debug("surName not found");
 		return "";
 	}
 
@@ -141,13 +143,8 @@ public class PoliticianTransformer {
 				membership.setFunction(m.group(1).trim());
 
 				String clubShortName = m.group(2);
-
-				ParliamentClub club = cache.getClub(clubShortName);
-				if (club == null) {
-					club = new ParliamentClub();
-					club.setShortName(clubShortName);
-					cache.putClub(club);
-				}
+				ParliamentClub club = getClub(clubShortName);
+				
 				membership.setClub(club);
 				membership.setPolitician(politician);
 
@@ -168,6 +165,16 @@ public class PoliticianTransformer {
 		}
 
 		return memberships;
+	}
+
+	protected ParliamentClub getClub(String clubShortName) {
+		ParliamentClub club = cache.getClub(clubShortName);
+		if (club == null) {
+			club = new ParliamentClub();
+			club.setShortName(clubShortName);
+			cache.putClub(club);
+		}
+		return club;
 	}
 
 }
