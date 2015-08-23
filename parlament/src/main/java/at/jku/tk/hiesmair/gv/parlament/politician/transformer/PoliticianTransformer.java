@@ -45,8 +45,7 @@ public class PoliticianTransformer {
 
 	public PoliticianTransformer() {
 		namePattern = Pattern.compile("((?:[^\\s]+\\.?\\s)*)([^\\s,\\.]+(?:\\s.\\.)?)\\s([^\\s,(\\.]+)");
-		mandatePattern = Pattern
-				.compile("([^(,]*)(?:\\([^),]*\\))?,? ?([^\\d]+)?\\s(\\d+\\.\\d+\\.\\d{4})(?: . (\\d+\\.\\d+\\.\\d{4}))?");
+		mandatePattern = Pattern.compile("([^(,]*)(?:\\(([^\\.]+)\\.(?:.([^\\.]+)\\.)?\\sGP\\))?,? ?([^\\d]+)?\\s(\\d+\\.\\d+\\.\\d{4})(?: . (\\d+\\.\\d+\\.\\d{4}))?");
 		birthDatePattern = Pattern.compile("Geb.:\\s(\\d+\\.\\d+\\.\\d{4})");
 
 		cache = DataCache.getInstance();
@@ -146,11 +145,13 @@ public class PoliticianTransformer {
 			Matcher m = mandatePattern.matcher(text);
 			if (m.find()) {
 				String description = m.group(1).trim();
-				String clubShortName = m.group(2);
-				String from = m.group(3);
-				String to = m.group(4);
+				String periodFrom = m.group(2);
+				String periodTo = m.group(3);
+				String clubShortName = m.group(4);
+				String from = m.group(5);
+				String to = m.group(6);
 
-				Mandate mandate = getMandate(politician, description, clubShortName, from, to);
+				Mandate mandate = getMandate(politician, description, periodFrom, periodTo, clubShortName, from, to);
 
 				mandates.add(mandate);
 			}
@@ -162,7 +163,7 @@ public class PoliticianTransformer {
 		return mandates;
 	}
 
-	private Mandate getMandate(Politician politician, String description, String clubShortName, String from, String to) {
+	private Mandate getMandate(Politician politician, String description, String periodFrom, String periodTo, String clubShortName, String from, String to) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
 
 		Mandate mandate = null;
@@ -173,7 +174,6 @@ public class PoliticianTransformer {
 			}
 		} else if (description.contains("Mitglied des Bundesrates")) {
 			mandate = new FederalCouncilMember();
-			
 			((FederalCouncilMember) mandate).setClub(getClub(clubShortName.trim()));
 		}
 		else if (description.contains("Vizepräsident des Bundesrates") || description.contains("Vizepräsidentin des Bundesrates")) {
