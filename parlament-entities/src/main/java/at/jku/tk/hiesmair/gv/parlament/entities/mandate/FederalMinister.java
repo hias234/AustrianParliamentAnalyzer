@@ -12,4 +12,10 @@ public class FederalMinister extends Mandate {
 		this.department = department;
 	}
 
+	@Override
+	public String toString() {
+		return "FederalMinister [department=" + department + ", politician=" + politician.getSurName() + ", validFrom="
+				+ validFrom + ", validUntil=" + validUntil + "]";
+	}
+
 }

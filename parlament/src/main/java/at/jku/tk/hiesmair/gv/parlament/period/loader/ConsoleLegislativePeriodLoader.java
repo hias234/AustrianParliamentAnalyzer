@@ -1,13 +1,11 @@
 package at.jku.tk.hiesmair.gv.parlament.period.loader;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.Session;
-import at.jku.tk.hiesmair.gv.parlament.entities.club.ClubMembership;
 import at.jku.tk.hiesmair.gv.parlament.entities.discussion.Discussion;
 
 public class ConsoleLegislativePeriodLoader implements LegislativePeriodLoader {
@@ -66,10 +64,6 @@ public class ConsoleLegislativePeriodLoader implements LegislativePeriodLoader {
 	protected void printPoliticians(List<Politician> politicians) {
 		for (Politician p : politicians) {
 			System.out.print(p.getFullName());
-			ClubMembership curMembership = p.getClubMembership(new Date());
-			if (curMembership != null) {
-				System.out.print(" (" + curMembership.getClub().getShortName() + ")");
-			}
 			System.out.print(", ");
 		}
 		System.out.println();

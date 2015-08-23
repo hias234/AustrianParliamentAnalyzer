@@ -13,4 +13,11 @@ public class NationalCouncilPresident extends Mandate {
 		this.position = position;
 	}
 
+	@Override
+	public String toString() {
+		return "NationalCouncilPresident [position=" + position + ", politician=" + politician.getSurName() + ", validFrom="
+				+ validFrom + ", validUntil=" + validUntil + "]";
+	}
+
+	
 }

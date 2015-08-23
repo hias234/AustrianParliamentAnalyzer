@@ -32,8 +32,8 @@ public class PatternTests {
 	}
 	
 	@Test
-	public void politicianPatternTest() {
-		Pattern p = Pattern.compile("([^(,]*)(?:\\([^),]*\\))?,? ?([^\\s]+)\\s(\\d+\\.\\d+\\.\\d{4})(?: . (\\d+\\.\\d+\\.\\d{4}))?");
+	public void politicianMandatePatternTest() {
+		Pattern p = Pattern.compile("([^(,]*)(?:\\([^),]*\\))?,? ?([^\\d]+)?\\s(\\d+\\.\\d+\\.\\d{4})(?: . (\\d+\\.\\d+\\.\\d{4}))?");
 		Matcher m = p.matcher("Abgeordneter zum Nationalrat (XXV. GP), SPÖ 29.10.2013 – 16.12.2013");
 		if (m.find()) {
 			String function = m.group(1);
@@ -85,6 +85,18 @@ public class PatternTests {
 			assertEquals("Bundesminister für Landesverteidigung und Sport", function.trim());
 			assertNull(m.group(2));
 			assertEquals("11.03.2013", m.group(3));
+			assertNull(m.group(4));
+		}
+		else{
+			fail();
+		}
+		
+		m = p.matcher("Mitglied des Bundesrates, ohne Fraktion 24.04.2013 –");
+		if (m.find()) {
+			String function = m.group(1);
+			assertEquals("Mitglied des Bundesrates", function.trim());
+			assertEquals("ohne Fraktion", m.group(2).trim());
+			assertEquals("24.04.2013", m.group(3));
 			assertNull(m.group(4));
 		}
 		else{

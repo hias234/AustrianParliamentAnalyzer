@@ -18,6 +18,8 @@ public class PoliticiansTranformerTest {
 		
 		List<Politician> politicians = new PoliticiansTransformer().getPoliticians(items);
 		assertTrue(politicians.size() > 0);
+		
+		politicians.forEach(p -> System.out.println(p));
 	}
 	
 }

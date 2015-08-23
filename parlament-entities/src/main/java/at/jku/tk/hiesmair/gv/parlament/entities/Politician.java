@@ -1,10 +1,11 @@
 package at.jku.tk.hiesmair.gv.parlament.entities;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
-import at.jku.tk.hiesmair.gv.parlament.entities.club.ClubMembership;
+import at.jku.tk.hiesmair.gv.parlament.entities.mandate.Mandate;
+
 
 public class Politician {
 
@@ -13,7 +14,7 @@ public class Politician {
 	private String firstName;
 	private String surName;
 	private Date birthDate;
-	private List<ClubMembership> clubMemberships;
+	private List<Mandate> mandates = new ArrayList<Mandate>();
 
 	public String getId() {
 		return id;
@@ -58,21 +59,15 @@ public class Politician {
 	public void setBirthDate(Date birthDate) {
 		this.birthDate = birthDate;
 	}
+	
+	
 
-	public List<ClubMembership> getClubMemberships() {
-		return clubMemberships;
+	public List<Mandate> getMandates() {
+		return mandates;
 	}
 
-	public void setClubMemberships(List<ClubMembership> clubMemberships) {
-		this.clubMemberships = clubMemberships;
-	}
-
-	public ClubMembership getClubMembership(Date date) {
-		Optional<ClubMembership> optional = clubMemberships.stream().filter(m -> m.isValidAtDate(date)).findFirst();
-		if (optional.isPresent()) {
-			return optional.get();
-		}
-		return null;
+	public void setMandates(List<Mandate> mandates) {
+		this.mandates = mandates;
 	}
 
 	@Override
@@ -103,7 +98,7 @@ public class Politician {
 	@Override
 	public String toString() {
 		return "Politician [id=" + id + ", title=" + title + ", firstName=" + firstName + ", surName=" + surName
-				+ ", birthDate=" + birthDate + ", clubMemberships (" + clubMemberships.size() + ") =" + clubMemberships
+				+ ", birthDate=" + birthDate + ", mandates (" + mandates.size() + ") =" + mandates
 				+ "]";
 	}
 

@@ -17,8 +17,18 @@ import org.jsoup.select.Elements;
 
 import at.jku.tk.hiesmair.gv.parlament.cache.DataCache;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
-import at.jku.tk.hiesmair.gv.parlament.entities.club.ClubMembership;
 import at.jku.tk.hiesmair.gv.parlament.entities.club.ParliamentClub;
+import at.jku.tk.hiesmair.gv.parlament.entities.mandate.EuropeanParliamentMember;
+import at.jku.tk.hiesmair.gv.parlament.entities.mandate.FederalChancellor;
+import at.jku.tk.hiesmair.gv.parlament.entities.mandate.FederalCouncilMember;
+import at.jku.tk.hiesmair.gv.parlament.entities.mandate.FederalCouncilPresident;
+import at.jku.tk.hiesmair.gv.parlament.entities.mandate.FederalCouncilVicePresident;
+import at.jku.tk.hiesmair.gv.parlament.entities.mandate.FederalMinister;
+import at.jku.tk.hiesmair.gv.parlament.entities.mandate.FederalPresident;
+import at.jku.tk.hiesmair.gv.parlament.entities.mandate.FederalViceChancellor;
+import at.jku.tk.hiesmair.gv.parlament.entities.mandate.Mandate;
+import at.jku.tk.hiesmair.gv.parlament.entities.mandate.NationalCouncilMember;
+import at.jku.tk.hiesmair.gv.parlament.entities.mandate.NationalCouncilPresident;
 import at.jku.tk.hiesmair.gv.parlament.politician.extractor.feed.PoliticianFeedItem;
 
 public class PoliticianTransformer {
@@ -26,18 +36,19 @@ public class PoliticianTransformer {
 	private static final String DATE_PATTERN = "dd.MM.yyyy";
 
 	private static final Logger logger = Logger.getLogger(PoliticianTransformer.class.getSimpleName());
-	
+
 	protected final Pattern namePattern;
 	protected final Pattern birthDatePattern;
 	protected final Pattern mandatePattern;
-	
+
 	protected final DataCache cache;
 
 	public PoliticianTransformer() {
 		namePattern = Pattern.compile("((?:[^\\s]+\\.?\\s)*)([^\\s,\\.]+(?:\\s.\\.)?)\\s([^\\s,(\\.]+)");
-		mandatePattern = Pattern.compile("([^(,]*)\\([^)]*\\),? ?([^\\s]+)\\s(\\d+\\.\\d+\\.\\d{4})(?: . (\\d+\\.\\d+\\.\\d{4}))?");
+		mandatePattern = Pattern
+				.compile("([^(,]*)(?:\\([^),]*\\))?,? ?([^\\d]+)?\\s(\\d+\\.\\d+\\.\\d{4})(?: . (\\d+\\.\\d+\\.\\d{4}))?");
 		birthDatePattern = Pattern.compile("Geb.:\\s(\\d+\\.\\d+\\.\\d{4})");
-		
+
 		cache = DataCache.getInstance();
 	}
 
@@ -56,17 +67,17 @@ public class PoliticianTransformer {
 
 	protected Politician getPolitician(String url, Document document) {
 		String fullText = document.text();
-		
+
 		Politician politician = new Politician();
 		politician.setId(url.toString());
 		politician.setFirstName(getFirstName(document));
 		politician.setSurName(getSurName(document));
 		politician.setTitle(getTitle(document));
 		politician.setBirthDate(getBirthDate(fullText));
-		politician.setClubMemberships(getClubMemberships(document, politician));
-		
+		politician.setMandates(getMandates(politician, document));
+
 		cache.putPolitician(politician);
-		
+
 		return politician;
 	}
 
@@ -106,29 +117,25 @@ public class PoliticianTransformer {
 		}
 		return "";
 	}
-	
-	private Date getBirthDate(String fullText){
+
+	private Date getBirthDate(String fullText) {
 		Matcher m = birthDatePattern.matcher(fullText);
-		if (m.find()){
+		if (m.find()) {
 			String birthDateString = m.group(1);
-			try{
+			try {
 				SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
 				return dateFormat.parse(birthDateString);
-			}
-			catch(ParseException pe){
+			} catch (ParseException pe) {
 				logger.debug("invalid birthdate");
 			}
 		}
-		
+
 		logger.debug("birthdate of politician not found");
 		return null;
 	}
 
-
-	private List<ClubMembership> getClubMemberships(Document document, Politician politician) {
-		List<ClubMembership> memberships = new ArrayList<ClubMembership>();
-
-		SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
+	private List<Mandate> getMandates(Politician politician, Document document) {
+		List<Mandate> mandates = new ArrayList<Mandate>();
 
 		Elements headers = document.getElementsByTag("h4");
 		Element polMandateHeader = headers.stream().filter(h -> h.text().contains("Mandate")).findFirst().get();
@@ -138,33 +145,92 @@ public class PoliticianTransformer {
 			String text = polMandat.text().replaceAll(Character.toString((char) 160), " ");
 			Matcher m = mandatePattern.matcher(text);
 			if (m.find()) {
-				ClubMembership membership = new ClubMembership();
-
-				membership.setFunction(m.group(1).trim());
-
+				String description = m.group(1).trim();
 				String clubShortName = m.group(2);
-				ParliamentClub club = getClub(clubShortName);
-				
-				membership.setClub(club);
-				membership.setPolitician(politician);
-
 				String from = m.group(3);
 				String to = m.group(4);
 
-				try {
-					membership.setValidFrom(dateFormat.parse(from));
-					if (to != null) {
-						membership.setValidUntil(dateFormat.parse(to));
-					}
-				} catch (ParseException ex) {
-					// invalid date
-				}
+				Mandate mandate = getMandate(politician, description, clubShortName, from, to);
 
-				memberships.add(membership);
+				mandates.add(mandate);
+			}
+			else{
+				logger.debug("mandate item not recognized: " + text);
 			}
 		}
 
-		return memberships;
+		return mandates;
+	}
+
+	private Mandate getMandate(Politician politician, String description, String clubShortName, String from, String to) {
+		SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
+
+		Mandate mandate = null;
+		if (description.contains("Abgeordnete")) {
+			if (description.contains(" zum Nationalrat")) {
+				mandate = new NationalCouncilMember();
+				((NationalCouncilMember) mandate).setClub(getClub(clubShortName.trim()));
+			}
+		} else if (description.contains("Mitglied des Bundesrates")) {
+			mandate = new FederalCouncilMember();
+			
+			((FederalCouncilMember) mandate).setClub(getClub(clubShortName.trim()));
+		}
+		else if (description.contains("Vizepräsident des Bundesrates") || description.contains("Vizepräsidentin des Bundesrates")) {
+			mandate = new FederalCouncilVicePresident();
+		}
+		else if (description.contains("Präsident des Bundesrates") || description.contains("Präsidentin des Bundesrates")) {
+			mandate = new FederalCouncilPresident();
+		} else if (description.contains("Bundesminister")) {
+			mandate = new FederalMinister();
+
+			String department;
+			int indexOfFor = description.indexOf("für");
+			if (indexOfFor != -1) {
+				department = description.substring(indexOfFor + 4);
+			} else if (description.contains("Bundesministerin")) {
+				department = description.substring(16).trim();
+			} else {
+				department = description.substring(14).trim();
+			}
+			((FederalMinister) mandate).setDepartment(department);
+		} else if (description.contains("Bundespräsident")) {
+			mandate = new FederalPresident();
+		} else if (description.contains("Vizekanzler")) {
+			mandate = new FederalViceChancellor();
+		} else if (description.contains("Bundeskanzler")) {
+			mandate = new FederalChancellor();
+		} else if (description.contains("Europäisches Parlament")) {
+			mandate = new EuropeanParliamentMember();
+		} else if (description.contains("Präsident des Nationalrates")
+				|| description.contains("Präsidentin des Nationalrates")) {
+			mandate = new NationalCouncilPresident();
+			
+			Integer position = 1;
+			if (description.contains("Zweite")){
+				position = 2;
+			}
+			else if (description.contains("Dritte")){
+				position = 3;
+			}
+			
+			((NationalCouncilPresident) mandate).setPosition(position);
+		} else {
+			mandate = new Mandate();
+		}
+
+		mandate.setDescription(description);
+		mandate.setPolitician(politician);
+		try {
+			mandate.setValidFrom(dateFormat.parse(from));
+			if (to != null) {
+				mandate.setValidUntil(dateFormat.parse(to));
+			}
+		} catch (ParseException ex) {
+			logger.debug("invalid date " + ex.getMessage());
+		}
+
+		return mandate;
 	}
 
 	protected ParliamentClub getClub(String clubShortName) {

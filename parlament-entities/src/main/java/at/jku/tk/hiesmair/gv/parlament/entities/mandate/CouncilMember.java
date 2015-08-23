@@ -4,7 +4,7 @@ import at.jku.tk.hiesmair.gv.parlament.entities.club.ParliamentClub;
 
 public abstract class CouncilMember extends Mandate {
 
-	private ParliamentClub club;
+	protected ParliamentClub club;
 
 	public ParliamentClub getClub() {
 		return club;
@@ -13,6 +13,6 @@ public abstract class CouncilMember extends Mandate {
 	public void setClub(ParliamentClub club) {
 		this.club = club;
 	}
-	
+
 	
 }
