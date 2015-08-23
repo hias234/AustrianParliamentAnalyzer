@@ -20,6 +20,7 @@ public class PoliticiansTranformerTest {
 		assertTrue(politicians.size() > 0);
 		
 		politicians.forEach(p -> System.out.println(p));
+		System.out.println(politicians.stream().filter(p -> p.getNationalCouncilPeriods().contains(23)).count());
 	}
 	
 }

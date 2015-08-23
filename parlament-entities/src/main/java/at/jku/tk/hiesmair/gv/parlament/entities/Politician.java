@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.Mandate;
+import at.jku.tk.hiesmair.gv.parlament.entities.mandate.NationalCouncilMember;
 
 
 public class Politician {
@@ -68,6 +69,22 @@ public class Politician {
 
 	public void setMandates(List<Mandate> mandates) {
 		this.mandates = mandates;
+	}
+	
+	/**
+	 * Returns the periods that the politician was/is in the national council
+	 * @return
+	 */
+	public List<Integer> getNationalCouncilPeriods(){
+		List<Integer> periods = new ArrayList<Integer>();
+		
+		for (Mandate mandate : mandates){
+			if (mandate instanceof NationalCouncilMember){
+				periods.addAll(((NationalCouncilMember)mandate).getPeriods());
+			}
+		}
+		
+		return periods;
 	}
 
 	@Override
