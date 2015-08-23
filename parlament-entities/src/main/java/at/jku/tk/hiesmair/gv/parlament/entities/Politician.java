@@ -3,10 +3,10 @@ package at.jku.tk.hiesmair.gv.parlament.entities;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.Mandate;
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.NationalCouncilMember;
-
 
 public class Politician {
 
@@ -60,8 +60,6 @@ public class Politician {
 	public void setBirthDate(Date birthDate) {
 		this.birthDate = birthDate;
 	}
-	
-	
 
 	public List<Mandate> getMandates() {
 		return mandates;
@@ -70,20 +68,31 @@ public class Politician {
 	public void setMandates(List<Mandate> mandates) {
 		this.mandates = mandates;
 	}
+
+	public List<NationalCouncilMember> getNationalCouncilMemberships() {
+		return mandates.stream()
+				.filter(m -> m instanceof NationalCouncilMember)
+				.map(m -> (NationalCouncilMember) m)
+				.collect(Collectors.toList());
+	}
 	
+	public boolean isInNationalCouncilAt(Date date){
+		return getNationalCouncilMemberships().stream()
+				.anyMatch(ncm -> date.compareTo(ncm.getValidFrom()) >= 0 && (ncm.getValidUntil() == null || date.compareTo(ncm.getValidUntil()) <= 0));
+	}
+
 	/**
 	 * Returns the periods that the politician was/is in the national council
+	 * 
 	 * @return
 	 */
-	public List<Integer> getNationalCouncilPeriods(){
+	public List<Integer> getNationalCouncilPeriods() {
 		List<Integer> periods = new ArrayList<Integer>();
-		
-		for (Mandate mandate : mandates){
-			if (mandate instanceof NationalCouncilMember){
-				periods.addAll(((NationalCouncilMember)mandate).getPeriods());
-			}
+
+		for (NationalCouncilMember ncm : getNationalCouncilMemberships()) {
+			periods.addAll(ncm.getPeriods());
 		}
-		
+
 		return periods;
 	}
 
@@ -107,7 +116,8 @@ public class Politician {
 		if (id == null) {
 			if (other.id != null)
 				return false;
-		} else if (!id.equals(other.id))
+		}
+		else if (!id.equals(other.id))
 			return false;
 		return true;
 	}
@@ -115,8 +125,7 @@ public class Politician {
 	@Override
 	public String toString() {
 		return "Politician [id=" + id + ", title=" + title + ", firstName=" + firstName + ", surName=" + surName
-				+ ", birthDate=" + birthDate + ", mandates (" + mandates.size() + ") =" + mandates
-				+ "]";
+				+ ", birthDate=" + birthDate + ", mandates (" + mandates.size() + ") =" + mandates + "]";
 	}
 
 }

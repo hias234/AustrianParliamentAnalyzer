@@ -1,6 +1,7 @@
 package at.jku.tk.hiesmair.gv.parlament.period.transformer;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
@@ -33,7 +34,8 @@ public class PatternTests {
 	
 	@Test
 	public void politicianMandatePatternTest() {
-		Pattern p = Pattern.compile("([^(,]*)(?:\\(([^\\.]+)\\.(?:.([^\\.]+)\\.)?\\sGP\\))?,? ?([^\\d]+)?\\s(\\d+\\.\\d+\\.\\d{4})(?: . (\\d+\\.\\d+\\.\\d{4}))?");
+		Pattern p = Pattern
+				.compile("([^(,]*)(?:\\(([^\\.]+)\\.(?:.([^\\.]+)\\.)?\\sGP\\))?,? ?([^\\d]+)?\\s(\\d+\\.\\d+\\.\\d{4})( .)?\\s?(?:(\\d+\\.\\d+\\.\\d{4}))?");
 		Matcher m = p.matcher("Abgeordneter zum Nationalrat (XXV. GP), SPÖ 29.10.2013 – 16.12.2013");
 		if (m.find()) {
 			String function = m.group(1);
@@ -42,7 +44,8 @@ public class PatternTests {
 			assertNull(m.group(3));
 			assertEquals("SPÖ", m.group(4));
 			assertEquals("29.10.2013", m.group(5));
-			assertEquals("16.12.2013", m.group(6));
+			assertNotNull(m.group(6));
+			assertEquals("16.12.2013", m.group(7));
 		}
 
 		m = p.matcher("Abgeordnete zum Nationalrat (XXIII.–XXV. GP), FPÖ 30.10.2006 –");
@@ -53,7 +56,8 @@ public class PatternTests {
 			assertEquals("XXV", m.group(3));
 			assertEquals("FPÖ", m.group(4));
 			assertEquals("30.10.2006", m.group(5));
-			assertNull(m.group(6));
+			assertNotNull(m.group(6));
+			assertNull(m.group(7));
 		}
 		else{
 			fail();
@@ -67,7 +71,8 @@ public class PatternTests {
 			assertNull(m.group(3));
 			assertEquals("STRONACH", m.group(4));
 			assertEquals("29.10.2013", m.group(5));
-			assertNull(m.group(6));
+			assertNotNull(m.group(6));
+			assertNull(m.group(7));
 		}
 		else{
 			fail();
@@ -81,13 +86,14 @@ public class PatternTests {
 			assertNull(m.group(3));
 			assertNull(m.group(4));
 			assertEquals("11.03.2013", m.group(5));
-			assertNull(m.group(6));
+			assertNotNull(m.group(6));
+			assertNull(m.group(7));
 		}
 		else{
 			fail();
 		}
 		
-		m = p.matcher("Mitglied des Bundesrates, ohne Fraktion 24.04.2013 –");
+		m = p.matcher("Mitglied des Bundesrates, ohne Fraktion 24.04.2013");
 		if (m.find()) {
 			String function = m.group(1);
 			assertEquals("Mitglied des Bundesrates", function.trim());
@@ -95,6 +101,7 @@ public class PatternTests {
 			assertNull(m.group(3));
 			assertEquals("ohne Fraktion", m.group(4).trim());
 			assertEquals("24.04.2013", m.group(5));
+			assertNull(m.group(6));
 			assertNull(m.group(6));
 		}
 		else{

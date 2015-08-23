@@ -50,7 +50,7 @@ public class PoliticianTransformer {
 	public PoliticianTransformer() {
 		namePattern = Pattern.compile("((?:[^\\s]+\\.?\\s)*)([^\\s,\\.]+(?:\\s.\\.)?)\\s([^\\s,(\\.]+)");
 		mandatePattern = Pattern
-				.compile("([^(,]*)(?:\\(([^\\.]+)\\.(?:.([^\\.]+)\\.)?\\sGP\\))?,? ?([^\\d]+)?\\s(\\d+\\.\\d+\\.\\d{4})(?: . (\\d+\\.\\d+\\.\\d{4}))?");
+				.compile("([^(,]*)(?:\\(([^\\.]+)\\.(?:.([^\\.]+)\\.)?\\sGP\\))?,? ?([^\\d]+)?\\s(\\d+\\.\\d+\\.\\d{4})( .)?\\s?(?:(\\d+\\.\\d+\\.\\d{4}))?");
 		birthDatePattern = Pattern.compile("Geb.:\\s(\\d+\\.\\d+\\.\\d{4})");
 
 		romanNrConverter = new Converter();
@@ -156,9 +156,10 @@ public class PoliticianTransformer {
 				String periodTo = m.group(3);
 				String clubShortName = m.group(4);
 				String from = m.group(5);
-				String to = m.group(6);
+				Boolean dateRange = m.group(6) != null;
+				String to = m.group(7);
 
-				Mandate mandate = getMandate(politician, description, periodFrom, periodTo, clubShortName, from, to);
+				Mandate mandate = getMandate(politician, description, periodFrom, periodTo, clubShortName, from, to, dateRange);
 
 				mandates.add(mandate);
 			}
@@ -171,7 +172,7 @@ public class PoliticianTransformer {
 	}
 
 	private Mandate getMandate(Politician politician, String description, String periodFrom, String periodTo,
-			String clubShortName, String from, String to) {
+			String clubShortName, String from, String to, Boolean isDateRange) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
 
 		Mandate mandate = null;
@@ -243,9 +244,15 @@ public class PoliticianTransformer {
 		mandate.setDescription(description);
 		mandate.setPolitician(politician);
 		try {
-			mandate.setValidFrom(dateFormat.parse(from));
-			if (to != null) {
-				mandate.setValidUntil(dateFormat.parse(to));
+			Date dateFrom = dateFormat.parse(from);
+			mandate.setValidFrom(dateFrom);
+			if (isDateRange){
+				if (to != null) {
+					mandate.setValidUntil(dateFormat.parse(to));
+				}
+			}
+			else{
+				mandate.setValidUntil(dateFrom);
 			}
 		} catch (ParseException ex) {
 			logger.debug("invalid date " + ex.getMessage());

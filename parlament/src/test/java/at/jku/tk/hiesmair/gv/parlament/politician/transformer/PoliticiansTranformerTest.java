@@ -2,8 +2,12 @@ package at.jku.tk.hiesmair.gv.parlament.politician.transformer;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.StringWriter;
+import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
@@ -18,9 +22,10 @@ public class PoliticiansTranformerTest {
 		
 		List<Politician> politicians = new PoliticiansTransformer().getPoliticians(items);
 		assertTrue(politicians.size() > 0);
-		
-		politicians.forEach(p -> System.out.println(p));
-		System.out.println(politicians.stream().filter(p -> p.getNationalCouncilPeriods().contains(23)).count());
+
+		StringWriter writer = new StringWriter();
+		politicians.stream().filter(p -> p.isInNationalCouncilAt(new Date())).forEach(p -> writer.write(p.toString() + "\n"));
+		FileUtils.writeStringToFile(new File("C:\\Temp\\pol.txt"), writer.toString());
 	}
 	
 }
