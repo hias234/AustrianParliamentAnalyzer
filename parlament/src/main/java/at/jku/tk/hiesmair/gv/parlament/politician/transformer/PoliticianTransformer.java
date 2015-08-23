@@ -31,6 +31,8 @@ import at.jku.tk.hiesmair.gv.parlament.entities.mandate.NationalCouncilMember;
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.NationalCouncilPresident;
 import at.jku.tk.hiesmair.gv.parlament.politician.extractor.feed.PoliticianFeedItem;
 
+import com.frequal.romannumerals.Converter;
+
 public class PoliticianTransformer {
 
 	private static final String DATE_PATTERN = "dd.MM.yyyy";
@@ -41,13 +43,18 @@ public class PoliticianTransformer {
 	protected final Pattern birthDatePattern;
 	protected final Pattern mandatePattern;
 
+	protected final Converter romanNrConverter;
+	
 	protected final DataCache cache;
 
 	public PoliticianTransformer() {
 		namePattern = Pattern.compile("((?:[^\\s]+\\.?\\s)*)([^\\s,\\.]+(?:\\s.\\.)?)\\s([^\\s,(\\.]+)");
-		mandatePattern = Pattern.compile("([^(,]*)(?:\\(([^\\.]+)\\.(?:.([^\\.]+)\\.)?\\sGP\\))?,? ?([^\\d]+)?\\s(\\d+\\.\\d+\\.\\d{4})(?: . (\\d+\\.\\d+\\.\\d{4}))?");
+		mandatePattern = Pattern
+				.compile("([^(,]*)(?:\\(([^\\.]+)\\.(?:.([^\\.]+)\\.)?\\sGP\\))?,? ?([^\\d]+)?\\s(\\d+\\.\\d+\\.\\d{4})(?: . (\\d+\\.\\d+\\.\\d{4}))?");
 		birthDatePattern = Pattern.compile("Geb.:\\s(\\d+\\.\\d+\\.\\d{4})");
 
+		romanNrConverter = new Converter();
+		
 		cache = DataCache.getInstance();
 	}
 
@@ -155,7 +162,7 @@ public class PoliticianTransformer {
 
 				mandates.add(mandate);
 			}
-			else{
+			else {
 				logger.debug("mandate item not recognized: " + text);
 			}
 		}
@@ -163,7 +170,8 @@ public class PoliticianTransformer {
 		return mandates;
 	}
 
-	private Mandate getMandate(Politician politician, String description, String periodFrom, String periodTo, String clubShortName, String from, String to) {
+	private Mandate getMandate(Politician politician, String description, String periodFrom, String periodTo,
+			String clubShortName, String from, String to) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
 
 		Mandate mandate = null;
@@ -171,51 +179,64 @@ public class PoliticianTransformer {
 			if (description.contains(" zum Nationalrat")) {
 				mandate = new NationalCouncilMember();
 				((NationalCouncilMember) mandate).setClub(getClub(clubShortName.trim()));
+				((NationalCouncilMember) mandate).setPeriods(getPeriods(periodFrom, periodTo));
 			}
-		} else if (description.contains("Mitglied des Bundesrates")) {
+		}
+		else if (description.contains("Mitglied des Bundesrates")) {
 			mandate = new FederalCouncilMember();
 			((FederalCouncilMember) mandate).setClub(getClub(clubShortName.trim()));
 		}
-		else if (description.contains("Vizepräsident des Bundesrates") || description.contains("Vizepräsidentin des Bundesrates")) {
+		else if (description.contains("Vizepräsident des Bundesrates")
+				|| description.contains("Vizepräsidentin des Bundesrates")) {
 			mandate = new FederalCouncilVicePresident();
 		}
-		else if (description.contains("Präsident des Bundesrates") || description.contains("Präsidentin des Bundesrates")) {
+		else if (description.contains("Präsident des Bundesrates")
+				|| description.contains("Präsidentin des Bundesrates")) {
 			mandate = new FederalCouncilPresident();
-		} else if (description.contains("Bundesminister")) {
+		}
+		else if (description.contains("Bundesminister")) {
 			mandate = new FederalMinister();
 
 			String department;
 			int indexOfFor = description.indexOf("für");
 			if (indexOfFor != -1) {
 				department = description.substring(indexOfFor + 4);
-			} else if (description.contains("Bundesministerin")) {
+			}
+			else if (description.contains("Bundesministerin")) {
 				department = description.substring(16).trim();
-			} else {
+			}
+			else {
 				department = description.substring(14).trim();
 			}
 			((FederalMinister) mandate).setDepartment(department);
-		} else if (description.contains("Bundespräsident")) {
+		}
+		else if (description.contains("Bundespräsident")) {
 			mandate = new FederalPresident();
-		} else if (description.contains("Vizekanzler")) {
+		}
+		else if (description.contains("Vizekanzler")) {
 			mandate = new FederalViceChancellor();
-		} else if (description.contains("Bundeskanzler")) {
+		}
+		else if (description.contains("Bundeskanzler")) {
 			mandate = new FederalChancellor();
-		} else if (description.contains("Europäisches Parlament")) {
+		}
+		else if (description.contains("Europäisches Parlament")) {
 			mandate = new EuropeanParliamentMember();
-		} else if (description.contains("Präsident des Nationalrates")
+		}
+		else if (description.contains("Präsident des Nationalrates")
 				|| description.contains("Präsidentin des Nationalrates")) {
 			mandate = new NationalCouncilPresident();
-			
+
 			Integer position = 1;
-			if (description.contains("Zweite")){
+			if (description.contains("Zweite")) {
 				position = 2;
 			}
-			else if (description.contains("Dritte")){
+			else if (description.contains("Dritte")) {
 				position = 3;
 			}
-			
+
 			((NationalCouncilPresident) mandate).setPosition(position);
-		} else {
+		}
+		else {
 			mandate = new Mandate();
 		}
 
@@ -231,6 +252,26 @@ public class PoliticianTransformer {
 		}
 
 		return mandate;
+	}
+
+	private List<Integer> getPeriods(String periodFromStr, String periodToStr) {
+		List<Integer> periods = new ArrayList<Integer>();
+		
+		try {
+			Integer periodFrom = romanNrConverter.toNumber(periodFromStr);
+			periods.add(periodFrom);
+			
+			if (periodToStr != null){
+				Integer periodTo = romanNrConverter.toNumber(periodToStr);
+				for (Integer period = periodFrom + 1; period <= periodTo; period++){
+					periods.add(period);
+				}
+			}
+		} catch (ParseException e) {
+			logger.debug("roman number convertion error" + e.getMessage());
+		}
+		
+		return periods;
 	}
 
 	protected ParliamentClub getClub(String clubShortName) {
