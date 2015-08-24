@@ -11,10 +11,16 @@ import org.apache.commons.io.IOUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+/**
+ * Item of the feed - loads the html-file
+ * 
+ * @author Markus
+ *
+ */
 public class FeedItem {
 	protected String cachePath;
 	protected String indexCachePrefix;
-	
+
 	protected URL url;
 	protected String title;
 	protected Date pubDate;
@@ -24,9 +30,7 @@ public class FeedItem {
 
 	protected volatile String indexContent;
 	protected volatile Document indexDocument;
-	
-	
-	
+
 	public FeedItem(String cachePath, String indexCachePrefix) {
 		super();
 		this.cachePath = cachePath;
@@ -44,8 +48,8 @@ public class FeedItem {
 		}
 		return this.indexCacheName;
 	}
-	
-	protected String getCacheName(String cachePrefix){
+
+	protected String getCacheName(String cachePrefix) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(cachePath);
 		if (!cachePath.endsWith(File.separator)) {
@@ -100,7 +104,8 @@ public class FeedItem {
 		if (this.indexContent == null) {
 			if (this.isCached()) {
 				loadFromCache();
-			} else {
+			}
+			else {
 				loadFromWeb();
 			}
 		}

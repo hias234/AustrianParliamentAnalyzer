@@ -19,6 +19,12 @@ import org.xml.sax.SAXException;
 
 import at.jku.tk.hiesmair.gv.parlament.feed.parser.title.TitleParser;
 
+/**
+ * parses a single feedItem and returns a list of feedItems
+ * @author Markus
+ *
+ * @param <T>
+ */
 public abstract class FeedParser<T extends FeedItem> {
 
 	/** Date-format to parse XML files */

@@ -2,6 +2,7 @@ package at.jku.tk.hiesmair.gv.parlament;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.Arrays;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -34,6 +35,6 @@ public class App {
 		LegislativePeriodEtlJob job = new LegislativePeriodEtlJob(new LegislativePeriodExtractor(),
 				new LegislativePeriodTransformer(), new ConsoleLegislativePeriodLoader());
 		
-		job.start(25);
+		job.start(Arrays.asList(25, 24, 23, 22, 21));
 	}
 }

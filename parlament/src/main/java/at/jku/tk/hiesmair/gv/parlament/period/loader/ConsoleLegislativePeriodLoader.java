@@ -13,9 +13,11 @@ public class ConsoleLegislativePeriodLoader implements LegislativePeriodLoader {
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 
 	@Override
-	public void loadLegislativePeriod(LegislativePeriod period) {
-		printPeriod(period);
-		printSessions(period.getSessions());
+	public void loadLegislativePeriods(List<LegislativePeriod> periods) {
+		for (LegislativePeriod period : periods){
+			printPeriod(period);
+			printSessions(period.getSessions());
+		}
 	}
 
 	protected void printSessions(List<Session> sessions) {

@@ -1,9 +1,11 @@
 package at.jku.tk.hiesmair.gv.parlament.period.loader;
 
+import java.util.List;
+
 import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
 
 public interface LegislativePeriodLoader {
 
-	public void loadLegislativePeriod(LegislativePeriod period);
+	public void loadLegislativePeriods(List<LegislativePeriod> period);
 	
 }

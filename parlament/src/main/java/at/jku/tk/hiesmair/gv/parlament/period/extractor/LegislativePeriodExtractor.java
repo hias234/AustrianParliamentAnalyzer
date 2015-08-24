@@ -25,6 +25,7 @@ public class LegislativePeriodExtractor {
 	/** Pattern that needs to be replaced with the period */
 	protected static final String PERIOD_PATTERN = "##PERIOD##";
 
+	/** roman number converter */
 	protected Converter converter;
 
 	public LegislativePeriodExtractor() {

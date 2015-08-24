@@ -1,5 +1,6 @@
 package at.jku.tk.hiesmair.gv.parlament.period;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -42,11 +43,24 @@ public class LegislativePeriodEtlJob {
 				});
 	}
 
-	public void start(int period) throws Exception {
+	public void start(List<Integer> periods) throws Exception {
 		loadPoliticians();
 
 		logger.info("LegislativePeriodEtlJob started...");
 
+		List<LegislativePeriod> legislativePeriods = new ArrayList<LegislativePeriod>();
+		for (Integer period : periods){
+			legislativePeriods.add(loadPeriod(period));
+		}
+
+		logger.debug("loading...");
+		loader.loadLegislativePeriods(legislativePeriods);
+		logger.debug("finished loading");
+
+		logger.info("LegislativePeriodEtlJob finished...");
+	}
+
+	protected LegislativePeriod loadPeriod(int period) throws Exception {
 		logger.debug("extracting...");
 		List<ProtocolFeedItem> extractedData = extractor.extractProtocols(period);
 		logger.debug("finished extracting, found " + extractedData.size() + " Protocols");
@@ -55,13 +69,9 @@ public class LegislativePeriodEtlJob {
 		LegislativePeriod legislativePeriod = transformer.getLegislativePeriod(period, extractedData);
 		logger.debug("finished transforming");
 
-		logger.debug("loading...");
-		loader.loadLegislativePeriod(legislativePeriod);
-		logger.debug("finished loading");
-
-		logger.info("LegislativePeriodEtlJob finished...");
+		return legislativePeriod;
 	}
-
+	
 	private void loadPoliticians() throws Exception {
 		politicianJob.start();
 	}

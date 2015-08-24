@@ -6,6 +6,12 @@ import java.util.Map;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.club.ParliamentClub;
 
+/**
+ * caching of politicians and clubs so that it does not have to load it several times.
+ * 
+ * @author Markus
+ *
+ */
 public class DataCache {
 
 	private static DataCache INSTANCE = null;
