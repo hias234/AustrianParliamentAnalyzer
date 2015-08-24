@@ -3,11 +3,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>at.jku.tk.hiesmair.gv</groupId>
-	<artifactId>parlament</artifactId>
+	<artifactId>parlament-etl</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>parlament</name>
+	<name>parlament-etl</name>
 	<url>http://maven.apache.org</url>
 
 	<properties>
