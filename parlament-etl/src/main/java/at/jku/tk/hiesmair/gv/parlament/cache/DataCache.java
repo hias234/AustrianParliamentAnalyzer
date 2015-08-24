@@ -3,6 +3,7 @@ package at.jku.tk.hiesmair.gv.parlament.cache;
 import java.util.HashMap;
 import java.util.Map;
 
+import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.club.ParliamentClub;
 
@@ -27,6 +28,7 @@ public class DataCache {
 	
 	private Map<String, ParliamentClub> clubs = new HashMap<String, ParliamentClub>();
 	private Map<String, Politician> politicians = new HashMap<String, Politician>();
+	private Map<Integer, LegislativePeriod> legislativePeriods = new HashMap<Integer, LegislativePeriod>();
 
 	public Map<String, ParliamentClub> getClubs() {
 		return clubs;
@@ -43,6 +45,16 @@ public class DataCache {
 	public void setPoliticians(Map<String, Politician> politicians) {
 		this.politicians = politicians;
 	}
+	
+	
+
+	public Map<Integer, LegislativePeriod> getLegislativePeriods() {
+		return legislativePeriods;
+	}
+
+	public void setLegislativePeriods(Map<Integer, LegislativePeriod> legislativePeriods) {
+		this.legislativePeriods = legislativePeriods;
+	}
 
 	public ParliamentClub getClub(String shortName){
 		return getClubs().get(shortName);
@@ -58,5 +70,13 @@ public class DataCache {
 	
 	public void putPolitician(Politician politician){
 		getPoliticians().put(politician.getId(), politician);
+	}
+	
+	public LegislativePeriod getLegislativePeriod(Integer period){
+		return legislativePeriods.get(period);
+	}
+	
+	public void putLegislativePeriod(LegislativePeriod period){
+		legislativePeriods.put(period.getPeriod(), period);
 	}
 }

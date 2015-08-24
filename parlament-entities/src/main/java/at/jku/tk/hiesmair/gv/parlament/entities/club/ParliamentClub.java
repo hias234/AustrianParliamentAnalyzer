@@ -1,11 +1,15 @@
 package at.jku.tk.hiesmair.gv.parlament.entities.club;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
 public class ParliamentClub {
+
+	@Id
 	private String shortName;
 	private String longName;
 
-	
-	
 	public String getShortName() {
 		return shortName;
 	}

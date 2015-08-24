@@ -21,6 +21,6 @@ public class App {
 		LegislativePeriodEtlJob job = new LegislativePeriodEtlJob(new LegislativePeriodExtractor(),
 				new LegislativePeriodTransformer(), new ConsoleLegislativePeriodLoader());
 		
-		job.start(Arrays.asList(25, 24, 23, 22, 21, 20));
+		job.start(Arrays.asList(25, 24));
 	}
 }

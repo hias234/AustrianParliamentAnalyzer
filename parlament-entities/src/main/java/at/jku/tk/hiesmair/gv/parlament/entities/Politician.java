@@ -5,16 +5,29 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.Mandate;
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.NationalCouncilMember;
 
+@Entity
 public class Politician {
 
+	@Id
 	private String id;
 	private String title;
 	private String firstName;
 	private String surName;
+	
+	@Temporal(TemporalType.DATE)
 	private Date birthDate;
+	
+	@OneToMany(fetch = FetchType.EAGER)
 	private List<Mandate> mandates = new ArrayList<Mandate>();
 
 	public String getId() {
@@ -86,15 +99,15 @@ public class Politician {
 	 * 
 	 * @return
 	 */
-	public List<Integer> getNationalCouncilPeriods() {
-		List<Integer> periods = new ArrayList<Integer>();
-
-		for (NationalCouncilMember ncm : getNationalCouncilMemberships()) {
-			periods.addAll(ncm.getPeriods());
-		}
-
-		return periods;
-	}
+//	public List<Integer> getNationalCouncilPeriods() {
+//		List<Integer> periods = new ArrayList<Integer>();
+//
+//		for (NationalCouncilMember ncm : getNationalCouncilMemberships()) {
+//			periods.addAll(ncm.getPeriods());
+//		}
+//
+//		return periods;
+//	}
 
 	@Override
 	public int hashCode() {

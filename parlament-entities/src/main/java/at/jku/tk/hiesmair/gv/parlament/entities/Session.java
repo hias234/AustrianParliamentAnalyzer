@@ -3,14 +3,41 @@ package at.jku.tk.hiesmair.gv.parlament.entities;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import at.jku.tk.hiesmair.gv.parlament.entities.discussion.Discussion;
 
+@Entity
 public class Session {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Integer id;
+
+	@ManyToOne(optional = false)
+	private LegislativePeriod period;
+
 	private Integer sessionNr;
+
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date startDate;
+
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date endDate;
+
+	@ManyToMany(fetch = FetchType.EAGER)
 	private List<Politician> politicians;
+
+	@OneToMany(fetch = FetchType.EAGER)
 	private List<Discussion> discussions;
 
 	public Session() {
@@ -22,6 +49,22 @@ public class Session {
 		this.sessionNr = sessionNr;
 		this.startDate = startDate;
 		this.endDate = endDate;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public LegislativePeriod getPeriod() {
+		return period;
+	}
+
+	public void setPeriod(LegislativePeriod period) {
+		this.period = period;
 	}
 
 	public Integer getSessionNr() {
@@ -66,7 +109,9 @@ public class Session {
 
 	@Override
 	public String toString() {
-		return "Session [sessionNr=" + sessionNr + ", startDate=" + startDate + ", endDate=" + endDate + "]";
+		return "Session [id=" + id + ", period=" + period.getPeriod() + ", sessionNr=" + sessionNr + ", startDate="
+				+ startDate + ", endDate=" + endDate + ", politicians=" + politicians + ", discussions=" + discussions
+				+ "]";
 	}
 
 }

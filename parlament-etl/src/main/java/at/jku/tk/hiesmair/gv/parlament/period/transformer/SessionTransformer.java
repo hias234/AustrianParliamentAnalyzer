@@ -20,6 +20,7 @@ import org.jsoup.select.Elements;
 
 import at.jku.tk.hiesmair.gv.parlament.Settings;
 import at.jku.tk.hiesmair.gv.parlament.cache.DataCache;
+import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.Session;
 import at.jku.tk.hiesmair.gv.parlament.entities.discussion.Discussion;
@@ -65,10 +66,11 @@ public class SessionTransformer {
 		cache = DataCache.getInstance();
 	}
 
-	public Session getSession(Document index, Document protocol) throws Exception {
+	public Session getSession(LegislativePeriod period, Document index, Document protocol) throws Exception {
 		String protocolHtml = protocol.html();
 
 		Session session = new Session();
+		session.setPeriod(period);
 		session.setSessionNr(getSessionNr(protocolHtml));
 		session.setStartDate(getStartDate(protocolHtml));
 		session.setEndDate(getEndDate(protocolHtml));

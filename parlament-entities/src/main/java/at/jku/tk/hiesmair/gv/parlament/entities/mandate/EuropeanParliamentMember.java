@@ -2,9 +2,14 @@ package at.jku.tk.hiesmair.gv.parlament.entities.mandate;
 
 import java.util.Date;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.club.ParliamentClub;
 
+@Entity
+@DiscriminatorValue("EuropeanParliamentMember")
 public class EuropeanParliamentMember extends CouncilMember {
 
 	public EuropeanParliamentMember() {

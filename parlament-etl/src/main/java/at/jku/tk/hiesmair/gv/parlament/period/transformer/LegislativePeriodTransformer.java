@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.jsoup.nodes.Document;
 
+import at.jku.tk.hiesmair.gv.parlament.cache.DataCache;
 import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parlament.entities.Session;
 import at.jku.tk.hiesmair.gv.parlament.period.extractor.feed.ProtocolFeedItem;
@@ -19,24 +20,31 @@ public class LegislativePeriodTransformer {
 
 	protected SessionTransformer sessionTransformer;
 
+	protected DataCache cache;
+
 	public LegislativePeriodTransformer() {
 		sessionTransformer = new SessionTransformer();
+		cache = DataCache.getInstance();
 	}
 
 	public LegislativePeriod getLegislativePeriod(int period, List<ProtocolFeedItem> sessionProtocols) throws Exception {
-		List<Session> sessions = getSessions(sessionProtocols);
-
 		LegislativePeriod legislativePeriod = new LegislativePeriod();
 		legislativePeriod.setPeriod(period);
-		legislativePeriod.setSessions(sessions);
+
+		cache.putLegislativePeriod(legislativePeriod);
+
+		legislativePeriod.setSessions(getSessions(legislativePeriod, sessionProtocols));
+
+		cache.putLegislativePeriod(legislativePeriod);
+
 		return legislativePeriod;
 	}
 
-	protected List<Session> getSessions(List<ProtocolFeedItem> sessionProtocols) throws Exception {
+	protected List<Session> getSessions(LegislativePeriod period, List<ProtocolFeedItem> sessionProtocols) throws Exception {
 		List<Session> sessions = new ArrayList<Session>(sessionProtocols.size());
 
 		for (ProtocolFeedItem sessionProtocol : sessionProtocols) {
-			Session session = getSession(sessionProtocol);
+			Session session = getSession(period, sessionProtocol);
 			if (session != null) {
 				sessions.add(session);
 			}
@@ -44,7 +52,7 @@ public class LegislativePeriodTransformer {
 		return sessions;
 	}
 
-	private Session getSession(ProtocolFeedItem sessionProtocol) throws Exception {
+	private Session getSession(LegislativePeriod period, ProtocolFeedItem sessionProtocol) throws Exception {
 		Document indexDoc = null;
 		Document protocolDoc = null;
 
@@ -58,7 +66,7 @@ public class LegislativePeriodTransformer {
 			return null;
 		}
 
-		return sessionTransformer.getSession(indexDoc, protocolDoc);
+		return sessionTransformer.getSession(period, indexDoc, protocolDoc);
 	}
 
 }

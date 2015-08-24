@@ -2,8 +2,13 @@ package at.jku.tk.hiesmair.gv.parlament.entities.mandate;
 
 import java.util.Date;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 
+@Entity
+@DiscriminatorValue("FederalChancellor")
 public class FederalChancellor extends Mandate {
 
 	public FederalChancellor() {

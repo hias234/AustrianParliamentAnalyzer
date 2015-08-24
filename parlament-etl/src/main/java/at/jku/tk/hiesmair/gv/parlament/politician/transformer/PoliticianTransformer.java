@@ -16,6 +16,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import at.jku.tk.hiesmair.gv.parlament.cache.DataCache;
+import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.club.ParliamentClub;
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.EuropeanParliamentMember;
@@ -262,17 +263,25 @@ public class PoliticianTransformer {
 		return mandate;
 	}
 
-	private List<Integer> getPeriods(String periodFromStr, String periodToStr) {
-		List<Integer> periods = new ArrayList<Integer>();
+	private List<LegislativePeriod> getPeriods(String periodFromStr, String periodToStr) {
+		List<LegislativePeriod> periods = new ArrayList<LegislativePeriod>();
 		
 		try {
 			Integer periodFrom = romanNrConverter.toNumber(periodFromStr);
-			periods.add(periodFrom);
+			LegislativePeriod period = cache.getLegislativePeriod(periodFrom);
+			if (period == null){
+				period = new LegislativePeriod(periodFrom);
+			}
+			periods.add(period);
 			
 			if (periodToStr != null){
 				Integer periodTo = romanNrConverter.toNumber(periodToStr);
-				for (Integer period = periodFrom + 1; period <= periodTo; period++){
-					periods.add(period);
+				for (Integer periodNr = periodFrom + 1; periodNr <= periodTo; periodNr++){
+					LegislativePeriod nextPeriod = cache.getLegislativePeriod(periodNr);
+					if (nextPeriod == null){
+						nextPeriod = new LegislativePeriod(periodNr);
+					}
+					periods.add(nextPeriod);
 				}
 			}
 		} catch (ParseException e) {

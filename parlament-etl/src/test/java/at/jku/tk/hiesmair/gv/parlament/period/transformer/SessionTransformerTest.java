@@ -17,6 +17,7 @@ import org.jsoup.nodes.Document;
 import org.junit.Test;
 
 import at.jku.tk.hiesmair.gv.parlament.cache.DataCache;
+import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.Session;
 import at.jku.tk.hiesmair.gv.parlament.politician.PoliticiansEtlJob;
@@ -42,7 +43,7 @@ public class SessionTransformerTest {
 		assertTrue("politicians in cache", DataCache.getInstance().getPoliticians().size() > 0);
 		
 		SessionTransformer extractor = new SessionTransformer();
-		Session session = extractor.getSession(getIndex(), getProtocol());
+		Session session = extractor.getSession(new LegislativePeriod(25), getIndex(), getProtocol());
 
 		assertEquals("SessionNr of Session", 25, session.getSessionNr().intValue());
 		assertEquals("StartDate of Session", "20.05.2014 09:05", dateFormat.format(session.getStartDate()));
