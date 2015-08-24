@@ -222,6 +222,7 @@ public class PoliticianTransformer {
 		}
 		else if (description.contains("Europäisches Parlament")) {
 			mandate = new EuropeanParliamentMember();
+			((EuropeanParliamentMember) mandate).setClub(getClub(clubShortName.trim()));
 		}
 		else if (description.contains("Präsident des Nationalrates")
 				|| description.contains("Präsidentin des Nationalrates")) {

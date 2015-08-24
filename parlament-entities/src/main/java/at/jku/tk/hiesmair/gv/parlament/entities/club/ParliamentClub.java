@@ -4,6 +4,8 @@ public class ParliamentClub {
 	private String shortName;
 	private String longName;
 
+	
+	
 	public String getShortName() {
 		return shortName;
 	}

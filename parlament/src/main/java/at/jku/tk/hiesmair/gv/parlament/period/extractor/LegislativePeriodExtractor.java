@@ -25,9 +25,16 @@ public class LegislativePeriodExtractor {
 	/** Pattern that needs to be replaced with the period */
 	protected static final String PERIOD_PATTERN = "##PERIOD##";
 
+	protected Converter converter;
+
+	public LegislativePeriodExtractor() {
+		converter = new Converter();
+	}
+
 	public List<ProtocolFeedItem> extractProtocols(int period) throws Exception {
 		String feedContent = getFeedContent(period);
-		LegislativePeriodFeedParser parser = new LegislativePeriodFeedParser(feedContent, new SessionTitleParser());
+		LegislativePeriodFeedParser parser = new LegislativePeriodFeedParser(feedContent, new SessionTitleParser(
+				converter.toRomanNumerals(period)));
 
 		return parser.getProtocols();
 	}
@@ -38,7 +45,6 @@ public class LegislativePeriodExtractor {
 	}
 
 	protected String getUrl(int period) throws MalformedURLException {
-		Converter converter = new Converter();
 		String periodShortName = converter.toRomanNumerals(period);
 		return buildUrl(periodShortName);
 	}

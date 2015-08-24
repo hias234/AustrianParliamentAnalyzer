@@ -10,13 +10,19 @@ import at.jku.tk.hiesmair.gv.parlament.feed.parser.title.TitleParser;
  */
 public class SessionTitleParser implements TitleParser {
 
+	protected String period;
+	
+	public SessionTitleParser(String period) {
+		this.period = period;
+	}
+	
 	@Override
 	public String parse(String input) {
 		if(input != null) {
 			String[] arr = input.split(". ");
 			return arr[0];
 		}
-		return input;
+		return period + "_" + input;
 	}
 
 }

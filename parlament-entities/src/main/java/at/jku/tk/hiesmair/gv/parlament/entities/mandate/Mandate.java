@@ -11,6 +11,18 @@ public class Mandate {
 	protected Date validFrom;
 	protected Date validUntil;
 
+	public Mandate() {
+		super();
+	}
+
+	public Mandate(String description, Politician politician, Date validFrom, Date validUntil) {
+		super();
+		this.description = description;
+		this.politician = politician;
+		this.validFrom = validFrom;
+		this.validUntil = validUntil;
+	}
+
 	public String getDescription() {
 		return description;
 	}
@@ -45,10 +57,8 @@ public class Mandate {
 
 	@Override
 	public String toString() {
-		return "Mandate [description=" + description + ", politician=" + politician.getSurName() + ", validFrom=" + validFrom
-				+ ", validUntil=" + validUntil + "]";
+		return "Mandate [description=" + description + ", politician=" + politician.getSurName() + ", validFrom="
+				+ validFrom + ", validUntil=" + validUntil + "]";
 	}
-
-	
 
 }

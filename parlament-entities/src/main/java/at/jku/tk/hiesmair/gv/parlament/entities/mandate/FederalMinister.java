@@ -1,8 +1,21 @@
 package at.jku.tk.hiesmair.gv.parlament.entities.mandate;
 
+import java.util.Date;
+
+import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
+
 public class FederalMinister extends Mandate {
 
-	private String department;
+	protected String department;
+
+	public FederalMinister() {
+		super();
+	}
+
+	public FederalMinister(String description, Politician politician, Date validFrom, Date validUntil, String department) {
+		super(description, politician, validFrom, validUntil);
+		this.department = department;
+	}
 
 	public String getDepartment() {
 		return department;
