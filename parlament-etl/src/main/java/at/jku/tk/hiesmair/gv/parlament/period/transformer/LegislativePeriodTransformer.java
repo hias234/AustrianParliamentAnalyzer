@@ -30,14 +30,13 @@ public class LegislativePeriodTransformer {
 	}
 
 	public LegislativePeriod getLegislativePeriod(int period, List<ProtocolFeedItem> sessionProtocols) throws Exception {
-		LegislativePeriod legislativePeriod = new LegislativePeriod();
-		legislativePeriod.setPeriod(period);
-
-		cache.putLegislativePeriod(legislativePeriod);
+		LegislativePeriod legislativePeriod = cache.getLegislativePeriod(period);
+		if (legislativePeriod == null){
+			legislativePeriod = new LegislativePeriod(period);
+			cache.putLegislativePeriod(legislativePeriod);
+		}
 
 		legislativePeriod.setSessions(getSessions(legislativePeriod, sessionProtocols));
-
-		cache.putLegislativePeriod(legislativePeriod);
 
 		return legislativePeriod;
 	}

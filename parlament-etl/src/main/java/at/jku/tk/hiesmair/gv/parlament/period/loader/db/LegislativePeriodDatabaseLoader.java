@@ -18,6 +18,7 @@ public class LegislativePeriodDatabaseLoader implements LegislativePeriodLoader 
 	
 	@Override
 	public void loadLegislativePeriods(List<LegislativePeriod> periods) {
+		periodRepository.delete(periodRepository.findAll());
 		for (LegislativePeriod period : periods){
 			// TODO
 //			period.setSessions(new ArrayList<Session>());

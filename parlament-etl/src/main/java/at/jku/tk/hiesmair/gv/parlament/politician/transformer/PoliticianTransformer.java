@@ -268,19 +268,13 @@ public class PoliticianTransformer {
 		
 		try {
 			Integer periodFrom = romanNrConverter.toNumber(periodFromStr);
-			LegislativePeriod period = cache.getLegislativePeriod(periodFrom);
-			if (period == null){
-				period = new LegislativePeriod(periodFrom);
-			}
+			LegislativePeriod period = getLegislativePeriod(periodFrom);
 			periods.add(period);
 			
 			if (periodToStr != null){
 				Integer periodTo = romanNrConverter.toNumber(periodToStr);
 				for (Integer periodNr = periodFrom + 1; periodNr <= periodTo; periodNr++){
-					LegislativePeriod nextPeriod = cache.getLegislativePeriod(periodNr);
-					if (nextPeriod == null){
-						nextPeriod = new LegislativePeriod(periodNr);
-					}
+					LegislativePeriod nextPeriod = getLegislativePeriod(periodNr);
 					periods.add(nextPeriod);
 				}
 			}
@@ -289,6 +283,15 @@ public class PoliticianTransformer {
 		}
 		
 		return periods;
+	}
+
+	protected LegislativePeriod getLegislativePeriod(Integer periodFrom) {
+		LegislativePeriod period = cache.getLegislativePeriod(periodFrom);
+		if (period == null){
+			period = new LegislativePeriod(periodFrom);
+			cache.putLegislativePeriod(period);
+		}
+		return period;
 	}
 
 	protected ParliamentClub getClub(String clubShortName) {

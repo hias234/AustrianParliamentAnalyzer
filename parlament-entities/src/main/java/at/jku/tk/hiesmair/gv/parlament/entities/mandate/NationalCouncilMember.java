@@ -3,9 +3,11 @@ package at.jku.tk.hiesmair.gv.parlament.entities.mandate;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.Transient;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToMany;
 
 import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
@@ -15,8 +17,8 @@ import at.jku.tk.hiesmair.gv.parlament.entities.club.ParliamentClub;
 @DiscriminatorValue("NationalCouncilMember")
 public class NationalCouncilMember extends CouncilMember {
 
-//	@ManyToMany(fetch = FetchType.EAGER)
-	@Transient
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+//	@Transient
 	protected List<LegislativePeriod> periods;
 
 	public NationalCouncilMember() {
