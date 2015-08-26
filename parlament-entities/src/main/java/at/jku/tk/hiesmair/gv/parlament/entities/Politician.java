@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -20,6 +21,7 @@ public class Politician {
 
 	@Id
 	private String id;
+	
 	private String title;
 	private String firstName;
 	private String surName;
@@ -27,7 +29,7 @@ public class Politician {
 	@Temporal(TemporalType.DATE)
 	private Date birthDate;
 	
-	@OneToMany(fetch = FetchType.EAGER)
+	@OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
 	private List<Mandate> mandates = new ArrayList<Mandate>();
 
 	public String getId() {

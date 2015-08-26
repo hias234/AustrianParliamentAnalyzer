@@ -2,7 +2,10 @@ package at.jku.tk.hiesmair.gv.parlament.politician;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.politician.extractor.PoliticiansExtractor;
@@ -10,6 +13,7 @@ import at.jku.tk.hiesmair.gv.parlament.politician.extractor.feed.PoliticianFeedI
 import at.jku.tk.hiesmair.gv.parlament.politician.loader.PoliticiansLoader;
 import at.jku.tk.hiesmair.gv.parlament.politician.transformer.PoliticiansTransformer;
 
+@Component
 public class PoliticiansEtlJob {
 
 	private static Logger logger = Logger.getLogger(PoliticiansEtlJob.class.getSimpleName());
@@ -18,6 +22,7 @@ public class PoliticiansEtlJob {
 	private PoliticiansTransformer transformer;
 	private PoliticiansLoader loader;
 
+	@Inject
 	public PoliticiansEtlJob(PoliticiansExtractor extractor, PoliticiansTransformer transformer,
 			PoliticiansLoader loader) {
 		super();

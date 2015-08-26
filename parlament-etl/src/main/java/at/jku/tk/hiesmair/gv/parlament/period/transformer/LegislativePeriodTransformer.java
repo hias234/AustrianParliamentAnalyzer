@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jsoup.nodes.Document;
+import org.springframework.stereotype.Component;
 
 import at.jku.tk.hiesmair.gv.parlament.cache.DataCache;
 import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
@@ -16,6 +17,7 @@ import at.jku.tk.hiesmair.gv.parlament.period.extractor.feed.ProtocolFeedItem;
  * @author Markus
  *
  */
+@Component
 public class LegislativePeriodTransformer {
 
 	protected SessionTransformer sessionTransformer;

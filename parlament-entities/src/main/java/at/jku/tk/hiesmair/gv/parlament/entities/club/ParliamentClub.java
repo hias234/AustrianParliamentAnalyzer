@@ -10,6 +10,16 @@ public class ParliamentClub {
 	private String shortName;
 	private String longName;
 
+	public ParliamentClub() {
+		super();
+	}
+
+	public ParliamentClub(String shortName, String longName) {
+		super();
+		this.shortName = shortName;
+		this.longName = longName;
+	}
+
 	public String getShortName() {
 		return shortName;
 	}

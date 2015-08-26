@@ -75,7 +75,7 @@ public class SessionTransformer {
 		session.setStartDate(getStartDate(protocolHtml));
 		session.setEndDate(getEndDate(protocolHtml));
 		session.setPoliticians(getPoliticians(index, protocol));
-		session.setDiscussions(getDiscussions(index));
+		session.setDiscussions(getDiscussions(index, session));
 
 		return session;
 	}
@@ -190,31 +190,34 @@ public class SessionTransformer {
 		return politician;
 	}
 
-	protected List<Discussion> getDiscussions(Document index) throws Exception {
+	protected List<Discussion> getDiscussions(Document index, Session session) throws Exception {
 		List<Discussion> discussions = new ArrayList<Discussion>();
 
 		Elements headers = index.select("h3");
+		int order = 1;
 		for (Element header : headers) {
 			String text = header.text().replaceAll(Character.toString((char) 160), " ");
 
 			if (isTopicRelevant(text)) {
-				Discussion discussion = getDiscussion(header, text);
-
+				Discussion discussion = getDiscussion(header, text, session, order);
 				discussions.add(discussion);
+				order++;
 			}
 		}
 
 		return discussions;
 	}
 
-	protected Discussion getDiscussion(Element header, String text) throws Exception {
+	protected Discussion getDiscussion(Element header, String text, Session session, int order) throws Exception {
 		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
 		Discussion discussion = new Discussion();
+		discussion.setSession(session);
 		discussion.setTopic(text);
+		discussion.setOrder(order);
 
 		Element nextElement = header.nextElementSibling();
-		discussion.setTopic(getDiscussionType(header, nextElement, discussion));
+		discussion.setType(getDiscussionType(header, nextElement, discussion));
 
 		for (; nextElement != null && !nextElement.tag().toString().equals("h3")
 				&& !nextElement.tag().toString().equals("table"); nextElement = nextElement.nextElementSibling())
@@ -242,6 +245,12 @@ public class SessionTransformer {
 					}
 
 					String speechType = tds.get(4).text();
+					String speechOrder = tds.get(0).text().trim();
+					try {
+						speech.setOrder(Integer.parseInt(speechOrder));
+					} catch (NumberFormatException nfe) {
+						logger.debug("speech order nr invalid");
+					}
 					speech.setType(SpeechType.getSpeechType(speechType));
 
 					String start = tds.get(5).text();

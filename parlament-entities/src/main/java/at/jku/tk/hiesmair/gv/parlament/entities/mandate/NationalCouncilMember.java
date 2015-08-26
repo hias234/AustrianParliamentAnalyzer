@@ -5,8 +5,7 @@ import java.util.List;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToMany;
+import javax.persistence.Transient;
 
 import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
@@ -16,7 +15,8 @@ import at.jku.tk.hiesmair.gv.parlament.entities.club.ParliamentClub;
 @DiscriminatorValue("NationalCouncilMember")
 public class NationalCouncilMember extends CouncilMember {
 
-	@ManyToMany(fetch = FetchType.EAGER)
+//	@ManyToMany(fetch = FetchType.EAGER)
+	@Transient
 	protected List<LegislativePeriod> periods;
 
 	public NationalCouncilMember() {

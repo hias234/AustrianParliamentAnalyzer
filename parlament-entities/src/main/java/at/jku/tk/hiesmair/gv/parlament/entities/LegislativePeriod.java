@@ -2,6 +2,7 @@ package at.jku.tk.hiesmair.gv.parlament.entities;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -13,7 +14,7 @@ public class LegislativePeriod {
 	@Id
 	private Integer period;
 
-	@OneToMany(fetch = FetchType.EAGER)
+	@OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
 	private List<Session> sessions;
 
 	public LegislativePeriod() {

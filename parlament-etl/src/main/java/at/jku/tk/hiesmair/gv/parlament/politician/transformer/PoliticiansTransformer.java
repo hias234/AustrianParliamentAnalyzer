@@ -6,9 +6,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.stereotype.Component;
+
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.politician.extractor.feed.PoliticianFeedItem;
 
+@Component
 public class PoliticiansTransformer {
 
 	private PoliticianTransformer politicianTransformer;

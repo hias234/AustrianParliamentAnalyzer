@@ -26,7 +26,7 @@ public class Mandate {
 	
 	protected String description;
 	
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.EAGER, optional=false)
 	protected Politician politician;
 	
 	@Temporal(TemporalType.DATE)

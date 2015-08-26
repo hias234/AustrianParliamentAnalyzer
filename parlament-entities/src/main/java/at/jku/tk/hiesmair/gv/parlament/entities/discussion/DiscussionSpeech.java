@@ -2,6 +2,8 @@ package at.jku.tk.hiesmair.gv.parlament.entities.discussion;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -18,18 +20,21 @@ import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 public class DiscussionSpeech {
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
 
-	@ManyToOne(optional = false)
+	@Column(name = "speech_order")
+	private Integer order;
+
+	@ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	private Discussion discussion;
-	
-	@ManyToOne(optional = false)
+
+	@ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	private Politician politician;
-	
+
 	@Temporal(TemporalType.TIME)
 	private Date startTime;
-	
+
 	@Temporal(TemporalType.TIME)
 	private Date endTime;
 
@@ -42,6 +47,14 @@ public class DiscussionSpeech {
 
 	public void setId(Integer id) {
 		this.id = id;
+	}
+
+	public Integer getOrder() {
+		return order;
+	}
+
+	public void setOrder(Integer order) {
+		this.order = order;
 	}
 
 	public Discussion getDiscussion() {

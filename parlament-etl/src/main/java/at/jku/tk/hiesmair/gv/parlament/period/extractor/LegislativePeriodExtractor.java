@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import at.jku.tk.hiesmair.gv.parlament.feed.FeedReader;
 import at.jku.tk.hiesmair.gv.parlament.period.extractor.feed.ProtocolFeedItem;
 import at.jku.tk.hiesmair.gv.parlament.period.extractor.feed.parser.LegislativePeriodFeedParser;
@@ -17,6 +19,7 @@ import com.frequal.romannumerals.Converter;
  * @author Markus
  *
  */
+@Component
 public class LegislativePeriodExtractor {
 
 	/** URL the feed is sitting on */

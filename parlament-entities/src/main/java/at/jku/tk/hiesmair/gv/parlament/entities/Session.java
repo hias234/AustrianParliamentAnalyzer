@@ -3,6 +3,7 @@ package at.jku.tk.hiesmair.gv.parlament.entities;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -34,10 +35,10 @@ public class Session {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date endDate;
 
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
 	private List<Politician> politicians;
 
-	@OneToMany(fetch = FetchType.EAGER)
+	@OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
 	private List<Discussion> discussions;
 
 	public Session() {
@@ -109,9 +110,8 @@ public class Session {
 
 	@Override
 	public String toString() {
-		return "Session [id=" + id + ", period=" + period.getPeriod() + ", sessionNr=" + sessionNr + ", startDate="
-				+ startDate + ", endDate=" + endDate + ", politicians=" + politicians + ", discussions=" + discussions
-				+ "]";
+		return "Session [period=" + period.getPeriod() + ", sessionNr=" + sessionNr + ", startDate=" + startDate
+				+ ", endDate=" + endDate + ", politicians=" + politicians + ", discussions=" + discussions + "]";
 	}
 
 }

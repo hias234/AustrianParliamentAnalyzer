@@ -2,15 +2,20 @@ package at.jku.tk.hiesmair.gv.parlament;
 
 import java.util.Arrays;
 
+import javax.inject.Inject;
+
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
 import at.jku.tk.hiesmair.gv.parlament.period.LegislativePeriodEtlJob;
-import at.jku.tk.hiesmair.gv.parlament.period.extractor.LegislativePeriodExtractor;
-import at.jku.tk.hiesmair.gv.parlament.period.loader.ConsoleLegislativePeriodLoader;
-import at.jku.tk.hiesmair.gv.parlament.period.transformer.LegislativePeriodTransformer;
+import at.jku.tk.hiesmair.gv.parlament.politician.PoliticiansEtlJob;
 
 /**
  * Main Application kicking off the analysis process
  */
-public class App {
+@SpringBootApplication
+public class App implements CommandLineRunner {
 
 	/**
 	 * download everything and analyse everything
@@ -18,9 +23,18 @@ public class App {
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception {
-		LegislativePeriodEtlJob job = new LegislativePeriodEtlJob(new LegislativePeriodExtractor(),
-				new LegislativePeriodTransformer(), new ConsoleLegislativePeriodLoader());
-		
-		job.start(Arrays.asList(25, 24));
+		SpringApplication.run(App.class, args);
+	}
+
+	@Inject
+	private LegislativePeriodEtlJob periodJob;
+	
+	@Inject
+	private PoliticiansEtlJob politiciansJob;
+	
+	@Override
+	public void run(String... args) throws Exception {
+		periodJob.start(Arrays.asList(25));
+//		politiciansJob.start();
 	}
 }

@@ -3,6 +3,7 @@ package at.jku.tk.hiesmair.gv.parlament.entities.discussion;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -24,12 +25,13 @@ public class Discussion {
 	@ManyToOne(optional = false)
 	private Session session;
 
-	@Column(name = "session_order")
+	@Column(name = "discussion_order")
 	private Integer order;
+
 	private String topic;
 	private String type;
 
-	@OneToMany(fetch = FetchType.EAGER)
+	@OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
 	private List<DiscussionSpeech> speeches = new ArrayList<DiscussionSpeech>();
 
 	public Integer getId() {
@@ -40,20 +42,20 @@ public class Discussion {
 		this.id = id;
 	}
 
-	public Session getSession() {
-		return session;
-	}
-
-	public void setSession(Session session) {
-		this.session = session;
-	}
-
 	public Integer getOrder() {
 		return order;
 	}
 
 	public void setOrder(Integer order) {
 		this.order = order;
+	}
+
+	public Session getSession() {
+		return session;
+	}
+
+	public void setSession(Session session) {
+		this.session = session;
 	}
 
 	public String getTopic() {
