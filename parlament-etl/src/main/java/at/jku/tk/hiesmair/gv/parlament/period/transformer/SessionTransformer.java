@@ -49,6 +49,7 @@ public class SessionTransformer {
 	protected final Pattern sessionNrPattern;
 	protected final Pattern startEndDatePattern;
 	protected final Pattern discussionTypePattern;
+	protected final Pattern speechBeginPattern;
 
 	protected final List<String> monthNames;
 	protected final List<String> topicExceptions;
@@ -65,8 +66,9 @@ public class SessionTransformer {
 
 		sessionNrPattern = Pattern.compile("(\\d+)\\.\\sSitzung\\sdes\\sNationalrates");
 		startEndDatePattern = Pattern
-				.compile("[\\wäüöÄÜÖ]+, (\\d+)\\. ([\\wäüöÄÜÖ]+) (\\d{4}):\\s+(\\d+)\\.(\\d+).+ (\\d+)\\.(\\d+).*Uhr");
+				.compile("[\\wäüöÄÜÖ]+, (\\d+)\\.\\s([\\wäüöÄÜÖ]+) (\\d{4}):\\s+(\\d+)\\.(\\d+).+ (\\d+)\\.(\\d+).*Uhr");
 		discussionTypePattern = Pattern.compile("Einzelredezeitbeschränkung:\\s+((?:\\d+)|.)\\s+min\\s+(.+)");
+		speechBeginPattern = Pattern.compile("(\\d{1,2})\\.\\d{1,2}");
 
 		politicianTransformer = new PoliticianTransformer();
 		cache = DataCache.getInstance();
@@ -74,14 +76,16 @@ public class SessionTransformer {
 
 	public Session getSession(LegislativePeriod period, Document index, Document protocol) throws Exception {
 		protocol = ProtocolUtil.filterPageBreaks(protocol);
-
-		String protocolHtml = protocol.html();
+		String protocolText = protocol.text().replaceAll(NBSP_STRING, " ");
 
 		Session session = new Session();
+		session.setSessionNr(getSessionNr(protocolText));
+
+		logger.debug("transforming session " + session.getSessionNr() + " of period " + period.getPeriod());
+
 		session.setPeriod(period);
-		session.setSessionNr(getSessionNr(protocolHtml));
-		session.setStartDate(getStartDate(protocolHtml));
-		session.setEndDate(getEndDate(protocolHtml));
+		session.setStartDate(getStartDate(protocolText));
+		session.setEndDate(getEndDate(protocolText));
 		session.setPoliticians(getPoliticians(index, protocol));
 		session.setChairMen(getChairMen(protocol, session));
 		session.setDiscussions(getDiscussions(index, protocol, session));
@@ -95,8 +99,8 @@ public class SessionTransformer {
 	 * @param protocolHtml
 	 * @return
 	 */
-	protected Integer getSessionNr(String protocolHtml) {
-		Matcher matcher = sessionNrPattern.matcher(protocolHtml);
+	protected Integer getSessionNr(String protocolText) {
+		Matcher matcher = sessionNrPattern.matcher(protocolText);
 
 		if (matcher.find()) {
 			String sessionNr = matcher.group(1);
@@ -111,28 +115,30 @@ public class SessionTransformer {
 		return null;
 	}
 
-	protected Date getStartDate(String protocolHtml) {
-		Matcher matcher = startEndDatePattern.matcher(protocolHtml);
-		SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT_PATTERN);
+	protected Date getStartDate(String protocolText) {
+		Matcher matcher = startEndDatePattern.matcher(protocolText);
 
 		if (matcher.find()) {
 			String day = matcher.group(1);
 			String month = matcher.group(2);
 			Integer monthIndex = 1 + monthNames.indexOf(month);
+			if (monthIndex == 0) {
+				logger.debug("unknown month-index");
+				monthIndex = 1;
+			}
 			String year = matcher.group(3);
 			String hourStart = matcher.group(4);
 			String minuteStart = matcher.group(5);
 
-			return getDate(format, day, monthIndex, year, hourStart, minuteStart);
+			return getDate(day, monthIndex, year, hourStart, minuteStart);
 		}
 		logger.debug("start date not found");
 
 		return null;
 	}
 
-	protected Date getEndDate(String protocolHtml) {
-		Matcher matcher = startEndDatePattern.matcher(protocolHtml);
-		SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT_PATTERN);
+	protected Date getEndDate(String protocolText) {
+		Matcher matcher = startEndDatePattern.matcher(protocolText);
 
 		if (matcher.find()) {
 			String day = matcher.group(1);
@@ -142,15 +148,16 @@ public class SessionTransformer {
 			String hourStart = matcher.group(6);
 			String minuteStart = matcher.group(7);
 
-			return getDate(format, day, monthIndex, year, hourStart, minuteStart);
+			return getDate(day, monthIndex, year, hourStart, minuteStart);
 		}
 		logger.debug("end date not found");
 
 		return null;
 	}
 
-	protected Date getDate(SimpleDateFormat format, String day, Integer monthIndex, String year, String hourStart,
-			String minuteStart) {
+	protected Date getDate(String day, Integer monthIndex, String year, String hourStart, String minuteStart) {
+		SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT_PATTERN);
+
 		try {
 			return format.parse(day + "." + monthIndex + "." + year + " " + hourStart + ":" + minuteStart);
 		} catch (ParseException pe) {
@@ -191,6 +198,9 @@ public class SessionTransformer {
 
 	protected Politician getPolitician(String href) throws Exception {
 		String url = Settings.BASE_URL + href;
+		if (!href.endsWith("index.shtml")){
+			url += "index.shtml";
+		}
 
 		Politician politician = cache.getPolitician(url);
 		if (politician == null) {
@@ -221,13 +231,18 @@ public class SessionTransformer {
 
 			Elements speechBeginnings = protocol.select("p.RB");
 			for (Element speechBegin : speechBeginnings) {
-
-				String time = speechBegin.text().replace((char) 160, ' ').trim();
-				if (time.length() >= 5) {
-					time = time.substring(0, 5);
+				
+				String timeStr = speechBegin.text().replace((char) 160, ' ').trim();
+				Matcher m = speechBeginPattern.matcher(timeStr);
+				Date time = null;
+				if (m.find()) {
+					try {
+						time = timeFormat.parse(m.group(0));
+					} catch (ParseException pe) {
+					}
 				}
 
-				if (time.length() == 5) {
+				if (time != null) {
 					Element speechPart = speechBegin.nextElementSibling();
 					if (speechPart == null) {
 						speechPart = speechBegin.parent().nextElementSibling().child(0);
@@ -262,8 +277,8 @@ public class SessionTransformer {
 									for (Discussion discussion : discussions) {
 										for (DiscussionSpeech speech : discussion.getSpeeches()) {
 											if (speech.getPolitician().equals(politician)
-													&& isTimeForSpeechCorrect(timeFormat, time, speech) && speech.getText() == null) {
-												
+													&& isTimeForSpeechCorrect(time, speech) && speech.getText() == null) {
+
 												found++;
 												speech.setText(speechText);
 												break;
@@ -283,9 +298,6 @@ public class SessionTransformer {
 							logger.debug("no link " + firstText);
 						}
 					}
-					else {
-
-					}
 				}
 			}
 
@@ -295,23 +307,19 @@ public class SessionTransformer {
 			}
 
 			if (speechCnt != found) {
-				logger.debug("not all speechtexts found in protocol " + speechCnt + " " + found + " " + session.getSessionNr());
+				logger.debug("not all speechtexts found in protocol: found " + found + " of " + speechCnt);
 			}
 		}
 
 		return discussions;
 	}
 
-	protected boolean isTimeForSpeechCorrect(SimpleDateFormat timeFormat, String time, DiscussionSpeech speech) {
-		Date startTime;
-		try {
-			startTime = timeFormat.parse(time);
-		} catch (ParseException e) {
-			logger.info("parseexception " + time);
+	protected boolean isTimeForSpeechCorrect(Date time, DiscussionSpeech speech) {
+		if (speech.getStartTime() == null) {
 			return false;
 		}
-		return startTime.getTime() >= speech.getStartTime().getTime() - SPEECH_TIME_TOLERANCE_IN_MS
-				&& startTime.getTime() <= speech.getStartTime().getTime() + SPEECH_TIME_TOLERANCE_IN_MS;
+		return time.getTime() >= speech.getStartTime().getTime() - SPEECH_TIME_TOLERANCE_IN_MS
+				&& time.getTime() <= speech.getStartTime().getTime() + SPEECH_TIME_TOLERANCE_IN_MS;
 	}
 
 	protected Discussion getDiscussion(Element header, String text, Session session, int order) throws Exception {
@@ -441,6 +449,10 @@ public class SessionTransformer {
 		Element beginningElement = getBeginningOfSessionElement(protocol);
 		if (beginningElement != null) {
 			Element chairMen = beginningElement.nextElementSibling();
+
+			if (!chairMen.text().startsWith("Vorsitzend")) {
+				chairMen = chairMen.parent().nextElementSibling().child(0);
+			}
 			if (chairMen.text().startsWith("Vorsitzend")) {
 				Elements chairMenLinks = chairMen.select("a");
 				for (Element chairMenLink : chairMenLinks) {
@@ -449,15 +461,25 @@ public class SessionTransformer {
 					position++;
 				}
 			}
+			else {
+				logger.debug("no chairmen tag found");
+			}
 		}
 
 		return chairMenList;
 	}
 
 	private Element getBeginningOfSessionElement(Document protocol) {
+		Elements sbs = protocol.select("p.SB");
+		for (Element sb : sbs) {
+			if (sb.text().contains("Beginn der Sitzung")) {
+				return sb;
+			}
+		}
+
 		Elements spans = protocol.select("span");
 		for (Element el : spans) {
-			if (el.text().startsWith("Beginn der Sitzung:")) {
+			if (el.text().startsWith("Beginn der Sitzung")) {
 				return el.parent();
 			}
 		}

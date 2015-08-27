@@ -45,18 +45,20 @@ public class PoliticianTransformer {
 	protected final Pattern mandatePattern;
 
 	protected final Converter romanNrConverter;
-	
+
 	protected final DataCache cache;
 
 	public PoliticianTransformer() {
-//		namePattern = Pattern.compile("((?:[^\\s]+\\.?\\s)*)([^\\s,\\.]+(?:\\s.\\.)?)\\s([^\\s,(\\.]+)");
-		namePattern = Pattern.compile("((?:[\\wöäüÖÄÜß]+\\..?)*\\s)?((?:[\\wöäüÖÄÜß,\\.]+(?:\\s.\\.)?\\s?)+)\\s([^\\s,(\\.:]+)");
+		// namePattern =
+		// Pattern.compile("((?:[^\\s]+\\.?\\s)*)([^\\s,\\.]+(?:\\s.\\.)?)\\s([^\\s,(\\.]+)");
+		namePattern = Pattern
+				.compile("((?:[\\wöäüÖÄÜß]+\\..?)*\\s)?((?:[\\wöäüÖÄÜß,\\.]+(?:\\s.\\.)?\\s?)+)\\s([^\\s,(\\.:]+)");
 		mandatePattern = Pattern
 				.compile("([^(,]*)(?:\\(([^\\.]+)\\.(?:.([^\\.]+)\\.)?\\sGP\\))?,? ?([^\\d]+)?\\s(\\d+\\.\\d+\\.\\d{4})( .)?\\s?(?:(\\d+\\.\\d+\\.\\d{4}))?");
 		birthDatePattern = Pattern.compile("Geb.:\\s(\\d+\\.\\d+\\.\\d{4})");
 
 		romanNrConverter = new Converter();
-		
+
 		cache = DataCache.getInstance();
 	}
 
@@ -74,10 +76,12 @@ public class PoliticianTransformer {
 	}
 
 	protected Politician getPolitician(String url, Document document) {
+		logger.debug("transorming politician " + url);
+		
 		String fullText = document.text();
 
 		Politician politician = new Politician();
-		politician.setId(url.toString());
+		politician.setId(url);
 		politician.setFirstName(getFirstName(document));
 		politician.setSurName(getSurName(document));
 		politician.setTitle(getTitle(document));
@@ -107,11 +111,11 @@ public class PoliticianTransformer {
 		logger.debug("surName not found");
 		return "";
 	}
-	
-	protected String getTitleAfter(Document document){
+
+	protected String getTitleAfter(Document document) {
 		String fullName = getFullName(document);
 		String[] parts = fullName.split(",");
-		if (parts.length > 1){
+		if (parts.length > 1) {
 			return parts[1].trim();
 		}
 		return "";
@@ -127,18 +131,21 @@ public class PoliticianTransformer {
 
 	protected String getFullName(Document document) {
 		Elements headers = document.getElementsByTag("h1");
-		Element header = headers.stream().findFirst().get();
+		if (!headers.isEmpty()) {
+			Element header = headers.stream().findFirst().get();
 
-		String text = header.text();
-		text = text.replaceAll(Character.toString((char) 160), " ");
-		return text;
+			String text = header.text();
+			text = text.replaceAll(Character.toString((char) 160), " ");
+			return text;
+		}
+		return "";
 	}
 
 	private String getTitle(Document document) {
 		Matcher m = matchName(document);
 		if (m.find()) {
 			String title = m.group(1);
-			if (title != null){
+			if (title != null) {
 				return title.trim();
 			}
 		}
@@ -180,7 +187,8 @@ public class PoliticianTransformer {
 				Boolean dateRange = m.group(6) != null;
 				String to = m.group(7);
 
-				Mandate mandate = getMandate(politician, description, periodFrom, periodTo, clubShortName, from, to, dateRange);
+				Mandate mandate = getMandate(politician, description, periodFrom, periodTo, clubShortName, from, to,
+						dateRange);
 
 				mandates.add(mandate);
 			}
@@ -268,12 +276,12 @@ public class PoliticianTransformer {
 		try {
 			Date dateFrom = dateFormat.parse(from);
 			mandate.setValidFrom(dateFrom);
-			if (isDateRange){
+			if (isDateRange) {
 				if (to != null) {
 					mandate.setValidUntil(dateFormat.parse(to));
 				}
 			}
-			else{
+			else {
 				mandate.setValidUntil(dateFrom);
 			}
 		} catch (ParseException ex) {
@@ -285,15 +293,15 @@ public class PoliticianTransformer {
 
 	private List<LegislativePeriod> getPeriods(String periodFromStr, String periodToStr) {
 		List<LegislativePeriod> periods = new ArrayList<LegislativePeriod>();
-		
+
 		try {
 			Integer periodFrom = romanNrConverter.toNumber(periodFromStr);
 			LegislativePeriod period = getLegislativePeriod(periodFrom);
 			periods.add(period);
-			
-			if (periodToStr != null){
+
+			if (periodToStr != null) {
 				Integer periodTo = romanNrConverter.toNumber(periodToStr);
-				for (Integer periodNr = periodFrom + 1; periodNr <= periodTo; periodNr++){
+				for (Integer periodNr = periodFrom + 1; periodNr <= periodTo; periodNr++) {
 					LegislativePeriod nextPeriod = getLegislativePeriod(periodNr);
 					periods.add(nextPeriod);
 				}
@@ -301,13 +309,13 @@ public class PoliticianTransformer {
 		} catch (ParseException e) {
 			logger.debug("roman number convertion error" + e.getMessage());
 		}
-		
+
 		return periods;
 	}
 
 	protected LegislativePeriod getLegislativePeriod(Integer periodFrom) {
 		LegislativePeriod period = cache.getLegislativePeriod(periodFrom);
-		if (period == null){
+		if (period == null) {
 			period = new LegislativePeriod(periodFrom);
 			cache.putLegislativePeriod(period);
 		}
