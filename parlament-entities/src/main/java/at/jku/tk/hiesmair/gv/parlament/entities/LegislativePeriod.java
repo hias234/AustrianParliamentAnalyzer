@@ -6,8 +6,10 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
+import at.jku.tk.hiesmair.gv.parlament.entities.mandate.NationalCouncilMember;
 import at.jku.tk.hiesmair.gv.parlament.entities.session.Session;
 
 @Entity
@@ -18,6 +20,9 @@ public class LegislativePeriod {
 
 	@OneToMany(mappedBy = "period", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
 	private List<Session> sessions;
+	
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	private List<NationalCouncilMember> nationalCouncilMembers;
 
 	public LegislativePeriod() {
 		super();

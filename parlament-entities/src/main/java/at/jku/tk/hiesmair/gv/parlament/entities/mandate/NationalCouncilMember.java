@@ -17,8 +17,7 @@ import at.jku.tk.hiesmair.gv.parlament.entities.club.ParliamentClub;
 @DiscriminatorValue("NationalCouncilMember")
 public class NationalCouncilMember extends CouncilMember {
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-//	@Transient
+	@ManyToMany(mappedBy = "nationalCouncilMembers", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	protected List<LegislativePeriod> periods;
 
 	public NationalCouncilMember() {
