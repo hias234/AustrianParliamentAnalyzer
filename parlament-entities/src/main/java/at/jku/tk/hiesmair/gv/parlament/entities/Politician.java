@@ -21,14 +21,15 @@ public class Politician {
 
 	@Id
 	private String id;
-	
+
 	private String title;
+	private String titleAfter;
 	private String firstName;
 	private String surName;
-	
+
 	@Temporal(TemporalType.DATE)
 	private Date birthDate;
-	
+
 	@OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
 	private List<Mandate> mandates = new ArrayList<Mandate>();
 
@@ -84,16 +85,23 @@ public class Politician {
 		this.mandates = mandates;
 	}
 
+	public String getTitleAfter() {
+		return titleAfter;
+	}
+
+	public void setTitleAfter(String titleAfter) {
+		this.titleAfter = titleAfter;
+	}
+
 	public List<NationalCouncilMember> getNationalCouncilMemberships() {
-		return mandates.stream()
-				.filter(m -> m instanceof NationalCouncilMember)
-				.map(m -> (NationalCouncilMember) m)
+		return mandates.stream().filter(m -> m instanceof NationalCouncilMember).map(m -> (NationalCouncilMember) m)
 				.collect(Collectors.toList());
 	}
-	
-	public boolean isInNationalCouncilAt(Date date){
-		return getNationalCouncilMemberships().stream()
-				.anyMatch(ncm -> date.compareTo(ncm.getValidFrom()) >= 0 && (ncm.getValidUntil() == null || date.compareTo(ncm.getValidUntil()) <= 0));
+
+	public boolean isInNationalCouncilAt(Date date) {
+		return getNationalCouncilMemberships().stream().anyMatch(
+				ncm -> date.compareTo(ncm.getValidFrom()) >= 0
+						&& (ncm.getValidUntil() == null || date.compareTo(ncm.getValidUntil()) <= 0));
 	}
 
 	/**
@@ -101,15 +109,15 @@ public class Politician {
 	 * 
 	 * @return
 	 */
-//	public List<Integer> getNationalCouncilPeriods() {
-//		List<Integer> periods = new ArrayList<Integer>();
-//
-//		for (NationalCouncilMember ncm : getNationalCouncilMemberships()) {
-//			periods.addAll(ncm.getPeriods());
-//		}
-//
-//		return periods;
-//	}
+	// public List<Integer> getNationalCouncilPeriods() {
+	// List<Integer> periods = new ArrayList<Integer>();
+	//
+	// for (NationalCouncilMember ncm : getNationalCouncilMemberships()) {
+	// periods.addAll(ncm.getPeriods());
+	// }
+	//
+	// return periods;
+	// }
 
 	@Override
 	public int hashCode() {

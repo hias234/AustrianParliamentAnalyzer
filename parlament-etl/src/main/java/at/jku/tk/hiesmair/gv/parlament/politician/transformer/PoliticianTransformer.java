@@ -49,7 +49,8 @@ public class PoliticianTransformer {
 	protected final DataCache cache;
 
 	public PoliticianTransformer() {
-		namePattern = Pattern.compile("((?:[^\\s]+\\.?\\s)*)([^\\s,\\.]+(?:\\s.\\.)?)\\s([^\\s,(\\.]+)");
+//		namePattern = Pattern.compile("((?:[^\\s]+\\.?\\s)*)([^\\s,\\.]+(?:\\s.\\.)?)\\s([^\\s,(\\.]+)");
+		namePattern = Pattern.compile("((?:[\\wöäüÖÄÜß]+\\..?)*\\s)?((?:[\\wöäüÖÄÜß,\\.]+(?:\\s.\\.)?\\s?)+)\\s([^\\s,(\\.:]+)");
 		mandatePattern = Pattern
 				.compile("([^(,]*)(?:\\(([^\\.]+)\\.(?:.([^\\.]+)\\.)?\\sGP\\))?,? ?([^\\d]+)?\\s(\\d+\\.\\d+\\.\\d{4})( .)?\\s?(?:(\\d+\\.\\d+\\.\\d{4}))?");
 		birthDatePattern = Pattern.compile("Geb.:\\s(\\d+\\.\\d+\\.\\d{4})");
@@ -80,6 +81,7 @@ public class PoliticianTransformer {
 		politician.setFirstName(getFirstName(document));
 		politician.setSurName(getSurName(document));
 		politician.setTitle(getTitle(document));
+		politician.setTitleAfter(getTitleAfter(document));
 		politician.setBirthDate(getBirthDate(fullText));
 		politician.setMandates(getMandates(politician, document));
 
@@ -105,22 +107,40 @@ public class PoliticianTransformer {
 		logger.debug("surName not found");
 		return "";
 	}
+	
+	protected String getTitleAfter(Document document){
+		String fullName = getFullName(document);
+		String[] parts = fullName.split(",");
+		if (parts.length > 1){
+			return parts[1].trim();
+		}
+		return "";
+	}
 
 	protected Matcher matchName(Document document) {
-		Elements headers = document.getElementsByTag("h1");
-		Element header = headers.stream().findFirst().get();
-
-		String text = header.text();
-		text = text.replaceAll(Character.toString((char) 160), " ");
+		String text = getFullName(document);
+		text = text.split(",")[0];
 
 		Matcher m = namePattern.matcher(text);
 		return m;
 	}
 
+	protected String getFullName(Document document) {
+		Elements headers = document.getElementsByTag("h1");
+		Element header = headers.stream().findFirst().get();
+
+		String text = header.text();
+		text = text.replaceAll(Character.toString((char) 160), " ");
+		return text;
+	}
+
 	private String getTitle(Document document) {
 		Matcher m = matchName(document);
 		if (m.find()) {
-			return m.group(1).trim();
+			String title = m.group(1);
+			if (title != null){
+				return title.trim();
+			}
 		}
 		return "";
 	}

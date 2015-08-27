@@ -26,6 +26,7 @@ import at.jku.tk.hiesmair.gv.parlament.entities.Session;
 import at.jku.tk.hiesmair.gv.parlament.entities.discussion.Discussion;
 import at.jku.tk.hiesmair.gv.parlament.entities.discussion.DiscussionSpeech;
 import at.jku.tk.hiesmair.gv.parlament.entities.discussion.SpeechType;
+import at.jku.tk.hiesmair.gv.parlament.period.protocol.ProtocolUtil;
 import at.jku.tk.hiesmair.gv.parlament.politician.transformer.PoliticianTransformer;
 
 /**
@@ -69,8 +70,10 @@ public class SessionTransformer {
 	}
 
 	public Session getSession(LegislativePeriod period, Document index, Document protocol) throws Exception {
+		protocol = ProtocolUtil.filterPageBreaks(protocol);
+		
 		String protocolHtml = protocol.html();
-
+		
 		Session session = new Session();
 		session.setPeriod(period);
 		session.setSessionNr(getSessionNr(protocolHtml));
