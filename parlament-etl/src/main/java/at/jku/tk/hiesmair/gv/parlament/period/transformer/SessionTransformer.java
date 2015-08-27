@@ -22,10 +22,11 @@ import at.jku.tk.hiesmair.gv.parlament.Settings;
 import at.jku.tk.hiesmair.gv.parlament.cache.DataCache;
 import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
-import at.jku.tk.hiesmair.gv.parlament.entities.Session;
 import at.jku.tk.hiesmair.gv.parlament.entities.discussion.Discussion;
 import at.jku.tk.hiesmair.gv.parlament.entities.discussion.DiscussionSpeech;
 import at.jku.tk.hiesmair.gv.parlament.entities.discussion.SpeechType;
+import at.jku.tk.hiesmair.gv.parlament.entities.session.Session;
+import at.jku.tk.hiesmair.gv.parlament.entities.session.SessionChairMan;
 import at.jku.tk.hiesmair.gv.parlament.period.protocol.ProtocolUtil;
 import at.jku.tk.hiesmair.gv.parlament.politician.transformer.PoliticianTransformer;
 
@@ -80,7 +81,7 @@ public class SessionTransformer {
 		session.setStartDate(getStartDate(protocolHtml));
 		session.setEndDate(getEndDate(protocolHtml));
 		session.setPoliticians(getPoliticians(index, protocol));
-		session.setChairMen(getChairMen(protocol));
+		session.setChairMen(getChairMen(protocol, session));
 		session.setDiscussions(getDiscussions(index, session));
 
 		return session;
@@ -333,8 +334,10 @@ public class SessionTransformer {
 		return !topicExceptions.stream().anyMatch(te -> text.contains(te));
 	}
 	
-	protected List<Politician> getChairMen(Document protocol) throws Exception{
-		List<Politician> chairMenList = new ArrayList<Politician>();
+	protected List<SessionChairMan> getChairMen(Document protocol, Session session) throws Exception{
+		List<SessionChairMan> chairMenList = new ArrayList<SessionChairMan>();
+		
+		int position = 1;
 		
 		Element beginningElement = getBeginningOfSessionElement(protocol);
 		if (beginningElement != null){
@@ -343,7 +346,8 @@ public class SessionTransformer {
 				Elements chairMenLinks = chairMen.select("a");
 				for (Element chairMenLink : chairMenLinks){
 					Politician politician = getPolitician(chairMenLink.attr("href"));
-					chairMenList.add(politician);
+					chairMenList.add(new SessionChairMan(position, politician, session));
+					position++;
 				}
 			}
 		}

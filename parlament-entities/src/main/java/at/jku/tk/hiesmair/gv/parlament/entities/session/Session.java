@@ -1,4 +1,4 @@
-package at.jku.tk.hiesmair.gv.parlament.entities;
+package at.jku.tk.hiesmair.gv.parlament.entities.session;
 
 import java.util.Date;
 import java.util.List;
@@ -15,6 +15,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
+import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.discussion.Discussion;
 
 @Entity
@@ -41,8 +43,8 @@ public class Session {
 	@OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
 	private List<Discussion> discussions;
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	private List<Politician> chairMen;
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	private List<SessionChairMan> chairMen;
 
 	public Session() {
 		super();
@@ -111,11 +113,11 @@ public class Session {
 		this.discussions = discussions;
 	}
 
-	public List<Politician> getChairMen() {
+	public List<SessionChairMan> getChairMen() {
 		return chairMen;
 	}
 
-	public void setChairMen(List<Politician> chairMen) {
+	public void setChairMen(List<SessionChairMan> chairMen) {
 		this.chairMen = chairMen;
 	}
 

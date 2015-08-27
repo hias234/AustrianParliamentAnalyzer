@@ -13,7 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
-import at.jku.tk.hiesmair.gv.parlament.entities.Session;
+import at.jku.tk.hiesmair.gv.parlament.entities.session.Session;
 
 @Entity
 public class Discussion {

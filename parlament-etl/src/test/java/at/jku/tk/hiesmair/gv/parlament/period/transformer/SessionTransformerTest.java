@@ -19,7 +19,7 @@ import org.junit.Test;
 import at.jku.tk.hiesmair.gv.parlament.cache.DataCache;
 import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
-import at.jku.tk.hiesmair.gv.parlament.entities.Session;
+import at.jku.tk.hiesmair.gv.parlament.entities.session.Session;
 import at.jku.tk.hiesmair.gv.parlament.politician.PoliticiansEtlJob;
 import at.jku.tk.hiesmair.gv.parlament.politician.extractor.PoliticiansExtractor;
 import at.jku.tk.hiesmair.gv.parlament.politician.loader.PoliticiansLoader;

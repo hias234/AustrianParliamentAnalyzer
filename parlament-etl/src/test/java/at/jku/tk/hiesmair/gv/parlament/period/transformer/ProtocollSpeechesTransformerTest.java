@@ -1,6 +1,7 @@
 package at.jku.tk.hiesmair.gv.parlament.period.transformer;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 
@@ -18,27 +19,39 @@ public class ProtocollSpeechesTransformerTest {
 	public void test() throws Exception {
 		Document document = Jsoup.parse(new File("C:\\Temp\\parlament\\protocol_64.html"), "UTF-8");
 		document = ProtocolUtil.filterPageBreaks(document);
-		
-		Elements spans = document.select("span");
-		Element beginningElement = null;
-		Element endingElement = null;
-		for (Element el : spans){
-			if (el.text().startsWith("Beginn der Sitzung:")){
-				beginningElement = el.parent();
-			}
-			else if (el.text().startsWith("Schluss der Sitzung:")){
-				endingElement = el.parent();
-			}
-		}
-		
+
+		Element beginningElement = getBeginningOfSessionElement(document);
+
 		Element chairMen = beginningElement.nextElementSibling();
-		if (chairMen.text().startsWith("Vorsitzend")){
-			
+		if (chairMen.text().startsWith("Vorsitzend")) {
+
 			Elements chairMenLinks = chairMen.select("a");
 			assertEquals(3, chairMenLinks.size());
+		}
+		else {
+			fail();
+		}
+
+		Element start = chairMen.nextElementSibling();
+		if (start.className().equals("ZM")){
+			start = start.nextElementSibling();
+		}
+
+		if (start.tagName().equals("b")){
+			start = start.nextElementSibling();
 		}
 		
 		
 	}
-	
+
+	private Element getBeginningOfSessionElement(Document protocol){
+		Elements spans = protocol.select("span");
+		Element beginningElement = null;
+		for (Element el : spans){
+			if (el.text().startsWith("Beginn der Sitzung:")){
+				return el.parent();
+			}
+		}
+		return null;
+	}
 }
