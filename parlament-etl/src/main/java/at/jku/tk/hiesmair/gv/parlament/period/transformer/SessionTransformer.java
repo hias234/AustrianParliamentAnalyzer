@@ -331,8 +331,6 @@ public class SessionTransformer {
 	}
 
 	protected Discussion getDiscussion(Element header, String text, Session session, int order) throws Exception {
-		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-
 		Discussion discussion = new Discussion();
 		discussion.setSession(session);
 		discussion.setTopic(text);
@@ -343,69 +341,80 @@ public class SessionTransformer {
 
 		nextElement = getNextTableElement(nextElement);
 
-		if (nextElement != null && nextElement.tag().toString().equals("table")) {
-			List<DiscussionSpeech> speeches = new ArrayList<DiscussionSpeech>();
-
-			Elements rows = nextElement.select("tbody").select("tr");
-			for (Element tr : rows) {
-				Elements tds = tr.select("td");
-
-				if (!tds.get(1).text().contains("n. anw.")) {
-					DiscussionSpeech speech = new DiscussionSpeech();
-					speech.setDiscussion(discussion);
-
-					Element td = tds.get(2);
-					if (td != null) {
-						Elements links = td.select("a");
-						if (links != null && links.size() >= 1) {
-							String href = links.first().attr("href");
-							if (isPoliticianLink(href)) {
-								Politician politician = getPolitician(href);
-								speech.setPolitician(politician);
-							}
-							else {
-								logger.warn("no politician link in speech");
-							}
-						}
-					}
-
-					String speechType = tds.get(4).text();
-					String speechOrder = tds.get(0).text().trim();
-					try {
-						speech.setOrder(Integer.parseInt(speechOrder));
-					} catch (NumberFormatException nfe) {
-						logger.debug("speech order nr invalid");
-					}
-					speech.setType(SpeechType.getSpeechType(speechType));
-
-					String start = tds.get(5).text();
-
-					try {
-						Date startTime = timeFormat.parse(start);
-						speech.setStartTime(startTime);
-
-						String duration = tds.get(5).text();
-						String[] parts = duration.split(":");
-						Integer minutes = Integer.parseInt(parts[0]);
-						Integer seconds = Integer.parseInt(parts[1]);
-
-						Calendar endDate = Calendar.getInstance();
-						endDate.setTime(startTime);
-						endDate.add(Calendar.MINUTE, minutes);
-						endDate.add(Calendar.SECOND, seconds);
-						speech.setEndTime(endDate.getTime());
-					} catch (ParseException | NumberFormatException e) {
-						logger.debug("discussion date parse error: " + e.getMessage());
-					}
-
-					speeches.add(speech);
-				}
-			}
-
+		if (nextElement != null && nextElement.tagName().equals("table")) {
+			List<DiscussionSpeech> speeches = getDiscussionSpeeches(discussion, nextElement);
 			discussion.setSpeeches(speeches);
 		}
 
 		return discussion;
+	}
+
+	protected List<DiscussionSpeech> getDiscussionSpeeches(Discussion discussion, Element nextElement) throws Exception {
+		List<DiscussionSpeech> speeches = new ArrayList<DiscussionSpeech>();
+
+		Elements rows = nextElement.select("tbody tr");
+		for (Element tr : rows) {
+			Elements tds = tr.select("td");
+
+			if (!tds.get(1).text().contains("n. anw.")) {
+				DiscussionSpeech speech = getDiscussionSpeech(discussion, tds);
+				speeches.add(speech);
+			}
+		}
+		return speeches;
+	}
+
+	protected DiscussionSpeech getDiscussionSpeech(Discussion discussion, Elements tds)
+			throws Exception {
+		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+		
+		DiscussionSpeech speech = new DiscussionSpeech();
+		speech.setDiscussion(discussion);
+
+		Element td = tds.get(2);
+		if (td != null) {
+			Elements links = td.select("a");
+			if (links != null && links.size() >= 1) {
+				String href = links.first().attr("href");
+				if (isPoliticianLink(href)) {
+					Politician politician = getPolitician(href);
+					speech.setPolitician(politician);
+				}
+				else {
+					logger.warn("no politician link in speech");
+				}
+			}
+		}
+
+		String speechType = tds.get(4).text();
+		String speechOrder = tds.get(0).text().trim();
+		try {
+			speech.setOrder(Integer.parseInt(speechOrder));
+		} catch (NumberFormatException nfe) {
+			logger.debug("speech order nr invalid");
+		}
+		speech.setType(SpeechType.getSpeechType(speechType));
+
+		String start = tds.get(5).text();
+
+		try {
+			Date startTime = timeFormat.parse(start);
+			speech.setStartTime(startTime);
+
+			String duration = tds.get(5).text();
+			String[] parts = duration.split(":");
+			Integer minutes = Integer.parseInt(parts[0]);
+			Integer seconds = Integer.parseInt(parts[1]);
+
+			Calendar endDate = Calendar.getInstance();
+			endDate.setTime(startTime);
+			endDate.add(Calendar.MINUTE, minutes);
+			endDate.add(Calendar.SECOND, seconds);
+			speech.setEndTime(endDate.getTime());
+		} catch (ParseException | NumberFormatException e) {
+			logger.debug("discussion date parse error: " + e.getMessage());
+		}
+		return speech;
 	}
 
 	protected Element getNextTableElement(Element nextElement) {
