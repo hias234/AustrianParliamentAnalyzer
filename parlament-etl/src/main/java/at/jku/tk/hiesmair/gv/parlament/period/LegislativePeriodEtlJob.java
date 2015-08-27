@@ -43,7 +43,6 @@ public class LegislativePeriodEtlJob {
 			
 			@Override
 			public void loadPoliticians(List<Politician> politicians) {
-				// TODO Auto-generated method stub
 				
 			}
 		});

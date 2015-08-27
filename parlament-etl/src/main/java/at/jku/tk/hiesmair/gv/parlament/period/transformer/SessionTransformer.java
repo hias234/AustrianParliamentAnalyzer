@@ -36,6 +36,8 @@ import at.jku.tk.hiesmair.gv.parlament.politician.transformer.PoliticianTransfor
  */
 public class SessionTransformer {
 
+	private static final String NBSP_STRING = Character.toString((char) 160);
+
 	private static final Logger logger = Logger.getLogger(SessionTransformer.class.getSimpleName());
 
 	private static final String DATE_FORMAT_PATTERN = "dd.MM.yyyy HH:mm";
@@ -196,7 +198,7 @@ public class SessionTransformer {
 		Elements headers = index.select("h3");
 		int order = 1;
 		for (Element header : headers) {
-			String text = header.text().replaceAll(Character.toString((char) 160), " ");
+			String text = header.text().replaceAll(NBSP_STRING, " ");
 
 			if (isTopicRelevant(text)) {
 				Discussion discussion = getDiscussion(header, text, session, order);
@@ -219,9 +221,7 @@ public class SessionTransformer {
 		Element nextElement = header.nextElementSibling();
 		discussion.setType(getDiscussionType(header, nextElement, discussion));
 
-		for (; nextElement != null && !nextElement.tag().toString().equals("h3")
-				&& !nextElement.tag().toString().equals("table"); nextElement = nextElement.nextElementSibling())
-			;
+		nextElement = getNextTableElement(nextElement);
 
 		if (nextElement != null && nextElement.tag().toString().equals("table")) {
 			List<DiscussionSpeech> speeches = new ArrayList<DiscussionSpeech>();
@@ -283,12 +283,38 @@ public class SessionTransformer {
 		return discussion;
 	}
 
+	protected Element getNextTableElement(Element nextElement) {
+		while (nextElement != null) {
+			String tagName = nextElement.tagName();
+			String text = nextElement.text();
+
+			if (tagName.equals("h3")) {
+				if (isTopicRelevant(text)) {
+					break;
+				}
+				else{
+					nextElement = nextElement.nextElementSibling();
+					if (nextElement == null) {
+						break;
+					}
+					nextElement = nextElement.nextElementSibling();
+				}
+			}
+			else if (tagName.equals("table")) {
+				break;
+			}
+			else {
+				nextElement = nextElement.nextElementSibling();
+			}
+		}
+		return nextElement;
+	}
+
 	protected String getDiscussionType(Element header, Element nextElement, Discussion discussion) {
-		String descriptionText = Jsoup.parse(header.nextSibling().toString()).text()
-				.replaceAll(Character.toString((char) 160), " ");
+		String descriptionText = Jsoup.parse(header.nextSibling().toString()).text().replaceAll(NBSP_STRING, " ");
 
 		if (nextElement != null && nextElement.tag().toString().equals("a")) {
-			descriptionText += " " + nextElement.text().replaceAll(Character.toString((char) 160), " ");
+			descriptionText += " " + nextElement.text().replaceAll(NBSP_STRING, " ");
 		}
 
 		Matcher m = discussionTypePattern.matcher(descriptionText);
