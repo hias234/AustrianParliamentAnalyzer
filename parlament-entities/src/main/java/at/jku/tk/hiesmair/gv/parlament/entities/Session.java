@@ -41,6 +41,9 @@ public class Session {
 	@OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
 	private List<Discussion> discussions;
 
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	private List<Politician> chairMen;
+
 	public Session() {
 		super();
 	}
@@ -106,6 +109,14 @@ public class Session {
 
 	public void setDiscussions(List<Discussion> discussions) {
 		this.discussions = discussions;
+	}
+
+	public List<Politician> getChairMen() {
+		return chairMen;
+	}
+
+	public void setChairMen(List<Politician> chairMen) {
+		this.chairMen = chairMen;
 	}
 
 	@Override

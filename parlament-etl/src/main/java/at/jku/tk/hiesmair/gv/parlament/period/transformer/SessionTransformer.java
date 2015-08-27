@@ -80,6 +80,7 @@ public class SessionTransformer {
 		session.setStartDate(getStartDate(protocolHtml));
 		session.setEndDate(getEndDate(protocolHtml));
 		session.setPoliticians(getPoliticians(index, protocol));
+		session.setChairMen(getChairMen(protocol));
 		session.setDiscussions(getDiscussions(index, session));
 
 		return session;
@@ -330,5 +331,35 @@ public class SessionTransformer {
 
 	private boolean isTopicRelevant(String text) {
 		return !topicExceptions.stream().anyMatch(te -> text.contains(te));
+	}
+	
+	protected List<Politician> getChairMen(Document protocol) throws Exception{
+		List<Politician> chairMenList = new ArrayList<Politician>();
+		
+		Element beginningElement = getBeginningOfSessionElement(protocol);
+		if (beginningElement != null){
+			Element chairMen = beginningElement.nextElementSibling();
+			if (chairMen.text().startsWith("Vorsitzend")){
+				Elements chairMenLinks = chairMen.select("a");
+				for (Element chairMenLink : chairMenLinks){
+					Politician politician = getPolitician(chairMenLink.attr("href"));
+					chairMenList.add(politician);
+				}
+			}
+		}
+		
+		return chairMenList;
+	}
+	
+	private Element getBeginningOfSessionElement(Document protocol){
+		Elements spans = protocol.select("span");
+		Element beginningElement = null;
+		for (Element el : spans){
+			if (el.text().startsWith("Beginn der Sitzung:")){
+				return el.parent();
+			}
+		}
+		logger.debug("beginning of session not found");
+		return null;
 	}
 }
