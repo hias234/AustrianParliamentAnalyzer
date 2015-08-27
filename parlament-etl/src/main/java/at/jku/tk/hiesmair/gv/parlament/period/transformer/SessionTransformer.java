@@ -191,22 +191,19 @@ public class SessionTransformer {
 	protected Set<Politician> getPoliticians(Document document) throws Exception {
 		Set<Politician> politicians = new HashSet<Politician>();
 
-		Elements links = document.getElementsByTag("a");
+		Elements links = getPoliticianLinks(document);
 		for (Element link : links) {
-			String href = link.attr("href");
-			if (isPoliticianLink(href)) {
-				Politician politician = getPolitician(href);
-				if (politician != null) {
-					politicians.add(politician);
-				}
+			Politician politician = getPolitician(link.attr("href"));
+			if (politician != null) {
+				politicians.add(politician);
 			}
 		}
 
 		return politicians;
 	}
 
-	protected boolean isPoliticianLink(String href) {
-		return href.startsWith("/WWER/PAD");
+	protected Elements getPoliticianLinks(Element document) {
+		return document.select("a[href*=WWER/PAD]");
 	}
 
 	protected Politician getPolitician(String href) throws Exception {
@@ -272,39 +269,34 @@ public class SessionTransformer {
 						}
 						String firstText = speechPart.text();
 
-						Elements links = speechPart.select("a[href]");
+						Elements links = getPoliticianLinks(speechPart);
 						if (links.size() > 0) {
-							if (isPoliticianLink(links.get(0).attr("href"))) {
-								Politician politician = getPolitician(links.get(0).attr("href"));
-								int indexOfColon = firstText.indexOf(":");
-								if (indexOfColon != -1) {
+							Politician politician = getPolitician(links.get(0).attr("href"));
+							int indexOfColon = firstText.indexOf(":");
+							if (indexOfColon != -1) {
 
-									String speechText = firstText.substring(indexOfColon + 1).trim();
+								String speechText = firstText.substring(indexOfColon + 1).trim();
 
-									speechPart = speechPart.nextElementSibling();
-									for (; speechPart != null && !speechPart.className().equals("RE"); speechPart = speechPart
-											.nextElementSibling()) {
-										speechText += "\n\n" + speechPart.text();
-									}
+								speechPart = speechPart.nextElementSibling();
+								for (; speechPart != null && !speechPart.className().equals("RE"); speechPart = speechPart
+										.nextElementSibling()) {
+									speechText += "\n\n" + speechPart.text();
+								}
 
-									for (Discussion discussion : discussions) {
-										for (DiscussionSpeech speech : discussion.getSpeeches()) {
-											if (speech.getPolitician().equals(politician)
-													&& isTimeForSpeechCorrect(time, speech) && speech.getText() == null) {
+								for (Discussion discussion : discussions) {
+									for (DiscussionSpeech speech : discussion.getSpeeches()) {
+										if (speech.getPolitician().equals(politician)
+												&& isTimeForSpeechCorrect(time, speech) && speech.getText() == null) {
 
-												found++;
-												speech.setText(speechText);
-												break;
-											}
+											found++;
+											speech.setText(speechText);
+											break;
 										}
 									}
 								}
-								else {
-									logger.debug("no colon " + firstText);
-								}
 							}
 							else {
-								logger.debug("no politician link " + firstText);
+								logger.debug("no colon " + firstText);
 							}
 						}
 						else {
@@ -354,10 +346,11 @@ public class SessionTransformer {
 		return discussion;
 	}
 
-	protected List<DiscussionSpeech> getDiscussionSpeeches(Discussion discussion, Element nextElement) throws Exception {
+	protected List<DiscussionSpeech> getDiscussionSpeeches(Discussion discussion, Element tableElement)
+			throws Exception {
 		List<DiscussionSpeech> speeches = new ArrayList<DiscussionSpeech>();
 
-		Elements rows = nextElement.select("tbody tr");
+		Elements rows = tableElement.select("tbody tr");
 		for (Element tr : rows) {
 			Elements tds = tr.select("td");
 
@@ -369,26 +362,19 @@ public class SessionTransformer {
 		return speeches;
 	}
 
-	protected DiscussionSpeech getDiscussionSpeech(Discussion discussion, Elements tds)
-			throws Exception {
+	protected DiscussionSpeech getDiscussionSpeech(Discussion discussion, Elements tds) throws Exception {
 		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-		
+
 		DiscussionSpeech speech = new DiscussionSpeech();
 		speech.setDiscussion(discussion);
 
-		Element td = tds.get(2);
-		if (td != null) {
-			Elements links = td.select("a");
-			if (links != null && links.size() >= 1) {
-				String href = links.first().attr("href");
-				if (isPoliticianLink(href)) {
-					Politician politician = getPolitician(href);
-					speech.setPolitician(politician);
-				}
-				else {
-					logger.warn("no politician link in speech");
-				}
-			}
+		Elements links = getPoliticianLinks(tds.get(2));
+		if (links != null && links.size() >= 1) {
+			String href = links.first().attr("href");
+			speech.setPolitician(getPolitician(href));
+		}
+		else {
+			logger.warn("no politician link in speech");
 		}
 
 		String speechType = tds.get(4).text();
@@ -475,14 +461,13 @@ public class SessionTransformer {
 
 		Elements chairMenElements = protocol.select("p:matches(^Vorsitzender?:.*)");
 		if (chairMenElements.size() == 1) {
-			Elements chairMenLinks = chairMenElements.select("a[href]");
+			Elements chairMenLinks = getPoliticianLinks(chairMenElements.first());
 			for (Element chairMenLink : chairMenLinks) {
 				String href = chairMenLink.attr("href");
-				if (isPoliticianLink(href)) {
-					Politician politician = getPolitician(href);
-					chairMenList.add(new SessionChairMan(position, politician, session));
-					position++;
-				}
+				Politician politician = getPolitician(href);
+				chairMenList.add(new SessionChairMan(position, politician, session));
+				position++;
+
 			}
 		}
 		else {
