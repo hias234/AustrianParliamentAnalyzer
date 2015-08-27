@@ -123,8 +123,16 @@ public class SessionTransformer {
 			String month = matcher.group(2);
 			Integer monthIndex = 1 + monthNames.indexOf(month);
 			if (monthIndex == 0) {
-				logger.debug("unknown month-index");
-				monthIndex = 1;
+				if (month.equals("Januar")) {
+					monthIndex = 1;
+				}
+				else if (month.equals("Feber")) {
+					monthIndex = 2;
+				}
+				else {
+					logger.debug("unknown month-index");
+					monthIndex = 1;
+				}
 			}
 			String year = matcher.group(3);
 			String hourStart = matcher.group(4);
@@ -198,7 +206,7 @@ public class SessionTransformer {
 
 	protected Politician getPolitician(String href) throws Exception {
 		String url = Settings.BASE_URL + href;
-		if (!href.endsWith("index.shtml")){
+		if (!href.endsWith("index.shtml")) {
 			url += "index.shtml";
 		}
 
@@ -231,7 +239,7 @@ public class SessionTransformer {
 
 			Elements speechBeginnings = protocol.select("p.RB");
 			for (Element speechBegin : speechBeginnings) {
-				
+
 				String timeStr = speechBegin.text().replace((char) 160, ' ').trim();
 				Matcher m = speechBeginPattern.matcher(timeStr);
 				Date time = null;
@@ -351,8 +359,13 @@ public class SessionTransformer {
 						Elements links = td.select("a");
 						if (links != null && links.size() >= 1) {
 							String href = links.first().attr("href");
-							Politician politician = getPolitician(href);
-							speech.setPolitician(politician);
+							if (isPoliticianLink(href)) {
+								Politician politician = getPolitician(href);
+								speech.setPolitician(politician);
+							}
+							else {
+								logger.warn("no politician link in speech");
+							}
 						}
 					}
 
@@ -450,15 +463,23 @@ public class SessionTransformer {
 		if (beginningElement != null) {
 			Element chairMen = beginningElement.nextElementSibling();
 
-			if (!chairMen.text().startsWith("Vorsitzend")) {
-				chairMen = chairMen.parent().nextElementSibling().child(0);
-			}
-			if (chairMen.text().startsWith("Vorsitzend")) {
-				Elements chairMenLinks = chairMen.select("a");
-				for (Element chairMenLink : chairMenLinks) {
-					Politician politician = getPolitician(chairMenLink.attr("href"));
-					chairMenList.add(new SessionChairMan(position, politician, session));
-					position++;
+			if (chairMen != null) {
+				if (!chairMen.text().startsWith("Vorsitzend")) {
+					chairMen = chairMen.parent().nextElementSibling().child(0);
+				}
+				if (chairMen != null && chairMen.text().startsWith("Vorsitzend")) {
+					Elements chairMenLinks = chairMen.select("a");
+					for (Element chairMenLink : chairMenLinks) {
+						String href = chairMenLink.attr("href");
+						if (isPoliticianLink(href)) {
+							Politician politician = getPolitician(href);
+							chairMenList.add(new SessionChairMan(position, politician, session));
+							position++;
+						}
+					}
+				}
+				else {
+					logger.debug("no chairmen tag found");
 				}
 			}
 			else {
