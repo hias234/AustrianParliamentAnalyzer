@@ -459,52 +459,40 @@ public class SessionTransformer {
 
 		int position = 1;
 
-		Element beginningElement = getBeginningOfSessionElement(protocol);
-		if (beginningElement != null) {
-			Element chairMen = beginningElement.nextElementSibling();
-
-			if (chairMen != null) {
-				if (!chairMen.text().startsWith("Vorsitzend")) {
-					chairMen = chairMen.parent().nextElementSibling().child(0);
-				}
-				if (chairMen != null && chairMen.text().startsWith("Vorsitzend")) {
-					Elements chairMenLinks = chairMen.select("a");
-					for (Element chairMenLink : chairMenLinks) {
-						String href = chairMenLink.attr("href");
-						if (isPoliticianLink(href)) {
-							Politician politician = getPolitician(href);
-							chairMenList.add(new SessionChairMan(position, politician, session));
-							position++;
-						}
-					}
-				}
-				else {
-					logger.debug("no chairmen tag found");
+		Elements chairMenElements = protocol.select("p:matches(^Vorsitzender?:.*)");
+		if (chairMenElements.size() == 1) {
+			Elements chairMenLinks = chairMenElements.select("a[href]");
+			for (Element chairMenLink : chairMenLinks) {
+				String href = chairMenLink.attr("href");
+				if (isPoliticianLink(href)) {
+					Politician politician = getPolitician(href);
+					chairMenList.add(new SessionChairMan(position, politician, session));
+					position++;
 				}
 			}
-			else {
-				logger.debug("no chairmen tag found");
-			}
+		}
+		else {
+			logger.debug("no chairmen tag found");
 		}
 
 		return chairMenList;
 	}
 
-	private Element getBeginningOfSessionElement(Document protocol) {
-		Elements sbs = protocol.select("p.SB");
-		for (Element sb : sbs) {
-			if (sb.text().contains("Beginn der Sitzung")) {
-				return sb;
-			}
-		}
-
-		Elements spans = protocol.select("span");
-		for (Element el : spans) {
-			if (el.text().startsWith("Beginn der Sitzung")) {
-				return el.parent();
-			}
-		}
-		logger.debug("beginning of session not found");
-		return null;
-	}
+	// private Element getBeginningOfSessionElement(Document protocol) {
+	// Elements sbs = protocol.select("p.SB");
+	// for (Element sb : sbs) {
+	// if (sb.text().contains("Beginn der Sitzung")) {
+	// return sb;
+	// }
+	// }
+	//
+	// Elements spans = protocol.select("span");
+	// for (Element el : spans) {
+	// if (el.text().startsWith("Beginn der Sitzung")) {
+	// return el.parent();
+	// }
+	// }
+	// logger.debug("beginning of session not found");
+	// return null;
+	// }
 }

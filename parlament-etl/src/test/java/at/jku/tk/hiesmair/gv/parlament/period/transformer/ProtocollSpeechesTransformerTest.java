@@ -16,6 +16,12 @@ import at.jku.tk.hiesmair.gv.parlament.period.protocol.ProtocolUtil;
 public class ProtocollSpeechesTransformerTest {
 
 	@Test
+	public void test2() throws Exception {
+		Document document = Jsoup.parse(new File("C:\\Temp\\parlament\\protocol_64.html"), "UTF-8");
+		document = ProtocolUtil.filterPageBreaks(document);
+	}
+	
+	@Test
 	public void test() throws Exception {
 		Document document = Jsoup.parse(new File("C:\\Temp\\parlament\\protocol_64.html"), "UTF-8");
 		document = ProtocolUtil.filterPageBreaks(document);
