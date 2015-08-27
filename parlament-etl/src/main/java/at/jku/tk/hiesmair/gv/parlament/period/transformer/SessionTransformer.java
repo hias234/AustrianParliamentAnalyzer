@@ -38,6 +38,8 @@ import at.jku.tk.hiesmair.gv.parlament.politician.transformer.PoliticianTransfor
  */
 public class SessionTransformer {
 
+	private static final int SPEECH_TIME_TOLERANCE_IN_MS = 60000 * 10; // 10 min
+
 	private static final String NBSP_STRING = Character.toString((char) 160);
 
 	private static final Logger logger = Logger.getLogger(SessionTransformer.class.getSimpleName());
@@ -72,9 +74,9 @@ public class SessionTransformer {
 
 	public Session getSession(LegislativePeriod period, Document index, Document protocol) throws Exception {
 		protocol = ProtocolUtil.filterPageBreaks(protocol);
-		
+
 		String protocolHtml = protocol.html();
-		
+
 		Session session = new Session();
 		session.setPeriod(period);
 		session.setSessionNr(getSessionNr(protocolHtml));
@@ -82,7 +84,7 @@ public class SessionTransformer {
 		session.setEndDate(getEndDate(protocolHtml));
 		session.setPoliticians(getPoliticians(index, protocol));
 		session.setChairMen(getChairMen(protocol, session));
-		session.setDiscussions(getDiscussions(index, session));
+		session.setDiscussions(getDiscussions(index, protocol, session));
 
 		return session;
 	}
@@ -197,7 +199,7 @@ public class SessionTransformer {
 		return politician;
 	}
 
-	protected List<Discussion> getDiscussions(Document index, Session session) throws Exception {
+	protected List<Discussion> getDiscussions(Document index, Document protocol, Session session) throws Exception {
 		List<Discussion> discussions = new ArrayList<Discussion>();
 
 		Elements headers = index.select("h3");
@@ -212,7 +214,104 @@ public class SessionTransformer {
 			}
 		}
 
+		SimpleDateFormat timeFormat = new SimpleDateFormat("HH.mm");
+
+		if (discussions.size() > 0) {
+			int found = 0;
+
+			Elements speechBeginnings = protocol.select("p.RB");
+			for (Element speechBegin : speechBeginnings) {
+
+				String time = speechBegin.text().replace((char) 160, ' ').trim();
+				if (time.length() >= 5) {
+					time = time.substring(0, 5);
+				}
+
+				if (time.length() == 5) {
+					Element speechPart = speechBegin.nextElementSibling();
+					if (speechPart == null) {
+						speechPart = speechBegin.parent().nextElementSibling().child(0);
+					}
+					if (speechPart != null) {
+						for (; speechPart.select("a[href]").isEmpty();) {
+							Element nextSibling = speechPart.nextElementSibling();
+							if (nextSibling == null) {
+								speechPart = speechPart.parent().nextElementSibling().child(0);
+							}
+							else {
+								speechPart = nextSibling;
+							}
+						}
+						String firstText = speechPart.text();
+
+						Elements links = speechPart.select("a[href]");
+						if (links.size() > 0) {
+							if (isPoliticianLink(links.get(0).attr("href"))) {
+								Politician politician = getPolitician(links.get(0).attr("href"));
+								int indexOfColon = firstText.indexOf(":");
+								if (indexOfColon != -1) {
+
+									String speechText = firstText.substring(indexOfColon + 1).trim();
+
+									speechPart = speechPart.nextElementSibling();
+									for (; speechPart != null && !speechPart.className().equals("RE"); speechPart = speechPart
+											.nextElementSibling()) {
+										speechText += "\n\n" + speechPart.text();
+									}
+
+									for (Discussion discussion : discussions) {
+										for (DiscussionSpeech speech : discussion.getSpeeches()) {
+											if (speech.getPolitician().equals(politician)
+													&& isTimeForSpeechCorrect(timeFormat, time, speech) && speech.getText() == null) {
+												
+												found++;
+												speech.setText(speechText);
+												break;
+											}
+										}
+									}
+								}
+								else {
+									logger.debug("no colon " + firstText);
+								}
+							}
+							else {
+								logger.debug("no politician link " + firstText);
+							}
+						}
+						else {
+							logger.debug("no link " + firstText);
+						}
+					}
+					else {
+
+					}
+				}
+			}
+
+			int speechCnt = 0;
+			for (Discussion discussion : discussions) {
+				speechCnt += discussion.getSpeeches().size();
+			}
+
+			if (speechCnt != found) {
+				logger.debug("not all speechtexts found in protocol " + speechCnt + " " + found + " " + session.getSessionNr());
+			}
+		}
+
 		return discussions;
+	}
+
+	protected boolean isTimeForSpeechCorrect(SimpleDateFormat timeFormat, String time, DiscussionSpeech speech) {
+		Date startTime;
+		try {
+			startTime = timeFormat.parse(time);
+		} catch (ParseException e) {
+			logger.info("parseexception " + time);
+			return false;
+		}
+		return startTime.getTime() >= speech.getStartTime().getTime() - SPEECH_TIME_TOLERANCE_IN_MS
+				&& startTime.getTime() <= speech.getStartTime().getTime() + SPEECH_TIME_TOLERANCE_IN_MS;
 	}
 
 	protected Discussion getDiscussion(Element header, String text, Session session, int order) throws Exception {
@@ -297,7 +396,7 @@ public class SessionTransformer {
 				if (isTopicRelevant(text)) {
 					break;
 				}
-				else{
+				else {
 					nextElement = nextElement.nextElementSibling();
 					if (nextElement == null) {
 						break;
@@ -333,33 +432,32 @@ public class SessionTransformer {
 	private boolean isTopicRelevant(String text) {
 		return !topicExceptions.stream().anyMatch(te -> text.contains(te));
 	}
-	
-	protected List<SessionChairMan> getChairMen(Document protocol, Session session) throws Exception{
+
+	protected List<SessionChairMan> getChairMen(Document protocol, Session session) throws Exception {
 		List<SessionChairMan> chairMenList = new ArrayList<SessionChairMan>();
-		
+
 		int position = 1;
-		
+
 		Element beginningElement = getBeginningOfSessionElement(protocol);
-		if (beginningElement != null){
+		if (beginningElement != null) {
 			Element chairMen = beginningElement.nextElementSibling();
-			if (chairMen.text().startsWith("Vorsitzend")){
+			if (chairMen.text().startsWith("Vorsitzend")) {
 				Elements chairMenLinks = chairMen.select("a");
-				for (Element chairMenLink : chairMenLinks){
+				for (Element chairMenLink : chairMenLinks) {
 					Politician politician = getPolitician(chairMenLink.attr("href"));
 					chairMenList.add(new SessionChairMan(position, politician, session));
 					position++;
 				}
 			}
 		}
-		
+
 		return chairMenList;
 	}
-	
-	private Element getBeginningOfSessionElement(Document protocol){
+
+	private Element getBeginningOfSessionElement(Document protocol) {
 		Elements spans = protocol.select("span");
-		Element beginningElement = null;
-		for (Element el : spans){
-			if (el.text().startsWith("Beginn der Sitzung:")){
+		for (Element el : spans) {
+			if (el.text().startsWith("Beginn der Sitzung:")) {
 				return el.parent();
 			}
 		}

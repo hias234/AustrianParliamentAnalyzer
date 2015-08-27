@@ -33,22 +33,46 @@ public class ProtocollSpeechesTransformerTest {
 		}
 
 		Element start = chairMen.nextElementSibling();
-		if (start.className().equals("ZM")){
+		if (start.className().equals("ZM")) {
 			start = start.nextElementSibling();
 		}
 
-		if (start.tagName().equals("b")){
+		if (start.tagName().equals("b")) {
 			start = start.nextElementSibling();
 		}
-		
-		
+
+		Elements speechBeginnings = document.select("p.RB");
+		for (Element speechBegin : speechBeginnings) {
+			String speechText = "";
+
+			Element speechPart = speechBegin.nextElementSibling();
+			if (speechPart != null) {
+				String firstText = speechPart.text();
+				int indexOfColon = firstText.indexOf(":");
+				if (indexOfColon != -1) {
+					System.out.print(firstText.substring(0, indexOfColon) + ": ");
+					speechText += firstText.substring(indexOfColon + 1).trim();
+				}
+				else {
+					speechText += firstText;
+				}
+
+				speechPart = speechPart.nextElementSibling();
+				for (; speechPart != null && !speechPart.className().equals("RE"); speechPart = speechPart
+						.nextElementSibling()) {
+					speechText += " " + speechPart.text();
+				}
+
+				System.out.println(speechText);
+			}
+		}
+
 	}
 
-	private Element getBeginningOfSessionElement(Document protocol){
+	private Element getBeginningOfSessionElement(Document protocol) {
 		Elements spans = protocol.select("span");
-		Element beginningElement = null;
-		for (Element el : spans){
-			if (el.text().startsWith("Beginn der Sitzung:")){
+		for (Element el : spans) {
+			if (el.text().startsWith("Beginn der Sitzung:")) {
 				return el.parent();
 			}
 		}

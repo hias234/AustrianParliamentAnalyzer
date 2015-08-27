@@ -41,6 +41,9 @@ public class DiscussionSpeech {
 	@Enumerated(EnumType.STRING)
 	private SpeechType type;
 
+	@Column(length = 100000)
+	private String text;
+
 	public Integer getId() {
 		return id;
 	}
@@ -95,6 +98,14 @@ public class DiscussionSpeech {
 
 	public void setType(SpeechType type) {
 		this.type = type;
+	}
+
+	public String getText() {
+		return text;
+	}
+
+	public void setText(String text) {
+		this.text = text;
 	}
 
 	@Override
