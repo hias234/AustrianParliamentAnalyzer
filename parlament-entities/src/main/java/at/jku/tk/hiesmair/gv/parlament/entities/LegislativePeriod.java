@@ -21,7 +21,7 @@ public class LegislativePeriod {
 	@OneToMany(mappedBy = "period", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
 	private List<Session> sessions;
 	
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToMany(mappedBy = "periods", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private List<NationalCouncilMember> nationalCouncilMembers;
 
 	public LegislativePeriod() {
