@@ -121,19 +121,7 @@ public class SessionTransformer {
 		if (matcher.find()) {
 			String day = matcher.group(1);
 			String month = matcher.group(2);
-			Integer monthIndex = 1 + monthNames.indexOf(month);
-			if (monthIndex == 0) {
-				if (month.equals("Januar")) {
-					monthIndex = 1;
-				}
-				else if (month.equals("Feber")) {
-					monthIndex = 2;
-				}
-				else {
-					logger.debug("unknown month-index");
-					monthIndex = 1;
-				}
-			}
+			Integer monthIndex = getMonthIndex(month);
 			String year = matcher.group(3);
 			String hourStart = matcher.group(4);
 			String minuteStart = matcher.group(5);
@@ -145,13 +133,30 @@ public class SessionTransformer {
 		return null;
 	}
 
+	protected Integer getMonthIndex(String month) {
+		Integer monthIndex = 1 + monthNames.indexOf(month);
+		if (monthIndex == 0) {
+			if (month.equals("Januar")) {
+				monthIndex = 1;
+			}
+			else if (month.equals("Feber")) {
+				monthIndex = 2;
+			}
+			else {
+				logger.debug("unknown month-index");
+				monthIndex = 1;
+			}
+		}
+		return monthIndex;
+	}
+
 	protected Date getEndDate(String protocolText) {
 		Matcher matcher = startEndDatePattern.matcher(protocolText);
 
 		if (matcher.find()) {
 			String day = matcher.group(1);
 			String month = matcher.group(2);
-			Integer monthIndex = 1 + monthNames.indexOf(month);
+			Integer monthIndex = getMonthIndex(month);
 			String year = matcher.group(3);
 			String hourStart = matcher.group(6);
 			String minuteStart = matcher.group(7);
