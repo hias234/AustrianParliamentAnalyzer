@@ -19,7 +19,7 @@ public class SessionChairMan {
 
 	private Integer position;
 
-	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToOne(optional = false, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Politician politician;
 
 	@ManyToOne(optional = false, fetch = FetchType.EAGER, cascade = CascadeType.ALL)

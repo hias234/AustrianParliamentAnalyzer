@@ -40,10 +40,10 @@ public class Session {
 	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
 	private List<Politician> politicians;
 
-	@OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+	@OneToMany(mappedBy = "session", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
 	private List<Discussion> discussions;
 
-	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "session", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private List<SessionChairMan> chairMen;
 
 	public Session() {

@@ -31,7 +31,7 @@ public class Discussion {
 	private String topic;
 	private String type;
 
-	@OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+	@OneToMany(mappedBy = "discussion", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
 	private List<DiscussionSpeech> speeches = new ArrayList<DiscussionSpeech>();
 
 	public Integer getId() {

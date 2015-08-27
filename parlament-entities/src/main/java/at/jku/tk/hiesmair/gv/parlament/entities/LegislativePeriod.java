@@ -16,7 +16,7 @@ public class LegislativePeriod {
 	@Id
 	private Integer period;
 
-	@OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+	@OneToMany(mappedBy = "period", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
 	private List<Session> sessions;
 
 	public LegislativePeriod() {

@@ -30,7 +30,7 @@ public class Politician {
 	@Temporal(TemporalType.DATE)
 	private Date birthDate;
 
-	@OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+	@OneToMany(mappedBy = "politician", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
 	private List<Mandate> mandates = new ArrayList<Mandate>();
 
 	public String getId() {
