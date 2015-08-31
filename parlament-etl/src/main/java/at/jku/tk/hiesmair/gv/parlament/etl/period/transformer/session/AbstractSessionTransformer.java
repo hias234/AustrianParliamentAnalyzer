@@ -427,11 +427,8 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 		return discussions;
 	}
 
-	protected abstract List<Discussion> setSpeechTexts(Document protocol, List<Discussion> discussions) throws Exception;
-	
-	protected Elements getSpeechBeginTags(Document protocol) {
-		return protocol.select("p.RB:matches(\\d{2}\\.\\d{2}.*)");
-	}
+	protected abstract List<Discussion> setSpeechTexts(Document protocol, List<Discussion> discussions)
+			throws Exception;
 
 	protected boolean isTimeForSpeechCorrect(Date time, DiscussionSpeech speech) {
 		if (speech.getStartTime() == null) {
@@ -560,7 +557,7 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 		if (m.find()) {
 			return m.group(2).trim();
 		}
-		
+
 		logger.info("did not find discussionType");
 		return null;
 	}

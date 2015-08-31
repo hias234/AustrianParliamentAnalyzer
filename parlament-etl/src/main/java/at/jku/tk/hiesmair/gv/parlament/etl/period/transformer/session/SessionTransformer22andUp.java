@@ -38,6 +38,7 @@ public class SessionTransformer22andUp extends AbstractSessionTransformer {
 		return protocol;
 	}
 
+	@Override
 	protected List<Discussion> setSpeechTexts(Document protocol, List<Discussion> discussions) throws Exception {
 		SimpleDateFormat timeFormat = new SimpleDateFormat("HH.mm");
 		int found = 0;
@@ -123,4 +124,7 @@ public class SessionTransformer22andUp extends AbstractSessionTransformer {
 		return discussions;
 	}
 
+	protected Elements getSpeechBeginTags(Document protocol) {
+		return protocol.select("p.RB:matches(\\d{2}\\.\\d{2}.*)");
+	}
 }
