@@ -33,15 +33,16 @@ import at.jku.tk.hiesmair.gv.parlament.etl.AbstractTransformer;
 import at.jku.tk.hiesmair.gv.parlament.etl.politician.transformer.PoliticianTransformer;
 
 public abstract class AbstractSessionTransformer extends AbstractTransformer {
-	
+
 	private static final Logger logger = Logger.getLogger(AbstractSessionTransformer.class.getSimpleName());
 
-	protected static final int SPEECH_TIME_TOLERANCE_IN_MS = 60000 * 10; // 10 min
+	protected static final int SPEECH_TIME_TOLERANCE_IN_MS = 60000 * 10; // 10
+																			// min
 	protected static final String DATE_FORMAT_PATTERN = "dd.MM.yyyy HH:mm";
-	
+
 	protected final List<String> monthNames;
 	protected final List<String> topicExceptions;
-	
+
 	protected final Pattern sessionNrPattern;
 	protected final Pattern startEndDatePattern;
 	protected final Pattern discussionTypePattern;
@@ -72,19 +73,20 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 
 		politicianTransformer = new PoliticianTransformer(cache);
 	}
-	
+
 	public Session getSession(LegislativePeriod period, Document index, Document protocol) throws Exception {
 		protocol = filterPageBreaks(protocol);
-		
+
 		String protocolText = protocol.text().replaceAll(NBSP_STRING, " ");
 
 		Session session = new Session();
-		session.setSessionNr(getSessionNr(protocolText));
-
-		logger.info("transforming session " + session.getSessionNr() + " of period " + period.getPeriod());
-
 		session.setPeriod(period);
+		session.setSessionNr(getSessionNr(protocolText));
 		session.setStartDate(getStartDate(protocolText));
+
+		logger.info("transforming session " + session.getSessionNr() + " of period " + period.getPeriod() + " at "
+				+ session.getStartDate());
+
 		session.setEndDate(getEndDate(protocolText));
 		session.setChairMen(getChairMen(protocol, session));
 		session.setDiscussions(getDiscussions(index, protocol, session));
@@ -362,27 +364,29 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 		return null;
 	}
 
-	protected List<Politician> getPoliticians(Document index, Document protocol) throws Exception {
-		Set<Politician> politicians = new HashSet<Politician>();
-		politicians.addAll(getPoliticians(index));
-		politicians.addAll(getPoliticians(protocol));
-
-		return new ArrayList<Politician>(politicians);
-	}
-
-	protected Set<Politician> getPoliticians(Document document) throws Exception {
-		Set<Politician> politicians = new HashSet<Politician>();
-
-		Elements links = getPoliticianLinks(document);
-		for (Element link : links) {
-			Politician politician = getPolitician(link.attr("href"));
-			if (politician != null) {
-				politicians.add(politician);
-			}
-		}
-
-		return politicians;
-	}
+	// protected List<Politician> getPoliticians(Document index, Document
+	// protocol) throws Exception {
+	// Set<Politician> politicians = new HashSet<Politician>();
+	// politicians.addAll(getPoliticians(index));
+	// politicians.addAll(getPoliticians(protocol));
+	//
+	// return new ArrayList<Politician>(politicians);
+	// }
+	//
+	// protected Set<Politician> getPoliticians(Document document) throws
+	// Exception {
+	// Set<Politician> politicians = new HashSet<Politician>();
+	//
+	// Elements links = getPoliticianLinks(document);
+	// for (Element link : links) {
+	// Politician politician = getPolitician(link.attr("href"));
+	// if (politician != null) {
+	// politicians.add(politician);
+	// }
+	// }
+	//
+	// return politicians;
+	// }
 
 	protected Elements getPoliticianLinks(Element document) {
 		return document.select("a[href*=WWER/PAD]");
@@ -416,90 +420,95 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 			}
 		}
 
-		SimpleDateFormat timeFormat = new SimpleDateFormat("HH.mm");
-
 		if (discussions.size() > 0) {
-			int found = 0;
+			discussions = setSpeechTexts(protocol, discussions);
+		}
 
-			Elements speechBeginnings = getSpeechBeginTags(protocol);
-			for (Element speechBegin : speechBeginnings) {
-				String timeStr = speechBegin.text().replace(NBSP_STRING, " ").trim();
-				Matcher m = speechBeginPattern.matcher(timeStr);
-				Date time = null;
-				if (m.find()) {
-					try {
-						time = timeFormat.parse(m.group(0));
-					} catch (ParseException pe) {
-					}
+		return discussions;
+	}
+
+	protected List<Discussion> setSpeechTexts(Document protocol, List<Discussion> discussions) throws Exception {
+		SimpleDateFormat timeFormat = new SimpleDateFormat("HH.mm");
+		int found = 0;
+
+		Elements speechBeginnings = getSpeechBeginTags(protocol);
+		for (Element speechBegin : speechBeginnings) {
+			String timeStr = speechBegin.text().replace(NBSP_STRING, " ").trim();
+			Matcher m = speechBeginPattern.matcher(timeStr);
+			Date time = null;
+			if (m.find()) {
+				try {
+					time = timeFormat.parse(m.group(0));
+				} catch (ParseException pe) {
 				}
+			}
 
-				if (time != null) {
-					Element speechPart = speechBegin.nextElementSibling();
-					if (speechPart == null) {
-						speechPart = speechBegin.parent().nextElementSibling().child(0);
-					}
-					if (speechPart != null) {
-						for (; speechPart.select("a[href]").isEmpty();) {
-							Element nextSibling = speechPart.nextElementSibling();
-							if (nextSibling == null) {
-								speechPart = speechPart.parent().nextElementSibling().child(0);
-							}
-							else {
-								speechPart = nextSibling;
-							}
+			if (time != null) {
+				Element speechPart = speechBegin.nextElementSibling();
+				if (speechPart == null) {
+					speechPart = speechBegin.parent().nextElementSibling().child(0);
+				}
+				if (speechPart != null) {
+					for (; speechPart.select("a[href]").isEmpty();) {
+						Element nextSibling = speechPart.nextElementSibling();
+						if (nextSibling == null) {
+							speechPart = speechPart.parent().nextElementSibling().child(0);
 						}
-						String firstText = speechPart.text();
+						else {
+							speechPart = nextSibling;
+						}
+					}
+					String firstText = speechPart.text();
 
-						Elements links = getPoliticianLinks(speechPart);
-						if (links.size() > 0) {
-							Politician politician = getPolitician(links.get(0).attr("href"));
-							int indexOfColon = firstText.indexOf(":");
-							if (indexOfColon != -1) {
+					Elements links = getPoliticianLinks(speechPart);
+					if (links.size() > 0) {
+						Politician politician = getPolitician(links.get(0).attr("href"));
+						int indexOfColon = firstText.indexOf(":");
+						if (indexOfColon != -1) {
 
-								String speechText = firstText.substring(indexOfColon + 1).trim();
+							String speechText = firstText.substring(indexOfColon + 1).trim();
 
-								speechPart = speechPart.nextElementSibling();
-								for (; speechPart != null && !speechPart.className().equals("RE"); speechPart = speechPart
-										.nextElementSibling()) {
-									speechText += "\n\n" + speechPart.text();
-								}
+							speechPart = speechPart.nextElementSibling();
+							for (; speechPart != null && !speechPart.className().equals("RE"); speechPart = speechPart
+									.nextElementSibling()) {
+								speechText += "\n\n" + speechPart.text();
+							}
 
-								for (Discussion discussion : discussions) {
-									for (DiscussionSpeech speech : discussion.getSpeeches()) {
-										if (speech.getPolitician().equals(politician)
-												&& isTimeForSpeechCorrect(time, speech) && speech.getText() == null) {
+							for (Discussion discussion : discussions) {
+								for (DiscussionSpeech speech : discussion.getSpeeches()) {
+									if (speech.getPolitician().equals(politician)
+											&& isTimeForSpeechCorrect(time, speech) && speech.getText() == null) {
 
-											found++;
-											speech.setText(speechText);
-											break;
-										}
+										found++;
+										speech.setText(speechText);
+										break;
 									}
 								}
 							}
-							else {
-								logger.info("no colon " + firstText);
-							}
 						}
 						else {
-							logger.info("no link " + firstText);
+							logger.info("no colon " + firstText);
 						}
 					}
-				}
-				else {
-					logger.info("unable to parse start time");
+					else {
+						logger.info("no link " + firstText);
+					}
 				}
 			}
-
-			int speechCnt = 0;
-			for (Discussion discussion : discussions) {
-				speechCnt += discussion.getSpeeches().size();
-			}
-
-			if (speechCnt != found) {
-				logger.warn("not all speechtexts found in protocol: found " + found + " of " + speechCnt);
+			else {
+				logger.info("unable to parse start time");
 			}
 		}
 
+		int speechCnt = 0;
+		for (Discussion discussion : discussions) {
+			speechCnt += discussion.getSpeeches().size();
+		}
+
+		if (speechCnt != found) {
+			logger.warn("not all speechtexts found in protocol: found " + found + " of " + speechCnt);
+		}
+		
 		return discussions;
 	}
 

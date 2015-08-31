@@ -15,10 +15,7 @@ public class SessionTransformer21 extends AbstractSessionTransformer {
 
 	@Override
 	protected Document filterPageBreaks(Document protocol) {
-		int pagebreaktables = protocol.select("hr + table:matches(^Nationalrat, )").remove().size();
-		if (pagebreaktables == 0){
-			logger.error("no pagebreaks found");
-		}
+		protocol.select("hr + table:matches(^Nationalrat, )").remove();
 		protocol.select("hr").remove();
 		
 		return protocol;
