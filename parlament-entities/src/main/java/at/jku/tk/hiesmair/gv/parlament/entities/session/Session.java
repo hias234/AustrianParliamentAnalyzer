@@ -38,7 +38,10 @@ public class Session {
 	private Date endDate;
 
 	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
-	private List<Politician> politicians;
+	private List<Politician> presentPoliticians;
+
+	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+	private List<Politician> absentPoliticians;
 
 	@OneToMany(mappedBy = "session", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
 	private List<Discussion> discussions;
@@ -97,12 +100,20 @@ public class Session {
 		this.endDate = endDate;
 	}
 
-	public List<Politician> getPoliticians() {
-		return politicians;
+	public List<Politician> getPresentPoliticians() {
+		return presentPoliticians;
 	}
 
-	public void setPoliticians(List<Politician> politicians) {
-		this.politicians = politicians;
+	public void setPresentPoliticians(List<Politician> presentPoliticians) {
+		this.presentPoliticians = presentPoliticians;
+	}
+
+	public List<Politician> getAbsentPoliticians() {
+		return absentPoliticians;
+	}
+
+	public void setAbsentPoliticians(List<Politician> absentPoliticians) {
+		this.absentPoliticians = absentPoliticians;
 	}
 
 	public List<Discussion> getDiscussions() {
@@ -124,7 +135,7 @@ public class Session {
 	@Override
 	public String toString() {
 		return "Session [period=" + period.getPeriod() + ", sessionNr=" + sessionNr + ", startDate=" + startDate
-				+ ", endDate=" + endDate + ", politicians=" + politicians + ", discussions=" + discussions + "]";
+				+ ", endDate=" + endDate + ", absentPoliticians=" + absentPoliticians + ", discussions=" + discussions + "]";
 	}
 
 }

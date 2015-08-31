@@ -49,9 +49,9 @@ public class SessionTransformerTest {
 		assertEquals("StartDate of Session", "20.05.2014 09:05", dateFormat.format(session.getStartDate()));
 		assertEquals("EndDate of Session", "20.05.2014 22:04", dateFormat.format(session.getEndDate()));
 
-		assertTrue("politicians of session", session.getPoliticians().size() > 0);
+		assertTrue("politicians of session", session.getAbsentPoliticians().size() > 0);
 
-		Collections.sort(session.getPoliticians(), new Comparator<Politician>() {
+		Collections.sort(session.getAbsentPoliticians(), new Comparator<Politician>() {
 
 			@Override
 			public int compare(Politician o1, Politician o2) {
@@ -59,7 +59,7 @@ public class SessionTransformerTest {
 			}
 		});
 
-		for (Politician p : session.getPoliticians()) {
+		for (Politician p : session.getPresentPoliticians()) {
 			if (p.getSurName().equals("Kopf")) {
 				assertEquals("Karlheinz", p.getFirstName());
 				assertEquals("", p.getTitle());

@@ -1,5 +1,6 @@
 package at.jku.tk.hiesmair.gv.parlament.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -20,9 +21,9 @@ public class LegislativePeriod {
 
 	@OneToMany(mappedBy = "period", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
 	private List<Session> sessions;
-	
-	@ManyToMany(mappedBy = "periods", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	private List<NationalCouncilMember> nationalCouncilMembers;
+
+	@ManyToMany(mappedBy = "periods", fetch = FetchType.EAGER)
+	private List<NationalCouncilMember> nationalCouncilMembers = new ArrayList<NationalCouncilMember>();
 
 	public LegislativePeriod() {
 		super();
@@ -47,6 +48,14 @@ public class LegislativePeriod {
 
 	public void setSessions(List<Session> sessions) {
 		this.sessions = sessions;
+	}
+
+	public List<NationalCouncilMember> getNationalCouncilMembers() {
+		return nationalCouncilMembers;
+	}
+
+	public void setNationalCouncilMembers(List<NationalCouncilMember> nationalCouncilMembers) {
+		this.nationalCouncilMembers = nationalCouncilMembers;
 	}
 
 	@Override

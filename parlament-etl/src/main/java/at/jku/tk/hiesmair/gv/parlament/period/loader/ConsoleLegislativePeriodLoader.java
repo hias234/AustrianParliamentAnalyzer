@@ -39,8 +39,8 @@ public class ConsoleLegislativePeriodLoader implements LegislativePeriodLoader {
 		}
 		System.out.println("-------------------------------------------");
 
-		System.out.print("Participating Politicians (" + session.getPoliticians().size() + "): ");
-		printPoliticians(session.getPoliticians());
+		System.out.print("Absent Politicians (" + session.getAbsentPoliticians().size() + "): ");
+		printPoliticians(session.getAbsentPoliticians());
 
 		// System.out.println("Discussions: ");
 		// printDiscussions(session.getDiscussions());

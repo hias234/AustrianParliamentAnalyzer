@@ -86,7 +86,7 @@ public class SessionTransformer {
 		session.setPeriod(period);
 		session.setStartDate(getStartDate(protocolText));
 		session.setEndDate(getEndDate(protocolText));
-		session.setPoliticians(getPoliticians(index, protocol));
+//		session.setPoliticians(getPoliticians(index, protocol));
 		session.setChairMen(getChairMen(protocol, session));
 		session.setDiscussions(getDiscussions(index, protocol, session));
 
@@ -322,7 +322,7 @@ public class SessionTransformer {
 	}
 
 	protected Elements getSpeechBeginTags(Document protocol) {
-		return protocol.select("p.RB");
+		return protocol.select("p.RB:matches(\\d{2}\\.\\d{2}.*)");
 	}
 
 	protected boolean isTimeForSpeechCorrect(Date time, DiscussionSpeech speech) {

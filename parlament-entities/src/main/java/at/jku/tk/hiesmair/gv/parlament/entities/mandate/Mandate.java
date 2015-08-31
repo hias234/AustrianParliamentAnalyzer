@@ -17,21 +17,21 @@ import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 
 @Entity
 @Inheritance
-@DiscriminatorColumn(name="mandate_type")
+@DiscriminatorColumn(name = "mandate_type")
 public class Mandate {
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	protected Integer id;
-	
+
 	protected String description;
-	
-	@ManyToOne(fetch = FetchType.EAGER, optional=false)
+
+	@ManyToOne(fetch = FetchType.EAGER, optional = false, cascade = { })
 	protected Politician politician;
-	
+
 	@Temporal(TemporalType.DATE)
 	protected Date validFrom;
-	
+
 	@Temporal(TemporalType.DATE)
 	protected Date validUntil;
 
@@ -47,8 +47,6 @@ public class Mandate {
 		this.validUntil = validUntil;
 	}
 
-	
-	
 	public Integer getId() {
 		return id;
 	}

@@ -36,6 +36,8 @@ import com.frequal.romannumerals.Converter;
 
 public class PoliticianTransformer {
 
+	private static final String NBSP_STRING = Character.toString((char) 160);
+
 	private static final String DATE_PATTERN = "dd.MM.yyyy";
 
 	private static final Logger logger = Logger.getLogger(PoliticianTransformer.class.getSimpleName());
@@ -49,8 +51,6 @@ public class PoliticianTransformer {
 	protected final DataCache cache;
 
 	public PoliticianTransformer() {
-		// namePattern =
-		// Pattern.compile("((?:[^\\s]+\\.?\\s)*)([^\\s,\\.]+(?:\\s.\\.)?)\\s([^\\s,(\\.]+)");
 		namePattern = Pattern
 				.compile("((?:[\\wöäüÖÄÜß]+\\..?)*\\s)?((?:[\\wöäüÖÄÜß,\\.]+(?:\\s.\\.)?\\s?)+)\\s([^\\s,(\\.:]+)");
 		mandatePattern = Pattern
@@ -76,7 +76,7 @@ public class PoliticianTransformer {
 	}
 
 	protected Politician getPolitician(String url, Document document) {
-		logger.debug("transorming politician " + url);
+		logger.debug("transforming politician " + url);
 		
 		String fullText = document.text();
 
@@ -135,7 +135,7 @@ public class PoliticianTransformer {
 			Element header = headers.stream().findFirst().get();
 
 			String text = header.text();
-			text = text.replaceAll(Character.toString((char) 160), " ");
+			text = text.replaceAll(NBSP_STRING, " ");
 			return text;
 		}
 		return "";
@@ -176,7 +176,7 @@ public class PoliticianTransformer {
 
 		Elements polMandate = polMandateHeader.nextElementSibling().children();
 		for (Element polMandat : polMandate) {
-			String text = polMandat.text().replaceAll(Character.toString((char) 160), " ");
+			String text = polMandat.text().replaceAll(NBSP_STRING, " ");
 			Matcher m = mandatePattern.matcher(text);
 			if (m.find()) {
 				String description = m.group(1).trim();
@@ -209,7 +209,7 @@ public class PoliticianTransformer {
 			if (description.contains(" zum Nationalrat")) {
 				mandate = new NationalCouncilMember();
 				((NationalCouncilMember) mandate).setClub(getClub(clubShortName.trim()));
-				((NationalCouncilMember) mandate).setPeriods(getPeriods(periodFrom, periodTo));
+				((NationalCouncilMember) mandate).setPeriods(getPeriods(((NationalCouncilMember) mandate), periodFrom, periodTo));
 			}
 		}
 		else if (description.contains("Mitglied des Bundesrates")) {
@@ -291,18 +291,20 @@ public class PoliticianTransformer {
 		return mandate;
 	}
 
-	private List<LegislativePeriod> getPeriods(String periodFromStr, String periodToStr) {
+	private List<LegislativePeriod> getPeriods(NationalCouncilMember member, String periodFromStr, String periodToStr) {
 		List<LegislativePeriod> periods = new ArrayList<LegislativePeriod>();
 
 		try {
 			Integer periodFrom = romanNrConverter.toNumber(periodFromStr);
 			LegislativePeriod period = getLegislativePeriod(periodFrom);
+			period.getNationalCouncilMembers().add(member);
 			periods.add(period);
 
 			if (periodToStr != null) {
 				Integer periodTo = romanNrConverter.toNumber(periodToStr);
 				for (Integer periodNr = periodFrom + 1; periodNr <= periodTo; periodNr++) {
 					LegislativePeriod nextPeriod = getLegislativePeriod(periodNr);
+					nextPeriod.getNationalCouncilMembers().add(member);
 					periods.add(nextPeriod);
 				}
 			}
