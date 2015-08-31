@@ -103,6 +103,11 @@ public class SessionTransformer {
 		if (session.getStartDate() != null) {
 			Set<NationalCouncilMember> membersWhoShouldBePresent = period.getNationalCouncilMembersAt(session
 					.getStartDate());
+			
+			if (membersWhoShouldBePresent.size() != 183){
+				logger.info("members who sould be present: " + membersWhoShouldBePresent.size());
+			}
+			
 			Set<NationalCouncilMember> absentMembers = getAbsentNationalCouncilMembers(protocol,
 					membersWhoShouldBePresent);
 
@@ -175,6 +180,7 @@ public class SessionTransformer {
 		name = name.replaceAll("die ", "");
 		name = name.replaceAll("Abgeordneten?r? ", "");
 		name = name.replaceAll("Klubobmann ", "");
+		
 		Matcher m = absentMembersNamePattern.matcher(name.trim());
 		if (m.find()) {
 			String titles = m.group(1);
@@ -295,8 +301,8 @@ public class SessionTransformer {
 				logger.info("invalid session number");
 			}
 		}
+		
 		logger.info("session number not found");
-
 		return null;
 	}
 
