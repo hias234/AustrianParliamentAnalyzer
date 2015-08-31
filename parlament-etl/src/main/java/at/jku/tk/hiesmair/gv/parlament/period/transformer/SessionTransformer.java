@@ -44,6 +44,8 @@ public class SessionTransformer {
 
 	private static final String NBSP_STRING = Character.toString((char) 160);
 	private static final String SOFT_HYPHEN_STRING = Character.toString((char) 173);
+	private static final String EN_DASH_STRING = Character.toString((char) 8211);
+	private static final String EM_DASH_STRING = Character.toString((char) 8212);
 
 	private static final Logger logger = Logger.getLogger(SessionTransformer.class.getSimpleName());
 
@@ -75,8 +77,9 @@ public class SessionTransformer {
 		discussionTypePattern = Pattern.compile("Einzelredezeitbeschränkung:\\s+((?:\\d+)|.)\\s+min\\s+(.+)");
 		speechBeginPattern = Pattern.compile("(\\d{1,2})\\.\\d{1,2}");
 		absentMembersPattern = Pattern
-				.compile("Abgeordneten?r? ((?:(?:\\s?[\\wäöüÄÖÜß]+\\.( |-)(\\(FH\\))?)*(?:\\s?[\\wäöüÄÖÜß-]+)(?:(?:,)|(?: und)|))+)(?:\\.| als verhindert gemeldet\\.)");
-		absentMembersNamePattern = Pattern.compile("^((?:(?:[\\wäöüÄÖÜß]+\\.(?: |-))(?:\\(FH\\))?)*)\\s*([\\s\\wäöüÄÖÜß-]+)$");
+				.compile("(?:Abgeordneten?r? |: )((?:(?:\\s*[\\wäöüÄÖÜß]+\\.( |-)(\\(FH\\))?)*(?:\\s*[\\wäöüÄÖÜß-]+)(?:(?:,)|(?: und)|))+)(?:\\.| als verhindert gemeldet\\.)");
+		absentMembersNamePattern = Pattern
+				.compile("^((?:(?:[\\wäöüÄÖÜß]+\\.(?: |-))(?:\\(FH\\))?)*)\\s*([\\s\\wäöüÄÖÜß-]+)$");
 
 		politicianTransformer = new PoliticianTransformer();
 		cache = DataCache.getInstance();
@@ -119,12 +122,12 @@ public class SessionTransformer {
 		Element absentMembersElement = getAbsentMemebersElement(protocol);
 		if (absentMembersElement != null) {
 			String elementText = absentMembersElement.text().replaceAll(NBSP_STRING, " ")
-					.replaceAll(SOFT_HYPHEN_STRING, "");
-			
+					.replaceAll(SOFT_HYPHEN_STRING, "").replaceAll(EN_DASH_STRING, "").replaceAll(EM_DASH_STRING, "");
+
 			Matcher m = absentMembersPattern.matcher(elementText);
 			if (m.find()) {
 				String match = m.group(1);
-				String[] names = match.split("((, )|( und ))");
+				String[] names = match.split("((, )|( und )|( sowie ))");
 				absentMemebers = getMembersByNames(names, membersWhoShouldBePresent);
 			}
 			else {
@@ -156,6 +159,10 @@ public class SessionTransformer {
 		name = name.replaceAll("[Dd]ritter? ", "");
 		name = name.replaceAll("[Zz]weiter? ", "");
 		name = name.replaceAll("Präsident(in)? ", "");
+		name = name.replaceAll("Klubvorsitzender? ", "");
+		name = name.replaceAll("der ", "");
+		name = name.replaceAll("die ", "");
+		name = name.replaceAll("Abgeordneten?r? ", "");
 		Matcher m = absentMembersNamePattern.matcher(name.trim());
 		if (m.find()) {
 			String titles = m.group(1);
@@ -169,19 +176,41 @@ public class SessionTransformer {
 
 	private NationalCouncilMember getAbsentMemberByTitleAndSurName(String titles, String surName,
 			Set<NationalCouncilMember> members) {
-		List<NationalCouncilMember> matchedMembers = members.stream()
-				.filter(m -> m.getPolitician().getSurName().equalsIgnoreCase(surName)).collect(Collectors.toList());
-		String[] nameParts = surName.split(" ");
+		List<NationalCouncilMember> matchedMembers = getSurNameMatchingMembers(surName, members);
 
-		if (matchedMembers.size() == 0 && nameParts.length > 1) {
-			matchedMembers = members.stream()
-					.filter(m -> m.getPolitician().getSurName().equalsIgnoreCase(nameParts[nameParts.length - 1]))
-					.collect(Collectors.toList());
+		if (matchedMembers.size() == 0) {
+			String[] dashParts = surName.split("-");
+			if (dashParts.length > 1) {
+				for (String dashPart : dashParts) {
+					matchedMembers = getSurNameMatchingMembers(dashPart, members);
+					if (matchedMembers.size() == 1) {
+						return matchedMembers.get(0);
+					}
+				}
+			}
 
-			if (matchedMembers.size() > 1) {
-				matchedMembers = matchedMembers.stream()
-						.filter(m -> m.getPolitician().getFirstName().equalsIgnoreCase(nameParts[0]))
+			String[] nameParts = surName.split(" ");
+			if (nameParts.length > 1) {
+				matchedMembers = members.stream()
+						.filter(m -> m.getPolitician().getSurName().equalsIgnoreCase(nameParts[nameParts.length - 1]))
 						.collect(Collectors.toList());
+
+				if (matchedMembers.size() > 1) {
+					matchedMembers = matchedMembers.stream()
+							.filter(m -> m.getPolitician().getFirstName().equalsIgnoreCase(nameParts[0]))
+							.collect(Collectors.toList());
+				}
+				if (matchedMembers.size() != 1) {
+					matchedMembers = members.stream()
+							.filter(m -> m.getPolitician().getSurName().equalsIgnoreCase(nameParts[0]))
+							.collect(Collectors.toList());
+
+					if (matchedMembers.size() > 1) {
+						matchedMembers = matchedMembers.stream()
+								.filter(m -> m.getPolitician().getFirstName().equalsIgnoreCase(nameParts[1]))
+								.collect(Collectors.toList());
+					}
+				}
 			}
 		}
 
@@ -189,13 +218,22 @@ public class SessionTransformer {
 			return matchedMembers.get(0);
 		}
 		if (matchedMembers.size() > 1) {
-			String[] titleArray = titles.split("[ -]");
-			for (String title : titleArray) {
-				matchedMembers = matchedMembers.stream()
-						.filter(m -> m.getPolitician().getTitle().toLowerCase().contains(title.toLowerCase()))
+			if (titles.trim().isEmpty()) {
+				matchedMembers = matchedMembers.stream().filter(m -> m.getPolitician().getTitle().isEmpty())
 						.collect(Collectors.toList());
 				if (matchedMembers.size() == 1) {
 					return matchedMembers.get(0);
+				}
+			}
+			else {
+				String[] titleArray = titles.split("[ -]");
+				for (String title : titleArray) {
+					matchedMembers = matchedMembers.stream()
+							.filter(m -> m.getPolitician().getTitle().toLowerCase().contains(title.toLowerCase()))
+							.collect(Collectors.toList());
+					if (matchedMembers.size() == 1) {
+						return matchedMembers.get(0);
+					}
 				}
 			}
 		}
@@ -204,11 +242,17 @@ public class SessionTransformer {
 		return null;
 	}
 
+	protected List<NationalCouncilMember> getSurNameMatchingMembers(String surName, Set<NationalCouncilMember> members) {
+		return members.stream().filter(m -> m.getPolitician().getSurName().equalsIgnoreCase(surName))
+				.collect(Collectors.toList());
+	}
+
 	private Element getAbsentMemebersElement(Document document) {
 		Elements pElements = document.getElementsByTag("p");
 		for (Element p : pElements) {
 			String text = p.text();
-			if (text.contains("ls verhindert gemeldet") || text.contains("ls verhindert für die heutige Sitzung gemeldet")) {
+			if (text.contains("ls verhindert gemeldet")
+					|| text.contains("ls verhindert für die heutige Sitzung gemeldet")) {
 				return p;
 			}
 			else if (text.contains("keine Abgeordneten als verhindert")) {

@@ -100,7 +100,7 @@ public class PoliticianTransformer {
 		if (m.find()) {
 			return m.group(2).trim();
 		}
-		logger.debug("firstName not found");
+		logger.info("firstName not found");
 		return "";
 	}
 
@@ -109,7 +109,7 @@ public class PoliticianTransformer {
 		if (m.find()) {
 			return m.group(3).trim();
 		}
-		logger.debug("surName not found");
+		logger.info("surName not found");
 		return "";
 	}
 
@@ -161,11 +161,11 @@ public class PoliticianTransformer {
 				SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
 				return dateFormat.parse(birthDateString);
 			} catch (ParseException pe) {
-				logger.debug("invalid birthdate");
+				logger.info("invalid birthdate");
 			}
 		}
 
-		logger.debug("birthdate of politician not found");
+		logger.info("birthdate of politician not found");
 		return null;
 	}
 
@@ -194,7 +194,7 @@ public class PoliticianTransformer {
 				mandates.add(mandate);
 			}
 			else {
-				logger.debug("mandate item not recognized: " + text);
+				logger.info("mandate item not recognized: " + text);
 			}
 		}
 
@@ -286,7 +286,7 @@ public class PoliticianTransformer {
 				mandate.setValidUntil(dateFrom);
 			}
 		} catch (ParseException ex) {
-			logger.debug("invalid date " + ex.getMessage());
+			logger.info("invalid date " + ex.getMessage());
 		}
 
 		return mandate;
@@ -310,7 +310,7 @@ public class PoliticianTransformer {
 				}
 			}
 		} catch (ParseException e) {
-			logger.debug("roman number convertion error" + e.getMessage());
+			logger.info("roman number convertion error" + e.getMessage());
 		}
 
 		return periods;
