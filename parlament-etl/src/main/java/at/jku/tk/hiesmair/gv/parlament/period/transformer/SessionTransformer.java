@@ -239,10 +239,9 @@ public class SessionTransformer {
 		if (discussions.size() > 0) {
 			int found = 0;
 
-			Elements speechBeginnings = protocol.select("p.RB");
+			Elements speechBeginnings = getSpeechBeginTags(protocol);
 			for (Element speechBegin : speechBeginnings) {
-
-				String timeStr = speechBegin.text().replace((char) 160, ' ').trim();
+				String timeStr = speechBegin.text().replace(NBSP_STRING, " ").trim();
 				Matcher m = speechBeginPattern.matcher(timeStr);
 				Date time = null;
 				if (m.find()) {
@@ -304,6 +303,9 @@ public class SessionTransformer {
 						}
 					}
 				}
+				else{
+					logger.debug("unable to parse start time");
+				}
 			}
 
 			int speechCnt = 0;
@@ -317,6 +319,10 @@ public class SessionTransformer {
 		}
 
 		return discussions;
+	}
+
+	protected Elements getSpeechBeginTags(Document protocol) {
+		return protocol.select("p.RB");
 	}
 
 	protected boolean isTimeForSpeechCorrect(Date time, DiscussionSpeech speech) {

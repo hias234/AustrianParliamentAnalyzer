@@ -109,15 +109,15 @@ public class Politician {
 	 * 
 	 * @return
 	 */
-	// public List<Integer> getNationalCouncilPeriods() {
-	// List<Integer> periods = new ArrayList<Integer>();
-	//
-	// for (NationalCouncilMember ncm : getNationalCouncilMemberships()) {
-	// periods.addAll(ncm.getPeriods());
-	// }
-	//
-	// return periods;
-	// }
+	public List<LegislativePeriod> getNationalCouncilPeriods() {
+		List<LegislativePeriod> periods = new ArrayList<LegislativePeriod>();
+
+		for (NationalCouncilMember ncm : getNationalCouncilMemberships()) {
+			periods.addAll(ncm.getPeriods());
+		}
+
+		return periods;
+	}
 
 	@Override
 	public int hashCode() {
