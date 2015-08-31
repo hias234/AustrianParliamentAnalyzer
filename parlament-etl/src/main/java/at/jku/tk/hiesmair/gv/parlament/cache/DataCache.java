@@ -6,6 +6,12 @@ import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.club.ParliamentClub;
 
+/**
+ * Caching data in memory so that it does not have to be loaded several times.
+ * 
+ * @author Markus
+ *
+ */
 public interface DataCache {
 
 	public abstract Map<String, ParliamentClub> getClubs();

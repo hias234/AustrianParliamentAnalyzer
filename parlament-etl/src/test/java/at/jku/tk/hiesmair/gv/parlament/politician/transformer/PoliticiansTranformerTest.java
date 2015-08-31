@@ -11,8 +11,9 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
-import at.jku.tk.hiesmair.gv.parlament.politician.extractor.PoliticiansExtractor;
-import at.jku.tk.hiesmair.gv.parlament.politician.extractor.feed.PoliticianFeedItem;
+import at.jku.tk.hiesmair.gv.parlament.etl.politician.extractor.PoliticiansExtractor;
+import at.jku.tk.hiesmair.gv.parlament.etl.politician.extractor.feed.PoliticianFeedItem;
+import at.jku.tk.hiesmair.gv.parlament.etl.politician.transformer.PoliticiansTransformer;
 
 public class PoliticiansTranformerTest {
 

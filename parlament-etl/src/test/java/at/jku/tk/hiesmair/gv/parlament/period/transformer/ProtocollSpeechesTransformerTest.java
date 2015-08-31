@@ -11,7 +11,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.Test;
 
-import at.jku.tk.hiesmair.gv.parlament.period.protocol.ProtocolUtil;
+import at.jku.tk.hiesmair.gv.parlament.etl.period.protocol.ProtocolUtil;
 
 public class ProtocollSpeechesTransformerTest {
 

@@ -8,8 +8,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import at.jku.tk.hiesmair.gv.parlament.period.LegislativePeriodEtlJob;
-import at.jku.tk.hiesmair.gv.parlament.politician.PoliticiansEtlJob;
+import at.jku.tk.hiesmair.gv.parlament.etl.period.LegislativePeriodEtlJob;
+import at.jku.tk.hiesmair.gv.parlament.etl.politician.PoliticiansEtlJob;
 
 /**
  * Main Application kicking off the analysis process

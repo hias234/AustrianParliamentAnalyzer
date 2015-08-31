@@ -19,10 +19,11 @@ import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.NationalCouncilMember;
 import at.jku.tk.hiesmair.gv.parlament.entities.session.Session;
-import at.jku.tk.hiesmair.gv.parlament.politician.PoliticiansEtlJob;
-import at.jku.tk.hiesmair.gv.parlament.politician.extractor.PoliticiansExtractor;
-import at.jku.tk.hiesmair.gv.parlament.politician.loader.PoliticiansLoader;
-import at.jku.tk.hiesmair.gv.parlament.politician.transformer.PoliticiansTransformer;
+import at.jku.tk.hiesmair.gv.parlament.etl.period.transformer.SessionTransformer;
+import at.jku.tk.hiesmair.gv.parlament.etl.politician.PoliticiansEtlJob;
+import at.jku.tk.hiesmair.gv.parlament.etl.politician.extractor.PoliticiansExtractor;
+import at.jku.tk.hiesmair.gv.parlament.etl.politician.loader.PoliticiansLoader;
+import at.jku.tk.hiesmair.gv.parlament.etl.politician.transformer.PoliticiansTransformer;
 
 public class SessionTransformerTest {
 
