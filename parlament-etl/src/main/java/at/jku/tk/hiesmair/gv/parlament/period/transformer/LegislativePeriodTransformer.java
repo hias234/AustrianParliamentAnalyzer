@@ -3,6 +3,8 @@ package at.jku.tk.hiesmair.gv.parlament.period.transformer;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 
@@ -24,9 +26,10 @@ public class LegislativePeriodTransformer {
 
 	protected DataCache cache;
 
-	public LegislativePeriodTransformer() {
-		sessionTransformer = new SessionTransformer();
-		cache = DataCache.getInstance();
+	@Inject
+	public LegislativePeriodTransformer(DataCache cache) {
+		this.cache = cache;
+		this.sessionTransformer = new SessionTransformer(cache);
 	}
 
 	public LegislativePeriod getLegislativePeriod(int period, List<ProtocolFeedItem> sessionProtocols) throws Exception {

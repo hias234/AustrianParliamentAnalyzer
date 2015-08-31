@@ -5,8 +5,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.springframework.stereotype.Component;
-
 import at.jku.tk.hiesmair.gv.parlament.db.MandateRepository;
 import at.jku.tk.hiesmair.gv.parlament.db.ParliamentClubRepository;
 import at.jku.tk.hiesmair.gv.parlament.db.PoliticianRepository;
@@ -17,7 +15,6 @@ import at.jku.tk.hiesmair.gv.parlament.entities.mandate.Mandate;
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.NationalCouncilMember;
 import at.jku.tk.hiesmair.gv.parlament.politician.loader.PoliticiansLoader;
 
-@Component
 public class PoliticiansDatabaseLoader implements PoliticiansLoader {
 
 	@Inject

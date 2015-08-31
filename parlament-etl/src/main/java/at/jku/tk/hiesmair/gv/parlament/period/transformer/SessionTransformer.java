@@ -65,7 +65,8 @@ public class SessionTransformer {
 
 	protected DataCache cache;
 
-	public SessionTransformer() {
+	public SessionTransformer(DataCache cache) {
+		this.cache = cache;
 		monthNames = Arrays.asList("Jänner", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September",
 				"Oktober", "November", "Dezember");
 		topicExceptions = Arrays.asList("Sitzung des Nationalrates", "Sitzungsunterbrechung",
@@ -81,8 +82,7 @@ public class SessionTransformer {
 		absentMembersNamePattern = Pattern
 				.compile("^((?:(?:[\\wäöüÄÖÜßáé]+\\.(?: |-))(?:\\(FH\\))?)*)\\s*([\\s\\wäöüÄÖÜßáé-]+)$");
 
-		politicianTransformer = new PoliticianTransformer();
-		cache = DataCache.getInstance();
+		politicianTransformer = new PoliticianTransformer(cache);
 	}
 
 	public Session getSession(LegislativePeriod period, Document index, Document protocol) throws Exception {

@@ -10,10 +10,13 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.inject.Inject;
+
 import org.apache.log4j.Logger;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.stereotype.Component;
 
 import at.jku.tk.hiesmair.gv.parlament.cache.DataCache;
 import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
@@ -34,6 +37,7 @@ import at.jku.tk.hiesmair.gv.parlament.politician.extractor.feed.PoliticianFeedI
 
 import com.frequal.romannumerals.Converter;
 
+@Component
 public class PoliticianTransformer {
 
 	private static final String NBSP_STRING = Character.toString((char) 160);
@@ -48,19 +52,17 @@ public class PoliticianTransformer {
 
 	protected final Converter romanNrConverter;
 
-	protected final DataCache cache;
+	protected DataCache cache;
 
-	public PoliticianTransformer() {
-//		namePattern = Pattern
-//				.compile("((?:[\\wöäüÖÄÜß]+\\..?)*\\s)?((?:[\\wöäüÖÄÜß,\\.]+(?:\\s.\\.)?\\s?)+)\\s([^\\s,(\\.:]+)");
-		namePattern = Pattern.compile("^((?:[\\wöäüÖÄÜß]+\\..?(?:\\(FH\\))?)*\\s)?((?:[\\wöäüÖÄÜß,-\\.]+(?:\\s.\\.)?\\s?)+)\\s([^\\s,(\\.:]+)$");
-		mandatePattern = Pattern
+	@Inject
+	public PoliticianTransformer(DataCache cache) {
+		this.cache = cache;
+		this.namePattern = Pattern.compile("^((?:[\\wöäüÖÄÜß]+\\..?(?:\\(FH\\))?)*\\s)?((?:[\\wöäüÖÄÜß,-\\.]+(?:\\s.\\.)?\\s?)+)\\s([^\\s,(\\.:]+)$");
+		this.mandatePattern = Pattern
 				.compile("([^(,]*)(?:\\(([^\\.]+)\\.(?:.([^\\.]+)\\.)?\\sGP\\))?,? ?([^\\d]+)?\\s(\\d+\\.\\d+\\.\\d{4})( .)?\\s?(?:(\\d+\\.\\d+\\.\\d{4}))?");
-		birthDatePattern = Pattern.compile("Geb.:\\s(\\d+\\.\\d+\\.\\d{4})");
+		this.birthDatePattern = Pattern.compile("Geb.:\\s(\\d+\\.\\d+\\.\\d{4})");
 
-		romanNrConverter = new Converter();
-
-		cache = DataCache.getInstance();
+		this.romanNrConverter = new Converter();
 	}
 
 	public Politician getPolitician(String url) throws Exception {

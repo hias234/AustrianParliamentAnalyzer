@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import org.springframework.stereotype.Component;
 
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
@@ -14,10 +16,10 @@ import at.jku.tk.hiesmair.gv.parlament.politician.extractor.feed.PoliticianFeedI
 @Component
 public class PoliticiansTransformer {
 
+	@Inject
 	private PoliticianTransformer politicianTransformer;
 
 	public PoliticiansTransformer() {
-		this.politicianTransformer = new PoliticianTransformer();
 	}
 
 	public List<Politician> getPoliticians(List<PoliticianFeedItem> feedItems) throws IOException {
