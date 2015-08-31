@@ -427,91 +427,8 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 		return discussions;
 	}
 
-	protected List<Discussion> setSpeechTexts(Document protocol, List<Discussion> discussions) throws Exception {
-		SimpleDateFormat timeFormat = new SimpleDateFormat("HH.mm");
-		int found = 0;
-
-		Elements speechBeginnings = getSpeechBeginTags(protocol);
-		for (Element speechBegin : speechBeginnings) {
-			String timeStr = speechBegin.text().replace(NBSP_STRING, " ").trim();
-			Matcher m = speechBeginPattern.matcher(timeStr);
-			Date time = null;
-			if (m.find()) {
-				try {
-					time = timeFormat.parse(m.group(0));
-				} catch (ParseException pe) {
-				}
-			}
-
-			if (time != null) {
-				Element speechPart = speechBegin.nextElementSibling();
-				if (speechPart == null) {
-					speechPart = speechBegin.parent().nextElementSibling().child(0);
-				}
-				if (speechPart != null) {
-					for (; speechPart.select("a[href]").isEmpty();) {
-						Element nextSibling = speechPart.nextElementSibling();
-						if (nextSibling == null) {
-							speechPart = speechPart.parent().nextElementSibling().child(0);
-						}
-						else {
-							speechPart = nextSibling;
-						}
-					}
-					String firstText = speechPart.text();
-
-					Elements links = getPoliticianLinks(speechPart);
-					if (links.size() > 0) {
-						Politician politician = getPolitician(links.get(0).attr("href"));
-						int indexOfColon = firstText.indexOf(":");
-						if (indexOfColon != -1) {
-
-							String speechText = firstText.substring(indexOfColon + 1).trim();
-
-							speechPart = speechPart.nextElementSibling();
-							for (; speechPart != null && !speechPart.className().equals("RE"); speechPart = speechPart
-									.nextElementSibling()) {
-								speechText += "\n\n" + speechPart.text();
-							}
-
-							for (Discussion discussion : discussions) {
-								for (DiscussionSpeech speech : discussion.getSpeeches()) {
-									if (speech.getPolitician().equals(politician)
-											&& isTimeForSpeechCorrect(time, speech) && speech.getText() == null) {
-
-										found++;
-										speech.setText(speechText);
-										break;
-									}
-								}
-							}
-						}
-						else {
-							logger.info("no colon " + firstText);
-						}
-					}
-					else {
-						logger.info("no link " + firstText);
-					}
-				}
-			}
-			else {
-				logger.info("unable to parse start time");
-			}
-		}
-
-		int speechCnt = 0;
-		for (Discussion discussion : discussions) {
-			speechCnt += discussion.getSpeeches().size();
-		}
-
-		if (speechCnt != found) {
-			logger.warn("not all speechtexts found in protocol: found " + found + " of " + speechCnt);
-		}
-		
-		return discussions;
-	}
-
+	protected abstract List<Discussion> setSpeechTexts(Document protocol, List<Discussion> discussions) throws Exception;
+	
 	protected Elements getSpeechBeginTags(Document protocol) {
 		return protocol.select("p.RB:matches(\\d{2}\\.\\d{2}.*)");
 	}
@@ -643,11 +560,12 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 		if (m.find()) {
 			return m.group(2).trim();
 		}
+		
 		logger.info("did not find discussionType");
 		return null;
 	}
 
-	private boolean isTopicRelevant(String text) {
+	protected boolean isTopicRelevant(String text) {
 		return !topicExceptions.stream().anyMatch(te -> text.contains(te));
 	}
 
@@ -664,7 +582,6 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 				Politician politician = getPolitician(href);
 				chairMenList.add(new SessionChairMan(position, politician, session));
 				position++;
-
 			}
 		}
 		else {
@@ -673,23 +590,5 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 
 		return chairMenList;
 	}
-
-	// private Element getBeginningOfSessionElement(Document protocol) {
-	// Elements sbs = protocol.select("p.SB");
-	// for (Element sb : sbs) {
-	// if (sb.text().contains("Beginn der Sitzung")) {
-	// return sb;
-	// }
-	// }
-	//
-	// Elements spans = protocol.select("span");
-	// for (Element el : spans) {
-	// if (el.text().startsWith("Beginn der Sitzung")) {
-	// return el.parent();
-	// }
-	// }
-	// logger.info("beginning of session not found");
-	// return null;
-	// }
 
 }
