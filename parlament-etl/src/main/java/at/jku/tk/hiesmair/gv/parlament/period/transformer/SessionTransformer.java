@@ -77,9 +77,9 @@ public class SessionTransformer {
 		discussionTypePattern = Pattern.compile("Einzelredezeitbeschränkung:\\s+((?:\\d+)|.)\\s+min\\s+(.+)");
 		speechBeginPattern = Pattern.compile("(\\d{1,2})\\.\\d{1,2}");
 		absentMembersPattern = Pattern
-				.compile("(?:Abgeordneten?r? |: )((?:(?:\\s*[\\wäöüÄÖÜß]+\\.( |-)(\\(FH\\))?)*(?:\\s*[\\wäöüÄÖÜß-]+)(?:(?:,)|(?: und)|))+)(?:\\.| als verhindert gemeldet\\.)");
+				.compile("(?:Abgeordneten?r? |: )((?:(?:\\s*[\\wäöüÄÖÜßáé]+\\.( |-)(\\(FH\\))?)*(?:\\s*[\\wäöüÄÖÜßáé-]+)(?:(?:,)|(?: und)|))+)(?:\\.| als verhindert gemeldet\\.)");
 		absentMembersNamePattern = Pattern
-				.compile("^((?:(?:[\\wäöüÄÖÜß]+\\.(?: |-))(?:\\(FH\\))?)*)\\s*([\\s\\wäöüÄÖÜß-]+)$");
+				.compile("^((?:(?:[\\wäöüÄÖÜßáé]+\\.(?: |-))(?:\\(FH\\))?)*)\\s*([\\s\\wäöüÄÖÜßáé-]+)$");
 
 		politicianTransformer = new PoliticianTransformer();
 		cache = DataCache.getInstance();
@@ -121,8 +121,7 @@ public class SessionTransformer {
 
 		Element absentMembersElement = getAbsentMemebersElement(protocol);
 		if (absentMembersElement != null) {
-			String elementText = absentMembersElement.text().replaceAll(NBSP_STRING, " ")
-					.replaceAll(SOFT_HYPHEN_STRING, "").replaceAll(EN_DASH_STRING, "").replaceAll(EM_DASH_STRING, "");
+			String elementText = getAbsentElementText(absentMembersElement);
 
 			Matcher m = absentMembersPattern.matcher(elementText);
 			if (m.find()) {
@@ -136,6 +135,18 @@ public class SessionTransformer {
 		}
 
 		return absentMemebers;
+	}
+
+	protected String getAbsentElementText(Element absentMembersElement) {
+		String elementText = absentMembersElement.text().replaceAll(NBSP_STRING, " ");
+		elementText = elementText.replaceAll(SOFT_HYPHEN_STRING, "");
+		elementText = elementText.replaceAll(EN_DASH_STRING, "");
+		elementText = elementText.replaceAll(EM_DASH_STRING, "");
+		elementText = elementText.replaceAll(" ?\\(.{3,}\\) ?", "");
+		elementText = elementText.replaceAll(" und jene Abgeordneten, die am Europa-Konvent teilnehmen:", ",");
+		elementText = elementText.replaceAll(" ,", ",");
+
+		return elementText;
 	}
 
 	private Set<NationalCouncilMember> getMembersByNames(String[] names, Set<NationalCouncilMember> members) {
@@ -163,6 +174,7 @@ public class SessionTransformer {
 		name = name.replaceAll("der ", "");
 		name = name.replaceAll("die ", "");
 		name = name.replaceAll("Abgeordneten?r? ", "");
+		name = name.replaceAll("Klubobmann ", "");
 		Matcher m = absentMembersNamePattern.matcher(name.trim());
 		if (m.find()) {
 			String titles = m.group(1);
@@ -170,7 +182,7 @@ public class SessionTransformer {
 			return getAbsentMemberByTitleAndSurName(titles, surName, members);
 		}
 
-		logger.info("name not recognized: " + name);
+		logger.info("name not recognized (pattern did not match): " + name);
 		return null;
 	}
 
@@ -196,9 +208,10 @@ public class SessionTransformer {
 						.collect(Collectors.toList());
 
 				if (matchedMembers.size() > 1) {
-					matchedMembers = matchedMembers.stream()
-							.filter(m -> m.getPolitician().getFirstName().equalsIgnoreCase(nameParts[0]))
-							.collect(Collectors.toList());
+					matchedMembers = matchedMembers
+							.stream()
+							.filter(m -> m.getPolitician().getFirstName().toLowerCase()
+									.contains(nameParts[0].toLowerCase())).collect(Collectors.toList());
 				}
 				if (matchedMembers.size() != 1) {
 					matchedMembers = members.stream()
@@ -206,9 +219,10 @@ public class SessionTransformer {
 							.collect(Collectors.toList());
 
 					if (matchedMembers.size() > 1) {
-						matchedMembers = matchedMembers.stream()
-								.filter(m -> m.getPolitician().getFirstName().equalsIgnoreCase(nameParts[1]))
-								.collect(Collectors.toList());
+						matchedMembers = matchedMembers
+								.stream()
+								.filter(m -> m.getPolitician().getFirstName().toLowerCase()
+										.contains(nameParts[1].toLowerCase())).collect(Collectors.toList());
 					}
 				}
 			}
@@ -250,13 +264,13 @@ public class SessionTransformer {
 	private Element getAbsentMemebersElement(Document document) {
 		Elements pElements = document.getElementsByTag("p");
 		for (Element p : pElements) {
-			String text = p.text();
-			if (text.contains("ls verhindert gemeldet")
-					|| text.contains("ls verhindert für die heutige Sitzung gemeldet")) {
+			String text = p.text().toLowerCase();
+			if (text.contains("verhindert gemeldet") || text.contains("verhindert für die heutige sitzung gemeldet")) {
 				return p;
 			}
-			else if (text.contains("keine Abgeordneten als verhindert")) {
+			else if (text.contains("keine abgeordneten als verhindert")) {
 				logger.info("no members absent in this session");
+				break;
 			}
 		}
 

@@ -6,6 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
 
 /**
  * Is capable of retrieving the feed from parliament and parses it
@@ -13,6 +14,8 @@ import org.apache.commons.io.IOUtils;
  * @author matthias
  */
 public class FeedReader {
+	
+	private static final Logger logger = Logger.getLogger(FeedReader.class.getSimpleName());
 
 	/** We use a fake a Moziall user agent otherwise we get invalid data */
 	public static final String USER_AGENT = "Mozilla/4.0";
@@ -42,6 +45,8 @@ public class FeedReader {
 	 * @throws InterruptedException
 	 */
 	public void loadFeedContent() throws IOException, InterruptedException {
+		logger.info("load Feed Content from url " + url);
+		
 		System.setProperty("http.agent", USER_AGENT);
 		InputStream in = this.url.openStream();
 		this.feedContent = IOUtils.toString(in);
