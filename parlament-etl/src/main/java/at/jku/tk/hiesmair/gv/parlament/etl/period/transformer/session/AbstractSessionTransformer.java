@@ -1,4 +1,4 @@
-package at.jku.tk.hiesmair.gv.parlament.etl.period.transformer;
+package at.jku.tk.hiesmair.gv.parlament.etl.period.transformer.session;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,23 +30,18 @@ import at.jku.tk.hiesmair.gv.parlament.entities.mandate.NationalCouncilMember;
 import at.jku.tk.hiesmair.gv.parlament.entities.session.Session;
 import at.jku.tk.hiesmair.gv.parlament.entities.session.SessionChairMan;
 import at.jku.tk.hiesmair.gv.parlament.etl.AbstractTransformer;
-import at.jku.tk.hiesmair.gv.parlament.etl.period.protocol.ProtocolUtil;
 import at.jku.tk.hiesmair.gv.parlament.etl.politician.transformer.PoliticianTransformer;
 
-/**
- * Transforms the Protocols of a Session into a session object
- * 
- * @author Markus
- *
- */
-public class SessionTransformer extends AbstractTransformer {
+public abstract class AbstractSessionTransformer extends AbstractTransformer {
+	
+	private static final Logger logger = Logger.getLogger(AbstractSessionTransformer.class.getSimpleName());
 
-
-	private static final Logger logger = Logger.getLogger(SessionTransformer.class.getSimpleName());
-
-	private static final int SPEECH_TIME_TOLERANCE_IN_MS = 60000 * 10; // 10 min
-	private static final String DATE_FORMAT_PATTERN = "dd.MM.yyyy HH:mm";
-
+	protected static final int SPEECH_TIME_TOLERANCE_IN_MS = 60000 * 10; // 10 min
+	protected static final String DATE_FORMAT_PATTERN = "dd.MM.yyyy HH:mm";
+	
+	protected final List<String> monthNames;
+	protected final List<String> topicExceptions;
+	
 	protected final Pattern sessionNrPattern;
 	protected final Pattern startEndDatePattern;
 	protected final Pattern discussionTypePattern;
@@ -54,35 +49,33 @@ public class SessionTransformer extends AbstractTransformer {
 	protected final Pattern absentMembersPattern;
 	protected final Pattern absentMembersNamePattern;
 
-	protected final List<String> monthNames;
-	protected final List<String> topicExceptions;
-
 	protected PoliticianTransformer politicianTransformer;
 
 	protected DataCache cache;
 
-	public SessionTransformer(DataCache cache) {
+	public AbstractSessionTransformer(DataCache cache) {
 		this.cache = cache;
-		monthNames = Arrays.asList("Jänner", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September",
-				"Oktober", "November", "Dezember");
-		topicExceptions = Arrays.asList("Sitzung des Nationalrates", "Sitzungsunterbrechung",
+		this.monthNames = Arrays.asList("Jänner", "Februar", "März", "April", "Mai", "Juni", "Juli", "August",
+				"September", "Oktober", "November", "Dezember");
+		this.topicExceptions = Arrays.asList("Sitzung des Nationalrates", "Sitzungsunterbrechung",
 				"Verhandlungsgegenstände Suchhilfen", "Blockredezeit der Debatte", "Blockredezeit der Sitzung");
 
-		sessionNrPattern = Pattern.compile("(\\d+)\\.\\sSitzung\\sdes\\sNationalrates");
-		startEndDatePattern = Pattern
+		this.sessionNrPattern = Pattern.compile("(\\d+)\\.\\sSitzung\\sdes\\sNationalrates");
+		this.startEndDatePattern = Pattern
 				.compile("[\\wäüöÄÜÖ]+, (\\d+)\\.\\s([\\wäüöÄÜÖ]+) (\\d{4}):\\s+(\\d+)\\.(\\d+).+ (\\d+)\\.(\\d+).*Uhr");
-		discussionTypePattern = Pattern.compile("Einzelredezeitbeschränkung:\\s+((?:\\d+)|.)\\s+min\\s+(.+)");
-		speechBeginPattern = Pattern.compile("(\\d{1,2})\\.\\d{1,2}");
-		absentMembersPattern = Pattern
+		this.discussionTypePattern = Pattern.compile("Einzelredezeitbeschränkung:\\s+((?:\\d+)|.)\\s+min\\s+(.+)");
+		this.speechBeginPattern = Pattern.compile("(\\d{1,2})\\.\\d{1,2}");
+		this.absentMembersPattern = Pattern
 				.compile("(?:Abgeordneten?r? |: )((?:(?:\\s*[\\wäöüÄÖÜßáé]+\\.( |-)(\\(FH\\))?)*(?:\\s*[\\wäöüÄÖÜßáé-]+)(?:(?:,)|(?: und)|))+)(?:\\.| als verhindert gemeldet\\.)");
-		absentMembersNamePattern = Pattern
+		this.absentMembersNamePattern = Pattern
 				.compile("^((?:(?:[\\wäöüÄÖÜßáé]+\\.(?: |-))(?:\\(FH\\))?)*)\\s*([\\s\\wäöüÄÖÜßáé-]+)$");
 
 		politicianTransformer = new PoliticianTransformer(cache);
 	}
-
+	
 	public Session getSession(LegislativePeriod period, Document index, Document protocol) throws Exception {
-		protocol = ProtocolUtil.filterPageBreaks(protocol);
+		protocol = filterPageBreaks(protocol);
+		
 		String protocolText = protocol.text().replaceAll(NBSP_STRING, " ");
 
 		Session session = new Session();
@@ -116,7 +109,9 @@ public class SessionTransformer extends AbstractTransformer {
 		return session;
 	}
 
-	private Set<NationalCouncilMember> getAbsentNationalCouncilMembers(Document protocol,
+	protected abstract Document filterPageBreaks(Document protocol);
+
+	protected Set<NationalCouncilMember> getAbsentNationalCouncilMembers(Document protocol,
 			Set<NationalCouncilMember> membersWhoShouldBePresent) {
 		Set<NationalCouncilMember> absentMemebers = new HashSet<NationalCouncilMember>();
 
@@ -687,4 +682,5 @@ public class SessionTransformer extends AbstractTransformer {
 	// logger.info("beginning of session not found");
 	// return null;
 	// }
+
 }

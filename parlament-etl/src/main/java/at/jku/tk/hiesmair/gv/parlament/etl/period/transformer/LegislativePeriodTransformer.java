@@ -12,6 +12,9 @@ import at.jku.tk.hiesmair.gv.parlament.cache.DataCache;
 import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parlament.entities.session.Session;
 import at.jku.tk.hiesmair.gv.parlament.etl.period.extractor.feed.ProtocolFeedItem;
+import at.jku.tk.hiesmair.gv.parlament.etl.period.transformer.session.AbstractSessionTransformer;
+import at.jku.tk.hiesmair.gv.parlament.etl.period.transformer.session.SessionTransformer21;
+import at.jku.tk.hiesmair.gv.parlament.etl.period.transformer.session.SessionTransformer22andUp;
 
 /**
  * Transforms the protocols of a period into a period object.
@@ -22,19 +25,21 @@ import at.jku.tk.hiesmair.gv.parlament.etl.period.extractor.feed.ProtocolFeedIte
 @Component
 public class LegislativePeriodTransformer {
 
-	protected SessionTransformer sessionTransformer;
+	protected SessionTransformer22andUp sessionTransformer22andUp;
+	protected SessionTransformer21 sessionTransformer21;
 
 	protected DataCache cache;
 
 	@Inject
 	public LegislativePeriodTransformer(DataCache cache) {
 		this.cache = cache;
-		this.sessionTransformer = new SessionTransformer(cache);
+		this.sessionTransformer22andUp = new SessionTransformer22andUp(cache);
+		this.sessionTransformer21 = new SessionTransformer21(cache);
 	}
 
 	public LegislativePeriod getLegislativePeriod(int period, List<ProtocolFeedItem> sessionProtocols) throws Exception {
 		LegislativePeriod legislativePeriod = cache.getLegislativePeriod(period);
-		if (legislativePeriod == null){
+		if (legislativePeriod == null) {
 			legislativePeriod = new LegislativePeriod(period);
 			cache.putLegislativePeriod(legislativePeriod);
 		}
@@ -44,7 +49,16 @@ public class LegislativePeriodTransformer {
 		return legislativePeriod;
 	}
 
-	protected List<Session> getSessions(LegislativePeriod period, List<ProtocolFeedItem> sessionProtocols) throws Exception {
+	protected AbstractSessionTransformer getSessionTransformer(LegislativePeriod period) {
+		if (period.getPeriod() <= 21) {
+			return sessionTransformer21;
+		}
+
+		return sessionTransformer22andUp;
+	}
+
+	protected List<Session> getSessions(LegislativePeriod period, List<ProtocolFeedItem> sessionProtocols)
+			throws Exception {
 		List<Session> sessions = new ArrayList<Session>(sessionProtocols.size());
 
 		for (ProtocolFeedItem sessionProtocol : sessionProtocols) {
@@ -70,7 +84,8 @@ public class LegislativePeriodTransformer {
 			return null;
 		}
 
-		return sessionTransformer.getSession(period, indexDoc, protocolDoc);
+		AbstractSessionTransformer transformer = getSessionTransformer(period);
+		return transformer.getSession(period, indexDoc, protocolDoc);
 	}
 
 }

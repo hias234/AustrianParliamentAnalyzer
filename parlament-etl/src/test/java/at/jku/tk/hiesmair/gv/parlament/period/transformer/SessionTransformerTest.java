@@ -19,7 +19,7 @@ import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.NationalCouncilMember;
 import at.jku.tk.hiesmair.gv.parlament.entities.session.Session;
-import at.jku.tk.hiesmair.gv.parlament.etl.period.transformer.SessionTransformer;
+import at.jku.tk.hiesmair.gv.parlament.etl.period.transformer.session.SessionTransformer22andUp;
 import at.jku.tk.hiesmair.gv.parlament.etl.politician.PoliticiansEtlJob;
 import at.jku.tk.hiesmair.gv.parlament.etl.politician.extractor.PoliticiansExtractor;
 import at.jku.tk.hiesmair.gv.parlament.etl.politician.loader.PoliticiansLoader;
@@ -41,7 +41,7 @@ public class SessionTransformerTest {
 		});
 		politicianJob.start();
 		
-		SessionTransformer extractor = new SessionTransformer(new InMemoryDataCache());
+		SessionTransformer22andUp extractor = new SessionTransformer22andUp(new InMemoryDataCache());
 		Session session = extractor.getSession(new LegislativePeriod(25), getIndex(), getProtocol());
 
 		assertEquals("SessionNr of Session", 25, session.getSessionNr().intValue());
