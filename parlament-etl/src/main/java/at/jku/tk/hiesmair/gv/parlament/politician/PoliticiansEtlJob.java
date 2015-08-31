@@ -34,17 +34,17 @@ public class PoliticiansEtlJob {
 	public void start() throws Exception {
 		logger.info("PoliticiansEtlJob started...");
 
-		logger.debug("extracting...");
+		logger.info("extracting...");
 		List<PoliticianFeedItem> extractedData = extractor.getPoliticianFeedItems();
-		logger.debug("finished extracting, found " + extractedData.size() + " PoliticianFeeds");
+		logger.info("finished extracting, found " + extractedData.size() + " PoliticianFeeds");
 
-		logger.debug("transforming...");
+		logger.info("transforming...");
 		List<Politician> politicians = transformer.getPoliticians(extractedData);
-		logger.debug("finished transforming");
+		logger.info("finished transforming");
 
-		logger.debug("loading...");
+		logger.info("loading...");
 		loader.loadPoliticians(politicians);
-		logger.debug("finished loading");
+		logger.info("finished loading");
 
 		logger.info("PoliticiansEtlJob finished...");
 	}

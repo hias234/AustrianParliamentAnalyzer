@@ -51,8 +51,9 @@ public class PoliticianTransformer {
 	protected final DataCache cache;
 
 	public PoliticianTransformer() {
-		namePattern = Pattern
-				.compile("((?:[\\wöäüÖÄÜß]+\\..?)*\\s)?((?:[\\wöäüÖÄÜß,\\.]+(?:\\s.\\.)?\\s?)+)\\s([^\\s,(\\.:]+)");
+//		namePattern = Pattern
+//				.compile("((?:[\\wöäüÖÄÜß]+\\..?)*\\s)?((?:[\\wöäüÖÄÜß,\\.]+(?:\\s.\\.)?\\s?)+)\\s([^\\s,(\\.:]+)");
+		namePattern = Pattern.compile("^((?:[\\wöäüÖÄÜß]+\\..?)*\\s)?((?:[\\wöäüÖÄÜß,-\\.]+(?:\\s.\\.)?\\s?)+)\\s([^\\s,(\\.:]+)$");
 		mandatePattern = Pattern
 				.compile("([^(,]*)(?:\\(([^\\.]+)\\.(?:.([^\\.]+)\\.)?\\sGP\\))?,? ?([^\\d]+)?\\s(\\d+\\.\\d+\\.\\d{4})( .)?\\s?(?:(\\d+\\.\\d+\\.\\d{4}))?");
 		birthDatePattern = Pattern.compile("Geb.:\\s(\\d+\\.\\d+\\.\\d{4})");

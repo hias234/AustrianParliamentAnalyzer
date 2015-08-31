@@ -1,7 +1,10 @@
 package at.jku.tk.hiesmair.gv.parlament.entities;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -12,6 +15,7 @@ import javax.persistence.OneToMany;
 
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.NationalCouncilMember;
 import at.jku.tk.hiesmair.gv.parlament.entities.session.Session;
+import at.jku.tk.hiesmair.gv.parlament.util.DateUtils;
 
 @Entity
 public class LegislativePeriod {
@@ -56,6 +60,12 @@ public class LegislativePeriod {
 
 	public void setNationalCouncilMembers(List<NationalCouncilMember> nationalCouncilMembers) {
 		this.nationalCouncilMembers = nationalCouncilMembers;
+	}
+
+	public Set<NationalCouncilMember> getNationalCouncilMembersAt(Date date) {
+		return nationalCouncilMembers.stream()
+				.filter(ncm -> DateUtils.isDateBetween(date, ncm.getValidFrom(), ncm.getValidUntil()))
+				.collect(Collectors.toSet());
 	}
 
 	@Override

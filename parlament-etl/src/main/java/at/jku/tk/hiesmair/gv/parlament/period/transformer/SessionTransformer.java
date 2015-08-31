@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
@@ -25,6 +26,7 @@ import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.discussion.Discussion;
 import at.jku.tk.hiesmair.gv.parlament.entities.discussion.DiscussionSpeech;
 import at.jku.tk.hiesmair.gv.parlament.entities.discussion.SpeechType;
+import at.jku.tk.hiesmair.gv.parlament.entities.mandate.NationalCouncilMember;
 import at.jku.tk.hiesmair.gv.parlament.entities.session.Session;
 import at.jku.tk.hiesmair.gv.parlament.entities.session.SessionChairMan;
 import at.jku.tk.hiesmair.gv.parlament.period.protocol.ProtocolUtil;
@@ -41,6 +43,7 @@ public class SessionTransformer {
 	private static final int SPEECH_TIME_TOLERANCE_IN_MS = 60000 * 10; // 10 min
 
 	private static final String NBSP_STRING = Character.toString((char) 160);
+	private static final String SOFT_HYPHEN_STRING = Character.toString((char) 173);
 
 	private static final Logger logger = Logger.getLogger(SessionTransformer.class.getSimpleName());
 
@@ -50,6 +53,8 @@ public class SessionTransformer {
 	protected final Pattern startEndDatePattern;
 	protected final Pattern discussionTypePattern;
 	protected final Pattern speechBeginPattern;
+	protected final Pattern absentMembersPattern;
+	protected final Pattern absentMembersNamePattern;
 
 	protected final List<String> monthNames;
 	protected final List<String> topicExceptions;
@@ -69,6 +74,9 @@ public class SessionTransformer {
 				.compile("[\\wäüöÄÜÖ]+, (\\d+)\\.\\s([\\wäüöÄÜÖ]+) (\\d{4}):\\s+(\\d+)\\.(\\d+).+ (\\d+)\\.(\\d+).*Uhr");
 		discussionTypePattern = Pattern.compile("Einzelredezeitbeschränkung:\\s+((?:\\d+)|.)\\s+min\\s+(.+)");
 		speechBeginPattern = Pattern.compile("(\\d{1,2})\\.\\d{1,2}");
+		absentMembersPattern = Pattern
+				.compile("Abgeordneten?r? ((?:(?:\\s?[\\wäöüÄÖÜß]+\\.( |-)(\\(FH\\))?)*(?:\\s?[\\wäöüÄÖÜß-]+)(?:(?:,)|(?: und)|))+)(?:\\.| als verhindert gemeldet\\.)");
+		absentMembersNamePattern = Pattern.compile("^((?:(?:[\\wäöüÄÖÜß]+\\.(?: |-)))*)\\s*([\\s\\wäöüÄÖÜß-]+)$");
 
 		politicianTransformer = new PoliticianTransformer();
 		cache = DataCache.getInstance();
@@ -81,16 +89,136 @@ public class SessionTransformer {
 		Session session = new Session();
 		session.setSessionNr(getSessionNr(protocolText));
 
-		logger.debug("transforming session " + session.getSessionNr() + " of period " + period.getPeriod());
+		logger.info("transforming session " + session.getSessionNr() + " of period " + period.getPeriod());
 
 		session.setPeriod(period);
 		session.setStartDate(getStartDate(protocolText));
 		session.setEndDate(getEndDate(protocolText));
-//		session.setPoliticians(getPoliticians(index, protocol));
 		session.setChairMen(getChairMen(protocol, session));
 		session.setDiscussions(getDiscussions(index, protocol, session));
 
+		if (session.getStartDate() != null) {
+			List<NationalCouncilMember> membersWhoShouldBePresent = new ArrayList<NationalCouncilMember>(
+					period.getNationalCouncilMembersAt(session.getStartDate()));
+			List<NationalCouncilMember> absentMembers = getAbsentNationalCouncilMembers(protocol,
+					membersWhoShouldBePresent);
+
+			membersWhoShouldBePresent.removeAll(absentMembers);
+
+			session.setAbsentNationalCouncilMembers(absentMembers);
+			session.setPresentNationalCouncilMembers(membersWhoShouldBePresent);
+		}
+
 		return session;
+	}
+
+	private List<NationalCouncilMember> getAbsentNationalCouncilMembers(Document protocol,
+			List<NationalCouncilMember> membersWhoShouldBePresent) {
+		List<NationalCouncilMember> absentMemebers = new ArrayList<NationalCouncilMember>();
+
+		Element absentMembersElement = getAbsentMemebersElement(protocol);
+		if (absentMembersElement != null) {
+			String elementText = absentMembersElement.text().replaceAll(NBSP_STRING, " ")
+					.replaceAll(SOFT_HYPHEN_STRING, "");
+			logger.info(elementText);
+			Matcher m = absentMembersPattern.matcher(elementText);
+			if (m.find()) {
+				String match = m.group(1);
+				String[] names = match.split("((, )|( und ))");
+				absentMemebers = getMembersByNames(names, membersWhoShouldBePresent);
+			}
+			else {
+				logger.warn("no absent memebers found -> pattern did not match");
+			}
+		}
+
+		return absentMemebers;
+	}
+
+	private List<NationalCouncilMember> getMembersByNames(String[] names, List<NationalCouncilMember> members) {
+		List<NationalCouncilMember> absentMemebers = new ArrayList<NationalCouncilMember>();
+
+		for (String name : names) {
+			NationalCouncilMember absentMember = getAbsentMemberByTitleAndSurName(name, members);
+			if (absentMember != null) {
+				absentMemebers.add(absentMember);
+			}
+		}
+
+		return absentMemebers;
+	}
+
+	private NationalCouncilMember getAbsentMemberByTitleAndSurName(String name, List<NationalCouncilMember> members) {
+		name = name.trim().replaceAll(" als verhindert gemeldet", "");
+		name = name.replaceAll("unsere ", "");
+		name = name.replaceAll("Herr ", "");
+		name = name.replaceAll("Frau ", "");
+		name = name.replaceAll("[Dd]ritter? ", "");
+		name = name.replaceAll("[Zz]weiter? ", "");
+		name = name.replaceAll("Präsident(in)? ", "");
+		Matcher m = absentMembersNamePattern.matcher(name.trim());
+		if (m.find()) {
+			String titles = m.group(1);
+			String surName = m.group(2).trim();
+			return getAbsentMemberByTitleAndSurName(titles, surName, members);
+		}
+
+		logger.info("name not recognized: " + name);
+		return null;
+	}
+
+	private NationalCouncilMember getAbsentMemberByTitleAndSurName(String titles, String surName,
+			List<NationalCouncilMember> members) {
+		
+		
+		List<NationalCouncilMember> matchedMembers = members.stream()
+				.filter(m -> m.getPolitician().getSurName().equalsIgnoreCase(surName)).collect(Collectors.toList());
+		String[] nameParts = surName.split(" ");
+		
+		if (matchedMembers.size() == 0 && nameParts.length > 1) {
+			matchedMembers = members.stream()
+					.filter(m -> m.getPolitician().getSurName().equalsIgnoreCase(nameParts[nameParts.length - 1]))
+					.collect(Collectors.toList());
+
+			if (matchedMembers.size() > 1) {
+				matchedMembers = matchedMembers.stream()
+						.filter(m -> m.getPolitician().getFirstName().equalsIgnoreCase(nameParts[0]))
+						.collect(Collectors.toList());
+			}
+		}
+
+		if (matchedMembers.size() == 1) {
+			return matchedMembers.get(0);
+		}
+		if (matchedMembers.size() > 1) {
+			String[] titleArray = titles.split("[ -]");
+			for (String title : titleArray) {
+				matchedMembers = matchedMembers.stream()
+						.filter(m -> m.getPolitician().getTitle().toLowerCase().contains(title.toLowerCase()))
+						.collect(Collectors.toList());
+				if (matchedMembers.size() == 1) {
+					return matchedMembers.get(0);
+				}
+			}
+		}
+
+		logger.info("no member matching name " + titles + " " + surName + " found");
+		return null;
+	}
+
+	private Element getAbsentMemebersElement(Document document) {
+		Elements pElements = document.getElementsByTag("p");
+		for (Element p : pElements) {
+			if (p.text().contains("ls verhindert gemeldet")) {
+				return p;
+			}
+			else if (p.text().contains("keine Abgeordneten als verhindert")) {
+				logger.info("no members absent in this session");
+			}
+		}
+
+		logger.info("no absentMember element found");
+		return null;
 	}
 
 	/**
@@ -107,10 +235,10 @@ public class SessionTransformer {
 			try {
 				return Integer.parseInt(sessionNr);
 			} catch (NumberFormatException nfe) {
-				logger.debug("invalid session number");
+				logger.info("invalid session number");
 			}
 		}
-		logger.debug("session number not found");
+		logger.info("session number not found");
 
 		return null;
 	}
@@ -128,7 +256,7 @@ public class SessionTransformer {
 
 			return getDate(day, monthIndex, year, hourStart, minuteStart);
 		}
-		logger.debug("start date not found");
+		logger.info("start date not found");
 
 		return null;
 	}
@@ -143,7 +271,7 @@ public class SessionTransformer {
 				monthIndex = 2;
 			}
 			else {
-				logger.debug("unknown month-index");
+				logger.info("unknown month-index");
 				monthIndex = 1;
 			}
 		}
@@ -163,7 +291,7 @@ public class SessionTransformer {
 
 			return getDate(day, monthIndex, year, hourStart, minuteStart);
 		}
-		logger.debug("end date not found");
+		logger.info("end date not found");
 
 		return null;
 	}
@@ -174,7 +302,7 @@ public class SessionTransformer {
 		try {
 			return format.parse(day + "." + monthIndex + "." + year + " " + hourStart + ":" + minuteStart);
 		} catch (ParseException pe) {
-			logger.debug("invalid dateformat");
+			logger.info("invalid dateformat");
 		}
 
 		return null;
@@ -295,16 +423,16 @@ public class SessionTransformer {
 								}
 							}
 							else {
-								logger.debug("no colon " + firstText);
+								logger.info("no colon " + firstText);
 							}
 						}
 						else {
-							logger.debug("no link " + firstText);
+							logger.info("no link " + firstText);
 						}
 					}
 				}
-				else{
-					logger.debug("unable to parse start time");
+				else {
+					logger.info("unable to parse start time");
 				}
 			}
 
@@ -314,7 +442,7 @@ public class SessionTransformer {
 			}
 
 			if (speechCnt != found) {
-				logger.debug("not all speechtexts found in protocol: found " + found + " of " + speechCnt);
+				logger.warn("not all speechtexts found in protocol: found " + found + " of " + speechCnt);
 			}
 		}
 
@@ -388,7 +516,7 @@ public class SessionTransformer {
 		try {
 			speech.setOrder(Integer.parseInt(speechOrder));
 		} catch (NumberFormatException nfe) {
-			logger.debug("speech order nr invalid");
+			logger.info("speech order nr invalid");
 		}
 		speech.setType(SpeechType.getSpeechType(speechType));
 
@@ -409,7 +537,7 @@ public class SessionTransformer {
 			endDate.add(Calendar.SECOND, seconds);
 			speech.setEndTime(endDate.getTime());
 		} catch (ParseException | NumberFormatException e) {
-			logger.debug("discussion date parse error: " + e.getMessage());
+			logger.info("discussion date parse error: " + e.getMessage());
 		}
 		return speech;
 	}
@@ -452,7 +580,7 @@ public class SessionTransformer {
 		if (m.find()) {
 			return m.group(2).trim();
 		}
-		logger.debug("did not find discussionType");
+		logger.info("did not find discussionType");
 		return null;
 	}
 
@@ -477,7 +605,7 @@ public class SessionTransformer {
 			}
 		}
 		else {
-			logger.debug("no chairmen tag found");
+			logger.info("no chairmen tag found");
 		}
 
 		return chairMenList;
@@ -497,7 +625,7 @@ public class SessionTransformer {
 	// return el.parent();
 	// }
 	// }
-	// logger.debug("beginning of session not found");
+	// logger.info("beginning of session not found");
 	// return null;
 	// }
 }

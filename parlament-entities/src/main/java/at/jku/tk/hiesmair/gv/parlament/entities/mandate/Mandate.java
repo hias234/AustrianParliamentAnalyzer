@@ -2,6 +2,7 @@ package at.jku.tk.hiesmair.gv.parlament.entities.mandate;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -26,7 +27,7 @@ public class Mandate {
 
 	protected String description;
 
-	@ManyToOne(fetch = FetchType.EAGER, optional = false, cascade = { })
+	@ManyToOne(fetch = FetchType.EAGER, optional = false, cascade = { CascadeType.ALL })
 	protected Politician politician;
 
 	@Temporal(TemporalType.DATE)

@@ -15,6 +15,7 @@ import javax.persistence.TemporalType;
 
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.Mandate;
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.NationalCouncilMember;
+import at.jku.tk.hiesmair.gv.parlament.util.DateUtils;
 
 @Entity
 public class Politician {
@@ -100,8 +101,7 @@ public class Politician {
 
 	public boolean isInNationalCouncilAt(Date date) {
 		return getNationalCouncilMemberships().stream().anyMatch(
-				ncm -> date.compareTo(ncm.getValidFrom()) >= 0
-						&& (ncm.getValidUntil() == null || date.compareTo(ncm.getValidUntil()) <= 0));
+				ncm -> DateUtils.isDateBetween(date, ncm.getValidFrom(), ncm.getValidUntil()));
 	}
 
 	/**

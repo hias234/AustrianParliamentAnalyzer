@@ -63,8 +63,15 @@ public abstract class FeedParser<T extends FeedItem> {
 	 * @throws ParserConfigurationException
 	 */
 	private Document getDocument(String raw) throws SAXException, IOException, ParserConfigurationException {
+		try{
 		return DocumentBuilderFactory.newInstance().newDocumentBuilder()
 				.parse(new ByteArrayInputStream(raw.getBytes()));
+		}
+		catch(SAXException | IOException | ParserConfigurationException ex){
+			System.out.println(raw);
+			ex.printStackTrace();
+			throw ex;
+		}
 	}
 
 	/**

@@ -2,6 +2,7 @@ package at.jku.tk.hiesmair.gv.parlament.period.loader;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
@@ -14,7 +15,7 @@ public class ConsoleLegislativePeriodLoader implements LegislativePeriodLoader {
 
 	@Override
 	public void loadLegislativePeriods(List<LegislativePeriod> periods) {
-		for (LegislativePeriod period : periods){
+		for (LegislativePeriod period : periods) {
 			printPeriod(period);
 			printSessions(period.getSessions());
 		}
@@ -39,8 +40,9 @@ public class ConsoleLegislativePeriodLoader implements LegislativePeriodLoader {
 		}
 		System.out.println("-------------------------------------------");
 
-		System.out.print("Absent Politicians (" + session.getAbsentPoliticians().size() + "): ");
-		printPoliticians(session.getAbsentPoliticians());
+		System.out.print("Absent Politicians (" + session.getAbsentNationalCouncilMembers().size() + "): ");
+		printPoliticians(session.getAbsentNationalCouncilMembers().stream().map(ncm -> ncm.getPolitician())
+				.collect(Collectors.toList()));
 
 		// System.out.println("Discussions: ");
 		// printDiscussions(session.getDiscussions());

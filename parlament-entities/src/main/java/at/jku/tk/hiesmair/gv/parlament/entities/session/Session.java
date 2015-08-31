@@ -9,15 +9,15 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
-import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.discussion.Discussion;
+import at.jku.tk.hiesmair.gv.parlament.entities.mandate.NationalCouncilMember;
 
 @Entity
 public class Session {
@@ -37,11 +37,13 @@ public class Session {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date endDate;
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
-	private List<Politician> presentPoliticians;
+//	@ManyToMany(fetch = FetchType.EAGER)
+	@Transient
+	private List<NationalCouncilMember> presentNationalCouncilMembers;
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
-	private List<Politician> absentPoliticians;
+//	@ManyToMany(fetch = FetchType.EAGER)
+	@Transient
+	private List<NationalCouncilMember> absentNationalCouncilMembers;
 
 	@OneToMany(mappedBy = "session", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
 	private List<Discussion> discussions;
@@ -100,20 +102,20 @@ public class Session {
 		this.endDate = endDate;
 	}
 
-	public List<Politician> getPresentPoliticians() {
-		return presentPoliticians;
+	public List<NationalCouncilMember> getPresentNationalCouncilMembers() {
+		return presentNationalCouncilMembers;
 	}
 
-	public void setPresentPoliticians(List<Politician> presentPoliticians) {
-		this.presentPoliticians = presentPoliticians;
+	public void setPresentNationalCouncilMembers(List<NationalCouncilMember> presentNationalCouncilMembers) {
+		this.presentNationalCouncilMembers = presentNationalCouncilMembers;
 	}
 
-	public List<Politician> getAbsentPoliticians() {
-		return absentPoliticians;
+	public List<NationalCouncilMember> getAbsentNationalCouncilMembers() {
+		return absentNationalCouncilMembers;
 	}
 
-	public void setAbsentPoliticians(List<Politician> absentPoliticians) {
-		this.absentPoliticians = absentPoliticians;
+	public void setAbsentNationalCouncilMembers(List<NationalCouncilMember> absentNationalCouncilMembers) {
+		this.absentNationalCouncilMembers = absentNationalCouncilMembers;
 	}
 
 	public List<Discussion> getDiscussions() {
@@ -135,7 +137,8 @@ public class Session {
 	@Override
 	public String toString() {
 		return "Session [period=" + period.getPeriod() + ", sessionNr=" + sessionNr + ", startDate=" + startDate
-				+ ", endDate=" + endDate + ", absentPoliticians=" + absentPoliticians + ", discussions=" + discussions + "]";
+				+ ", endDate=" + endDate + ", absentPoliticians=" + absentNationalCouncilMembers + ", discussions=" + discussions
+				+ "]";
 	}
 
 }

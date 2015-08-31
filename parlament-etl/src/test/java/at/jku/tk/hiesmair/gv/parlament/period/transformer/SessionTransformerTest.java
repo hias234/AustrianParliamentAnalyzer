@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -19,6 +17,7 @@ import org.junit.Test;
 import at.jku.tk.hiesmair.gv.parlament.cache.DataCache;
 import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
+import at.jku.tk.hiesmair.gv.parlament.entities.mandate.NationalCouncilMember;
 import at.jku.tk.hiesmair.gv.parlament.entities.session.Session;
 import at.jku.tk.hiesmair.gv.parlament.politician.PoliticiansEtlJob;
 import at.jku.tk.hiesmair.gv.parlament.politician.extractor.PoliticiansExtractor;
@@ -49,17 +48,10 @@ public class SessionTransformerTest {
 		assertEquals("StartDate of Session", "20.05.2014 09:05", dateFormat.format(session.getStartDate()));
 		assertEquals("EndDate of Session", "20.05.2014 22:04", dateFormat.format(session.getEndDate()));
 
-		assertTrue("politicians of session", session.getAbsentPoliticians().size() > 0);
+		assertTrue("politicians of session", session.getAbsentNationalCouncilMembers().size() > 0);
 
-		Collections.sort(session.getAbsentPoliticians(), new Comparator<Politician>() {
-
-			@Override
-			public int compare(Politician o1, Politician o2) {
-				return o1.getSurName().compareTo(o2.getSurName());
-			}
-		});
-
-		for (Politician p : session.getPresentPoliticians()) {
+		for (NationalCouncilMember ncm : session.getPresentNationalCouncilMembers()) {
+			Politician p = ncm.getPolitician();
 			if (p.getSurName().equals("Kopf")) {
 				assertEquals("Karlheinz", p.getFirstName());
 				assertEquals("", p.getTitle());

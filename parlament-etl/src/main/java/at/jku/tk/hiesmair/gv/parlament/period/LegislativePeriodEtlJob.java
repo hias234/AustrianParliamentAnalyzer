@@ -58,21 +58,21 @@ public class LegislativePeriodEtlJob {
 			legislativePeriods.add(loadPeriod(period));
 		}
 
-		logger.debug("loading " + legislativePeriods.size() + " elements...");
+		logger.info("loading " + legislativePeriods.size() + " elements...");
 		loader.loadLegislativePeriods(legislativePeriods);
-		logger.debug("finished loading");
+		logger.info("finished loading");
 
 		logger.info("LegislativePeriodEtlJob finished...");
 	}
 
 	protected LegislativePeriod loadPeriod(int period) throws Exception {
-		logger.debug("extracting...");
+		logger.info("extracting...");
 		List<ProtocolFeedItem> extractedData = extractor.extractProtocols(period);
-		logger.debug("finished extracting, found " + extractedData.size() + " Protocols");
+		logger.info("finished extracting, found " + extractedData.size() + " Protocols");
 
-		logger.debug("transforming...");
+		logger.info("transforming...");
 		LegislativePeriod legislativePeriod = transformer.getLegislativePeriod(period, extractedData);
-		logger.debug("finished transforming");
+		logger.info("finished transforming");
 
 		return legislativePeriod;
 	}
