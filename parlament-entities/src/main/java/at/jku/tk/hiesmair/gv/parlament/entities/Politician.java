@@ -2,7 +2,9 @@ package at.jku.tk.hiesmair.gv.parlament.entities;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
@@ -32,7 +34,7 @@ public class Politician {
 	private Date birthDate;
 
 	@OneToMany(mappedBy = "politician", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
-	private List<Mandate> mandates = new ArrayList<Mandate>();
+	private Set<Mandate> mandates = new HashSet<Mandate>();
 
 	public String getId() {
 		return id;
@@ -78,11 +80,11 @@ public class Politician {
 		this.birthDate = birthDate;
 	}
 
-	public List<Mandate> getMandates() {
+	public Set<Mandate> getMandates() {
 		return mandates;
 	}
 
-	public void setMandates(List<Mandate> mandates) {
+	public void setMandates(Set<Mandate> mandates) {
 		this.mandates = mandates;
 	}
 

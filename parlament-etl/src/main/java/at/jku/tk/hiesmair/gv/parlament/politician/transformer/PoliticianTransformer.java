@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,7 +53,7 @@ public class PoliticianTransformer {
 	public PoliticianTransformer() {
 //		namePattern = Pattern
 //				.compile("((?:[\\wöäüÖÄÜß]+\\..?)*\\s)?((?:[\\wöäüÖÄÜß,\\.]+(?:\\s.\\.)?\\s?)+)\\s([^\\s,(\\.:]+)");
-		namePattern = Pattern.compile("^((?:[\\wöäüÖÄÜß]+\\..?)*\\s)?((?:[\\wöäüÖÄÜß,-\\.]+(?:\\s.\\.)?\\s?)+)\\s([^\\s,(\\.:]+)$");
+		namePattern = Pattern.compile("^((?:[\\wöäüÖÄÜß]+\\..?(?:\\(FH\\))?)*\\s)?((?:[\\wöäüÖÄÜß,-\\.]+(?:\\s.\\.)?\\s?)+)\\s([^\\s,(\\.:]+)$");
 		mandatePattern = Pattern
 				.compile("([^(,]*)(?:\\(([^\\.]+)\\.(?:.([^\\.]+)\\.)?\\sGP\\))?,? ?([^\\d]+)?\\s(\\d+\\.\\d+\\.\\d{4})( .)?\\s?(?:(\\d+\\.\\d+\\.\\d{4}))?");
 		birthDatePattern = Pattern.compile("Geb.:\\s(\\d+\\.\\d+\\.\\d{4})");
@@ -169,8 +169,8 @@ public class PoliticianTransformer {
 		return null;
 	}
 
-	private List<Mandate> getMandates(Politician politician, Document document) {
-		List<Mandate> mandates = new ArrayList<Mandate>();
+	private Set<Mandate> getMandates(Politician politician, Document document) {
+		Set<Mandate> mandates = new HashSet<Mandate>();
 
 		Elements headers = document.getElementsByTag("h4");
 		Element polMandateHeader = headers.stream().filter(h -> h.text().contains("Mandate")).findFirst().get();
@@ -292,8 +292,8 @@ public class PoliticianTransformer {
 		return mandate;
 	}
 
-	private List<LegislativePeriod> getPeriods(NationalCouncilMember member, String periodFromStr, String periodToStr) {
-		List<LegislativePeriod> periods = new ArrayList<LegislativePeriod>();
+	private Set<LegislativePeriod> getPeriods(NationalCouncilMember member, String periodFromStr, String periodToStr) {
+		Set<LegislativePeriod> periods = new HashSet<LegislativePeriod>();
 
 		try {
 			Integer periodFrom = romanNrConverter.toNumber(periodFromStr);

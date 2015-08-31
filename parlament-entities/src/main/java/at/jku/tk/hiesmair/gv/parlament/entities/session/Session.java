@@ -2,6 +2,7 @@ package at.jku.tk.hiesmair.gv.parlament.entities.session;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -37,13 +38,13 @@ public class Session {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date endDate;
 
-//	@ManyToMany(fetch = FetchType.EAGER)
+	// @ManyToMany(fetch = FetchType.EAGER)
 	@Transient
-	private List<NationalCouncilMember> presentNationalCouncilMembers;
+	private Set<NationalCouncilMember> presentNationalCouncilMembers;
 
-//	@ManyToMany(fetch = FetchType.EAGER)
+	// @ManyToMany(fetch = FetchType.EAGER)
 	@Transient
-	private List<NationalCouncilMember> absentNationalCouncilMembers;
+	private Set<NationalCouncilMember> absentNationalCouncilMembers;
 
 	@OneToMany(mappedBy = "session", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
 	private List<Discussion> discussions;
@@ -102,19 +103,19 @@ public class Session {
 		this.endDate = endDate;
 	}
 
-	public List<NationalCouncilMember> getPresentNationalCouncilMembers() {
+	public Set<NationalCouncilMember> getPresentNationalCouncilMembers() {
 		return presentNationalCouncilMembers;
 	}
 
-	public void setPresentNationalCouncilMembers(List<NationalCouncilMember> presentNationalCouncilMembers) {
+	public void setPresentNationalCouncilMembers(Set<NationalCouncilMember> presentNationalCouncilMembers) {
 		this.presentNationalCouncilMembers = presentNationalCouncilMembers;
 	}
 
-	public List<NationalCouncilMember> getAbsentNationalCouncilMembers() {
+	public Set<NationalCouncilMember> getAbsentNationalCouncilMembers() {
 		return absentNationalCouncilMembers;
 	}
 
-	public void setAbsentNationalCouncilMembers(List<NationalCouncilMember> absentNationalCouncilMembers) {
+	public void setAbsentNationalCouncilMembers(Set<NationalCouncilMember> absentNationalCouncilMembers) {
 		this.absentNationalCouncilMembers = absentNationalCouncilMembers;
 	}
 
@@ -137,8 +138,8 @@ public class Session {
 	@Override
 	public String toString() {
 		return "Session [period=" + period.getPeriod() + ", sessionNr=" + sessionNr + ", startDate=" + startDate
-				+ ", endDate=" + endDate + ", absentPoliticians=" + absentNationalCouncilMembers + ", discussions=" + discussions
-				+ "]";
+				+ ", endDate=" + endDate + ", absentPoliticians=" + absentNationalCouncilMembers + ", discussions="
+				+ discussions + "]";
 	}
 
 }

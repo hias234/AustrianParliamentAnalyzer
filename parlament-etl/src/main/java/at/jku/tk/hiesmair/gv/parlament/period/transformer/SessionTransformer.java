@@ -76,7 +76,7 @@ public class SessionTransformer {
 		speechBeginPattern = Pattern.compile("(\\d{1,2})\\.\\d{1,2}");
 		absentMembersPattern = Pattern
 				.compile("Abgeordneten?r? ((?:(?:\\s?[\\wäöüÄÖÜß]+\\.( |-)(\\(FH\\))?)*(?:\\s?[\\wäöüÄÖÜß-]+)(?:(?:,)|(?: und)|))+)(?:\\.| als verhindert gemeldet\\.)");
-		absentMembersNamePattern = Pattern.compile("^((?:(?:[\\wäöüÄÖÜß]+\\.(?: |-)))*)\\s*([\\s\\wäöüÄÖÜß-]+)$");
+		absentMembersNamePattern = Pattern.compile("^((?:(?:[\\wäöüÄÖÜß]+\\.(?: |-))(?:\\(FH\\))?)*)\\s*([\\s\\wäöüÄÖÜß-]+)$");
 
 		politicianTransformer = new PoliticianTransformer();
 		cache = DataCache.getInstance();
@@ -98,9 +98,9 @@ public class SessionTransformer {
 		session.setDiscussions(getDiscussions(index, protocol, session));
 
 		if (session.getStartDate() != null) {
-			List<NationalCouncilMember> membersWhoShouldBePresent = new ArrayList<NationalCouncilMember>(
-					period.getNationalCouncilMembersAt(session.getStartDate()));
-			List<NationalCouncilMember> absentMembers = getAbsentNationalCouncilMembers(protocol,
+			Set<NationalCouncilMember> membersWhoShouldBePresent = period.getNationalCouncilMembersAt(session
+					.getStartDate());
+			Set<NationalCouncilMember> absentMembers = getAbsentNationalCouncilMembers(protocol,
 					membersWhoShouldBePresent);
 
 			membersWhoShouldBePresent.removeAll(absentMembers);
@@ -112,15 +112,15 @@ public class SessionTransformer {
 		return session;
 	}
 
-	private List<NationalCouncilMember> getAbsentNationalCouncilMembers(Document protocol,
-			List<NationalCouncilMember> membersWhoShouldBePresent) {
-		List<NationalCouncilMember> absentMemebers = new ArrayList<NationalCouncilMember>();
+	private Set<NationalCouncilMember> getAbsentNationalCouncilMembers(Document protocol,
+			Set<NationalCouncilMember> membersWhoShouldBePresent) {
+		Set<NationalCouncilMember> absentMemebers = new HashSet<NationalCouncilMember>();
 
 		Element absentMembersElement = getAbsentMemebersElement(protocol);
 		if (absentMembersElement != null) {
 			String elementText = absentMembersElement.text().replaceAll(NBSP_STRING, " ")
 					.replaceAll(SOFT_HYPHEN_STRING, "");
-			logger.info(elementText);
+			
 			Matcher m = absentMembersPattern.matcher(elementText);
 			if (m.find()) {
 				String match = m.group(1);
@@ -135,8 +135,8 @@ public class SessionTransformer {
 		return absentMemebers;
 	}
 
-	private List<NationalCouncilMember> getMembersByNames(String[] names, List<NationalCouncilMember> members) {
-		List<NationalCouncilMember> absentMemebers = new ArrayList<NationalCouncilMember>();
+	private Set<NationalCouncilMember> getMembersByNames(String[] names, Set<NationalCouncilMember> members) {
+		Set<NationalCouncilMember> absentMemebers = new HashSet<NationalCouncilMember>();
 
 		for (String name : names) {
 			NationalCouncilMember absentMember = getAbsentMemberByTitleAndSurName(name, members);
@@ -148,7 +148,7 @@ public class SessionTransformer {
 		return absentMemebers;
 	}
 
-	private NationalCouncilMember getAbsentMemberByTitleAndSurName(String name, List<NationalCouncilMember> members) {
+	private NationalCouncilMember getAbsentMemberByTitleAndSurName(String name, Set<NationalCouncilMember> members) {
 		name = name.trim().replaceAll(" als verhindert gemeldet", "");
 		name = name.replaceAll("unsere ", "");
 		name = name.replaceAll("Herr ", "");
@@ -168,13 +168,11 @@ public class SessionTransformer {
 	}
 
 	private NationalCouncilMember getAbsentMemberByTitleAndSurName(String titles, String surName,
-			List<NationalCouncilMember> members) {
-		
-		
+			Set<NationalCouncilMember> members) {
 		List<NationalCouncilMember> matchedMembers = members.stream()
 				.filter(m -> m.getPolitician().getSurName().equalsIgnoreCase(surName)).collect(Collectors.toList());
 		String[] nameParts = surName.split(" ");
-		
+
 		if (matchedMembers.size() == 0 && nameParts.length > 1) {
 			matchedMembers = members.stream()
 					.filter(m -> m.getPolitician().getSurName().equalsIgnoreCase(nameParts[nameParts.length - 1]))
@@ -209,10 +207,11 @@ public class SessionTransformer {
 	private Element getAbsentMemebersElement(Document document) {
 		Elements pElements = document.getElementsByTag("p");
 		for (Element p : pElements) {
-			if (p.text().contains("ls verhindert gemeldet")) {
+			String text = p.text();
+			if (text.contains("ls verhindert gemeldet") || text.contains("ls verhindert für die heutige Sitzung gemeldet")) {
 				return p;
 			}
-			else if (p.text().contains("keine Abgeordneten als verhindert")) {
+			else if (text.contains("keine Abgeordneten als verhindert")) {
 				logger.info("no members absent in this session");
 			}
 		}

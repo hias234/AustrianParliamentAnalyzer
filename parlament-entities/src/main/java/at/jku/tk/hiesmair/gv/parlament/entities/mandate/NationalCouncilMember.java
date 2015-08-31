@@ -1,7 +1,7 @@
 package at.jku.tk.hiesmair.gv.parlament.entities.mandate;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
@@ -18,23 +18,23 @@ import at.jku.tk.hiesmair.gv.parlament.entities.club.ParliamentClub;
 public class NationalCouncilMember extends CouncilMember {
 
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	protected List<LegislativePeriod> periods;
+	protected Set<LegislativePeriod> periods;
 
 	public NationalCouncilMember() {
 		super();
 	}
 
 	public NationalCouncilMember(String description, Politician politician, Date validFrom, Date validUntil,
-			ParliamentClub club, List<LegislativePeriod> periods) {
+			ParliamentClub club, Set<LegislativePeriod> periods) {
 		super(description, politician, validFrom, validUntil, club);
 		this.periods = periods;
 	}
 
-	public List<LegislativePeriod> getPeriods() {
+	public Set<LegislativePeriod> getPeriods() {
 		return periods;
 	}
 
-	public void setPeriods(List<LegislativePeriod> periods) {
+	public void setPeriods(Set<LegislativePeriod> periods) {
 		this.periods = periods;
 	}
 

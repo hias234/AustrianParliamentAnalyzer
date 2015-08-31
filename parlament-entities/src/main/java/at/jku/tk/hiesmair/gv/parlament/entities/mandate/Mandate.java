@@ -94,4 +94,44 @@ public class Mandate {
 				+ validFrom + ", validUntil=" + validUntil + "]";
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((description == null) ? 0 : description.hashCode());
+		result = prime * result + ((politician == null) ? 0 : politician.hashCode());
+		result = prime * result + ((validFrom == null) ? 0 : validFrom.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Mandate other = (Mandate) obj;
+		if (description == null) {
+			if (other.description != null)
+				return false;
+		}
+		else if (!description.equals(other.description))
+			return false;
+		if (politician == null) {
+			if (other.politician != null)
+				return false;
+		}
+		else if (!politician.equals(other.politician))
+			return false;
+		if (validFrom == null) {
+			if (other.validFrom != null)
+				return false;
+		}
+		else if (!validFrom.equals(other.validFrom))
+			return false;
+		return true;
+	}
+
 }

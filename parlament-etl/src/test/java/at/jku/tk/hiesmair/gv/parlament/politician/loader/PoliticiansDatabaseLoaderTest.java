@@ -3,10 +3,10 @@ package at.jku.tk.hiesmair.gv.parlament.politician.loader;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -48,9 +48,9 @@ public class PoliticiansDatabaseLoaderTest {
 
 		ParliamentClub club = new ParliamentClub("FPÖ", "");
 
-		List<Mandate> mandates = new ArrayList<Mandate>();
+		Set<Mandate> mandates = new HashSet<Mandate>();
 		NationalCouncilMember member = new NationalCouncilMember("desc", p, new Date(), new Date(), club,
-				new ArrayList<LegislativePeriod>());
+				new HashSet<LegislativePeriod>());
 		
 //		LegislativePeriod period = new LegislativePeriod(25);
 //		member.setPeriods(Arrays.asList(period));
@@ -65,10 +65,10 @@ public class PoliticiansDatabaseLoaderTest {
 		for (Politician pol : politicianRepository.findAll()) {
 			assertEquals(p.getId(), pol.getId());
 
-			List<Mandate> m = pol.getMandates();
+			Set<Mandate> m = pol.getMandates();
 			assertEquals(mandates.size(), m.size());
-			assertEquals(mandates.get(0).getDescription(), m.get(0).getDescription());
-			assertTrue(mandates.get(0) instanceof NationalCouncilMember);
+			assertEquals(mandates.iterator().next().getDescription(), m.iterator().next().getDescription());
+			assertTrue(mandates.iterator().next() instanceof NationalCouncilMember);
 //			assertEquals(period.getPeriod(), ((NationalCouncilMember)mandates.get(0)).getPeriods().get(0).getPeriod());
 
 			size++;

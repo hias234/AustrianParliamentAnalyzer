@@ -1,7 +1,7 @@
 package at.jku.tk.hiesmair.gv.parlament.entities;
 
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -27,7 +27,7 @@ public class LegislativePeriod {
 	private List<Session> sessions;
 
 	@ManyToMany(mappedBy = "periods", fetch = FetchType.EAGER)
-	private List<NationalCouncilMember> nationalCouncilMembers = new ArrayList<NationalCouncilMember>();
+	private Set<NationalCouncilMember> nationalCouncilMembers = new HashSet<NationalCouncilMember>();
 
 	public LegislativePeriod() {
 		super();
@@ -54,11 +54,11 @@ public class LegislativePeriod {
 		this.sessions = sessions;
 	}
 
-	public List<NationalCouncilMember> getNationalCouncilMembers() {
+	public Set<NationalCouncilMember> getNationalCouncilMembers() {
 		return nationalCouncilMembers;
 	}
 
-	public void setNationalCouncilMembers(List<NationalCouncilMember> nationalCouncilMembers) {
+	public void setNationalCouncilMembers(Set<NationalCouncilMember> nationalCouncilMembers) {
 		this.nationalCouncilMembers = nationalCouncilMembers;
 	}
 
