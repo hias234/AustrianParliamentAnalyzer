@@ -452,7 +452,7 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 						}
 					}
 					else {
-						logger.info("no link " + speechPartElement);
+						logger.info("no politician-link " + speechPartElement);
 					}
 				}
 				else {
@@ -500,10 +500,11 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 				if (speech.getPolitician().equals(politician)
 						&& isTimeForSpeechCorrect(time, speech) && speech.getText() == null) {
 					speech.setText(speechText);
-					break;
+					return;
 				}
 			}
 		}
+		logger.info("did not find corresponding speech (" + politician.getSurName() + ", " + time);
 	}
 
 	protected abstract String getSpeechText(Element speechPartElement);

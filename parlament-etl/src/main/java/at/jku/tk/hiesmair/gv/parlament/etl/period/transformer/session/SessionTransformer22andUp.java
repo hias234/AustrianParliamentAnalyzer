@@ -49,20 +49,32 @@ public class SessionTransformer22andUp extends AbstractSessionTransformer {
 
 	@Override
 	protected Element getFirstSpeechTextElement(Element speechBegin) {
-		Element speechPart = speechBegin.nextElementSibling();
-		if (speechPart == null) {
-			speechPart = speechBegin.parent().nextElementSibling().child(0);
-		}
-		if (speechPart != null) {
-			for (; getPoliticianLinks(speechPart).isEmpty();) {
-				Element nextSibling = speechPart.nextElementSibling();
-				if (nextSibling == null) {
-					speechPart = speechPart.parent().nextElementSibling().child(0);
-				}
-				else {
-					speechPart = nextSibling;
-				}
+		Element speechPart = getNextPossibleStartTextElement(speechBegin);
+		while (speechPart != null && !speechPart.className().equals("RE")){
+			if (!getPoliticianLinks(speechPart).isEmpty()){
+				return speechPart;
 			}
+			
+			speechPart = getNextPossibleStartTextElement(speechPart);
+		}
+		if (speechPart.className().equals("RE")){
+			logger.info("did not find first speechText-Element -> reached SpeechEndElement");
+			return null;
+		}
+		return speechPart;
+	}
+
+	protected Element getNextPossibleStartTextElement(Element speechPart) {
+		Element nextSibling = speechPart.nextElementSibling();
+		if (nextSibling != null){
+			speechPart = nextSibling;
+		}
+		else {
+			speechPart = speechPart.parent().nextElementSibling();
+			while (speechPart != null && speechPart.children().isEmpty()){
+				speechPart = speechPart.nextElementSibling();
+			}
+			speechPart = speechPart.child(0);
 		}
 		return speechPart;
 	}
