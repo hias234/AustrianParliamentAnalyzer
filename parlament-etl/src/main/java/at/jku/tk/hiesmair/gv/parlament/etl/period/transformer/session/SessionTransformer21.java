@@ -64,4 +64,22 @@ public class SessionTransformer21 extends AbstractSessionTransformer {
 		return protocol.select("i:matches(^\\d{1,2}\\.\\d{1,2}$)");
 	}
 
+	@Override
+	protected String getSpeechText(Element speechPartElement) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected Element getFirstSpeechTextElement(Element speechBegin) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected Elements getSpeechBeginTags(Document protocol) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

@@ -467,8 +467,45 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 		}
 	}
 
-	protected abstract List<Discussion> setSpeechTexts(Document protocol, List<Discussion> discussions)
-			throws Exception;
+	protected abstract String getSpeechText(Element speechPartElement);
+	protected abstract Element getFirstSpeechTextElement(Element speechBegin);
+	protected abstract Elements getSpeechBeginTags(Document protocol);
+	
+	protected List<Discussion> setSpeechTexts(Document protocol, List<Discussion> discussions) throws Exception {
+		Elements speechBeginnings = getSpeechBeginTags(protocol);
+		for (Element speechBegin : speechBeginnings) {
+			Date time = getBeginTime(speechBegin);
+
+			if (time != null) {
+				Element speechPartElement = getFirstSpeechTextElement(speechBegin);
+
+				if (speechPartElement != null) {
+					Elements politicianLinks = getPoliticianLinks(speechPartElement);
+					if (politicianLinks.size() > 0) {
+						Politician politician = getPolitician(politicianLinks.get(0).attr("href"));
+						String speechText = getSpeechText(speechPartElement);
+						if (speechText != null) {
+							setSpeechText(discussions, time, politician, speechText);
+						}
+						else {
+							logger.info("no colon " + speechPartElement);
+						}
+					}
+					else {
+						logger.info("no link " + speechPartElement);
+					}
+				}
+				else {
+					logger.info("speechPart-Tag is null");
+				}
+			}
+			else {
+				logger.info("unable to parse start time");
+			}
+		}
+
+		return discussions;
+	}
 
 	protected boolean isTimeForSpeechCorrect(Date time, DiscussionSpeech speech) {
 		if (speech.getStartTime() == null) {
