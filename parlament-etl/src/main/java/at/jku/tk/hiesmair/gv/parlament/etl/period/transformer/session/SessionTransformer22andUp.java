@@ -69,6 +69,6 @@ public class SessionTransformer22andUp extends AbstractSessionTransformer {
 
 	@Override
 	protected Elements getSpeechBeginElements(Document protocol) {
-		return protocol.select("p.RB:matches(\\d{1,2}\\.\\d{2}.*)");
+		return protocol.select("p.RB:matches(^\\s*\\d{1,2}\\.\\d{2}.*)");
 	}
 }
