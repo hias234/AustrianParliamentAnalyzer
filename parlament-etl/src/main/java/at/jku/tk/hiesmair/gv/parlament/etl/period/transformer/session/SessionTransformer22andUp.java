@@ -11,7 +11,6 @@ import org.jsoup.select.Elements;
 import at.jku.tk.hiesmair.gv.parlament.cache.DataCache;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.discussion.Discussion;
-import at.jku.tk.hiesmair.gv.parlament.entities.discussion.DiscussionSpeech;
 
 /**
  * Transforms the Protocols of a Session into a session object
@@ -37,59 +36,31 @@ public class SessionTransformer22andUp extends AbstractSessionTransformer {
 
 	@Override
 	protected List<Discussion> setSpeechTexts(Document protocol, List<Discussion> discussions) throws Exception {
-
 		Elements speechBeginnings = getSpeechBeginTags(protocol);
 		for (Element speechBegin : speechBeginnings) {
 			Date time = getBeginTime(speechBegin);
 
 			if (time != null) {
-				Element speechPart = speechBegin.nextElementSibling();
-				if (speechPart == null) {
-					speechPart = speechBegin.parent().nextElementSibling().child(0);
-				}
-				if (speechPart != null) {
-					for (; speechPart.select("a[href]").isEmpty();) {
-						Element nextSibling = speechPart.nextElementSibling();
-						if (nextSibling == null) {
-							speechPart = speechPart.parent().nextElementSibling().child(0);
+				Element speechPartElement = getFirstSpeechTextElement(speechBegin);
+
+				if (speechPartElement != null) {
+					Elements politicianLinks = getPoliticianLinks(speechPartElement);
+					if (politicianLinks.size() > 0) {
+						Politician politician = getPolitician(politicianLinks.get(0).attr("href"));
+						String speechText = getSpeechText(speechPartElement);
+						if (speechText != null) {
+							setSpeechText(discussions, time, politician, speechText);
 						}
 						else {
-							speechPart = nextSibling;
-						}
-					}
-					String firstText = speechPart.text();
-
-					Elements links = getPoliticianLinks(speechPart);
-					if (links.size() > 0) {
-						Politician politician = getPolitician(links.get(0).attr("href"));
-						int indexOfColon = firstText.indexOf(":");
-						if (indexOfColon != -1) {
-
-							String speechText = firstText.substring(indexOfColon + 1).trim();
-
-							speechPart = speechPart.nextElementSibling();
-							for (; speechPart != null && !speechPart.className().equals("RE"); speechPart = speechPart
-									.nextElementSibling()) {
-								speechText += "\n\n" + speechPart.text();
-							}
-
-							for (Discussion discussion : discussions) {
-								for (DiscussionSpeech speech : discussion.getSpeeches()) {
-									if (speech.getPolitician().equals(politician)
-											&& isTimeForSpeechCorrect(time, speech) && speech.getText() == null) {
-										speech.setText(speechText);
-										break;
-									}
-								}
-							}
-						}
-						else {
-							logger.info("no colon " + firstText);
+							logger.info("no colon " + speechPartElement);
 						}
 					}
 					else {
-						logger.info("no link " + firstText);
+						logger.info("no link " + speechPartElement);
 					}
+				}
+				else {
+					logger.info("speechPart-Tag is null");
 				}
 			}
 			else {
@@ -98,6 +69,42 @@ public class SessionTransformer22andUp extends AbstractSessionTransformer {
 		}
 
 		return discussions;
+	}
+
+	private String getSpeechText(Element speechPartElement) {
+		String speechText = null;
+		String firstText = speechPartElement.text();
+		int indexOfColon = firstText.indexOf(":");
+		if (indexOfColon != -1) {
+
+			speechText = firstText.substring(indexOfColon + 1).trim();
+
+			speechPartElement = speechPartElement.nextElementSibling();
+			for (; speechPartElement != null && !speechPartElement.className().equals("RE"); speechPartElement = speechPartElement
+					.nextElementSibling()) {
+				speechText += "\n\n" + speechPartElement.text();
+			}
+		}
+		return speechText;
+	}
+
+	protected Element getFirstSpeechTextElement(Element speechBegin) {
+		Element speechPart = speechBegin.nextElementSibling();
+		if (speechPart == null) {
+			speechPart = speechBegin.parent().nextElementSibling().child(0);
+		}
+		if (speechPart != null) {
+			for (; getPoliticianLinks(speechPart).isEmpty();) {
+				Element nextSibling = speechPart.nextElementSibling();
+				if (nextSibling == null) {
+					speechPart = speechPart.parent().nextElementSibling().child(0);
+				}
+				else {
+					speechPart = nextSibling;
+				}
+			}
+		}
+		return speechPart;
 	}
 
 	protected Elements getSpeechBeginTags(Document protocol) {

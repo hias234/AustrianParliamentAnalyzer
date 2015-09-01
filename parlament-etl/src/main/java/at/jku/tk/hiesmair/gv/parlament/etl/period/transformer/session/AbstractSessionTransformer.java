@@ -454,6 +454,18 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 		}
 		return time;
 	}
+	
+	protected void setSpeechText(List<Discussion> discussions, Date time, Politician politician, String speechText) {
+		for (Discussion discussion : discussions) {
+			for (DiscussionSpeech speech : discussion.getSpeeches()) {
+				if (speech.getPolitician().equals(politician)
+						&& isTimeForSpeechCorrect(time, speech) && speech.getText() == null) {
+					speech.setText(speechText);
+					break;
+				}
+			}
+		}
+	}
 
 	protected abstract List<Discussion> setSpeechTexts(Document protocol, List<Discussion> discussions)
 			throws Exception;

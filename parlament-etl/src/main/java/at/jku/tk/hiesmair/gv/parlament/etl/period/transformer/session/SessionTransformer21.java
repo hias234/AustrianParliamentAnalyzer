@@ -37,6 +37,7 @@ public class SessionTransformer21 extends AbstractSessionTransformer {
 			Date beginTime = getBeginTime(speechBeginElement);
 			if (beginTime != null){
 				Element speechPartElement = getSpeechPartElement(speechBeginElement);
+				Elements links = getPoliticianLinks(speechPartElement);
 				
 			}
 		}
@@ -44,6 +45,11 @@ public class SessionTransformer21 extends AbstractSessionTransformer {
 		return discussions;
 	}
 
+	/**
+	 * Gets element that contains the actual text of the speech
+	 * @param speechBeginElement
+	 * @return
+	 */
 	protected Element getSpeechPartElement(Element speechBeginElement) {
 		return speechBeginElement.nextElementSibling()
 				.nextElementSibling().nextElementSibling().child(0);
