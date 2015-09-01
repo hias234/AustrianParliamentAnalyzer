@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 import at.jku.tk.hiesmair.gv.parlament.cache.DataCache;
 import at.jku.tk.hiesmair.gv.parlament.entities.discussion.Discussion;
@@ -26,7 +27,18 @@ public class SessionTransformer21 extends AbstractSessionTransformer {
 
 	@Override
 	protected List<Discussion> setSpeechTexts(Document protocol, List<Discussion> discussions) throws Exception {
+		Elements speechBeginAndEndElements = getSpeechBeginAndEndTags(protocol);
+		
 		return discussions;
+	}
+
+	/**
+	 * Get speech begin and end-elements that contain the time aka. 12.08
+	 * @param protocol
+	 * @return
+	 */
+	private Elements getSpeechBeginAndEndTags(Document protocol) {
+		return protocol.select("i:matches(^\\d{1,2}\\.\\d{1,2}$)");
 	}
 
 }
