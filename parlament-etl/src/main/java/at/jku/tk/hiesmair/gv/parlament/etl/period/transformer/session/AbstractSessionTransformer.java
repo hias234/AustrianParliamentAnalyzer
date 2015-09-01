@@ -439,6 +439,21 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 			logger.warn("not all speechtexts found in protocol: found " + speechesWithTexts + " of " + speechCnt);
 		}
 	}
+	
+	protected Date getBeginTime(Element speechBeginElement) {
+		SimpleDateFormat timeFormat = new SimpleDateFormat("HH.mm");
+
+		String timeStr = speechBeginElement.text().replace(NBSP_STRING, " ").trim();
+		Matcher m = speechBeginPattern.matcher(timeStr);
+		Date time = null;
+		if (m.find()) {
+			try {
+				time = timeFormat.parse(m.group(0));
+			} catch (ParseException pe) {
+			}
+		}
+		return time;
+	}
 
 	protected abstract List<Discussion> setSpeechTexts(Document protocol, List<Discussion> discussions)
 			throws Exception;

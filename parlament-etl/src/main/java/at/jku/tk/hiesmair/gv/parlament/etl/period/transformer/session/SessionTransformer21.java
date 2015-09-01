@@ -1,9 +1,11 @@
 package at.jku.tk.hiesmair.gv.parlament.etl.period.transformer.session;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import at.jku.tk.hiesmair.gv.parlament.cache.DataCache;
@@ -29,7 +31,22 @@ public class SessionTransformer21 extends AbstractSessionTransformer {
 	protected List<Discussion> setSpeechTexts(Document protocol, List<Discussion> discussions) throws Exception {
 		Elements speechBeginAndEndElements = getSpeechBeginAndEndTags(protocol);
 		
+		for (int i = 0; i < speechBeginAndEndElements.size(); i += 2){
+			Element speechBeginElement = speechBeginAndEndElements.get(i);
+			
+			Date beginTime = getBeginTime(speechBeginElement);
+			if (beginTime != null){
+				Element speechPartElement = getSpeechPartElement(speechBeginElement);
+				
+			}
+		}
+		
 		return discussions;
+	}
+
+	protected Element getSpeechPartElement(Element speechBeginElement) {
+		return speechBeginElement.nextElementSibling()
+				.nextElementSibling().nextElementSibling().child(0);
 	}
 
 	/**

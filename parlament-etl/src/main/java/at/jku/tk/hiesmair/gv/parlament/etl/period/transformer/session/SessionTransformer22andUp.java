@@ -1,10 +1,7 @@
 package at.jku.tk.hiesmair.gv.parlament.etl.period.transformer.session;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.regex.Matcher;
 
 import org.apache.log4j.Logger;
 import org.jsoup.nodes.Document;
@@ -40,19 +37,10 @@ public class SessionTransformer22andUp extends AbstractSessionTransformer {
 
 	@Override
 	protected List<Discussion> setSpeechTexts(Document protocol, List<Discussion> discussions) throws Exception {
-		SimpleDateFormat timeFormat = new SimpleDateFormat("HH.mm");
 
 		Elements speechBeginnings = getSpeechBeginTags(protocol);
 		for (Element speechBegin : speechBeginnings) {
-			String timeStr = speechBegin.text().replace(NBSP_STRING, " ").trim();
-			Matcher m = speechBeginPattern.matcher(timeStr);
-			Date time = null;
-			if (m.find()) {
-				try {
-					time = timeFormat.parse(m.group(0));
-				} catch (ParseException pe) {
-				}
-			}
+			Date time = getBeginTime(speechBegin);
 
 			if (time != null) {
 				Element speechPart = speechBegin.nextElementSibling();
