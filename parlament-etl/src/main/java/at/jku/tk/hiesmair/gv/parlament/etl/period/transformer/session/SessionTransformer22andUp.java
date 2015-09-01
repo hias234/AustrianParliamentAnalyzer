@@ -34,14 +34,13 @@ public class SessionTransformer22andUp extends AbstractSessionTransformer {
 	protected Document filterPageBreaks(Document protocol) {
 		protocol.select("hr").remove();
 		protocol.select("span.threecol").remove();
-		
+
 		return protocol;
 	}
 
 	@Override
 	protected List<Discussion> setSpeechTexts(Document protocol, List<Discussion> discussions) throws Exception {
 		SimpleDateFormat timeFormat = new SimpleDateFormat("HH.mm");
-		int found = 0;
 
 		Elements speechBeginnings = getSpeechBeginTags(protocol);
 		for (Element speechBegin : speechBeginnings) {
@@ -90,8 +89,6 @@ public class SessionTransformer22andUp extends AbstractSessionTransformer {
 								for (DiscussionSpeech speech : discussion.getSpeeches()) {
 									if (speech.getPolitician().equals(politician)
 											&& isTimeForSpeechCorrect(time, speech) && speech.getText() == null) {
-
-										found++;
 										speech.setText(speechText);
 										break;
 									}
@@ -112,15 +109,6 @@ public class SessionTransformer22andUp extends AbstractSessionTransformer {
 			}
 		}
 
-		int speechCnt = 0;
-		for (Discussion discussion : discussions) {
-			speechCnt += discussion.getSpeeches().size();
-		}
-
-		if (speechCnt != found) {
-			logger.warn("not all speechtexts found in protocol: found " + found + " of " + speechCnt);
-		}
-		
 		return discussions;
 	}
 

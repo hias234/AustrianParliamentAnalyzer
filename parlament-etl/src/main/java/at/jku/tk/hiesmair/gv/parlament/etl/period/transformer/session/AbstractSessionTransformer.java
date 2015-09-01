@@ -422,9 +422,22 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 
 		if (discussions.size() > 0) {
 			discussions = setSpeechTexts(protocol, discussions);
+			checkIfAllSpeechTextsWereFound(discussions);
 		}
 
 		return discussions;
+	}
+
+	protected void checkIfAllSpeechTextsWereFound(List<Discussion> discussions) {
+		int speechCnt = discussions.stream().mapToInt(d -> d.getSpeeches().size()).sum();
+		int speechesWithTexts = Long.valueOf(discussions
+				.stream()
+				.mapToLong(d -> d.getSpeeches().stream().filter(sp -> sp.getText() != null || sp.getStartTime() == null).count())
+				.sum()).intValue();
+
+		if (speechCnt != speechesWithTexts) {
+			logger.warn("not all speechtexts found in protocol: found " + speechesWithTexts + " of " + speechCnt);
+		}
 	}
 
 	protected abstract List<Discussion> setSpeechTexts(Document protocol, List<Discussion> discussions)
