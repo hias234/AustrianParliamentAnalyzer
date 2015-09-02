@@ -28,7 +28,7 @@ import at.jku.tk.hiesmair.gv.parlament.feed.parser.title.TitleParser;
 public abstract class FeedParser<T extends FeedItem> {
 
 	/** Date-format to parse XML files */
-	public static final String DATE_FORMAT = "d MMM yyyy HH:mm:ss Z";
+	public static final String DATE_FORMAT = "dd MMM yyyy HH:mm:ss Z";
 
 	/** A list of all HTML protocols */
 	protected List<T> items;

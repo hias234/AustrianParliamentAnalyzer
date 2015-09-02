@@ -16,10 +16,11 @@ import at.jku.tk.hiesmair.gv.parlament.etl.politician.extractor.feed.PoliticianF
 @Component
 public class PoliticiansTransformer {
 
-	@Inject
 	private PoliticianTransformer politicianTransformer;
 
-	public PoliticiansTransformer() {
+	@Inject
+	public PoliticiansTransformer(PoliticianTransformer politicianTransformer) {
+		this.politicianTransformer = politicianTransformer;
 	}
 
 	public List<Politician> getPoliticians(List<PoliticianFeedItem> feedItems) throws IOException {
