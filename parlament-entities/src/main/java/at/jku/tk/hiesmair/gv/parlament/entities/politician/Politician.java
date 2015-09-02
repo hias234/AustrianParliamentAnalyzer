@@ -114,6 +114,15 @@ public class Politician {
 	public void setPreviousNames(List<PoliticianName> previousNames) {
 		this.previousNames = previousNames;
 	}
+	
+	public Name getNameAt(Date date){
+		for (PoliticianName politicianName : previousNames){
+			if (date.compareTo(politicianName.getValidUntil()) <= 0){
+				return politicianName.getName();
+			}
+		}
+		return name;
+	}
 
 	public List<NationalCouncilMember> getNationalCouncilMemberships() {
 		return mandates.stream().filter(m -> m instanceof NationalCouncilMember).map(m -> (NationalCouncilMember) m)

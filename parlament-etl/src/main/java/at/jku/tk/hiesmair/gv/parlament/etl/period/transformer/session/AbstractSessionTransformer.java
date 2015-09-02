@@ -100,7 +100,7 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 			}
 
 			Set<NationalCouncilMember> absentMembers = getAbsentNationalCouncilMembers(protocol,
-					membersWhoShouldBePresent);
+					session.getStartDate(), membersWhoShouldBePresent);
 
 			membersWhoShouldBePresent.removeAll(absentMembers);
 
@@ -113,7 +113,7 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 
 	protected abstract Document filterPageBreaks(Document protocol);
 
-	protected Set<NationalCouncilMember> getAbsentNationalCouncilMembers(Document protocol,
+	protected Set<NationalCouncilMember> getAbsentNationalCouncilMembers(Document protocol, Date startDate,
 			Set<NationalCouncilMember> membersWhoShouldBePresent) {
 		Set<NationalCouncilMember> absentMemebers = new HashSet<NationalCouncilMember>();
 
@@ -125,7 +125,7 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 			if (m.find()) {
 				String match = m.group(1);
 				String[] names = match.split("((, )|( und )|( sowie ))");
-				absentMemebers = getMembersByNames(names, membersWhoShouldBePresent);
+				absentMemebers = getMembersByNames(startDate, names, membersWhoShouldBePresent);
 			}
 			else {
 				logger.warn("no absent memebers found -> pattern did not match");
@@ -147,11 +147,12 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 		return elementText;
 	}
 
-	private Set<NationalCouncilMember> getMembersByNames(String[] names, Set<NationalCouncilMember> members) {
+	private Set<NationalCouncilMember> getMembersByNames(Date startDate, String[] names,
+			Set<NationalCouncilMember> members) {
 		Set<NationalCouncilMember> absentMemebers = new HashSet<NationalCouncilMember>();
 
 		for (String name : names) {
-			NationalCouncilMember absentMember = getAbsentMemberByTitleAndSurName(name, members);
+			NationalCouncilMember absentMember = getAbsentMemberByTitleAndSurName(startDate, name, members);
 			if (absentMember != null) {
 				absentMemebers.add(absentMember);
 			}
@@ -160,7 +161,8 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 		return absentMemebers;
 	}
 
-	private NationalCouncilMember getAbsentMemberByTitleAndSurName(String name, Set<NationalCouncilMember> members) {
+	private NationalCouncilMember getAbsentMemberByTitleAndSurName(Date startDate, String name,
+			Set<NationalCouncilMember> members) {
 		name = name.trim().replaceAll(" als verhindert gemeldet", "");
 		name = name.replaceAll("unsere ", "");
 		name = name.replaceAll("Herr ", "");
@@ -178,22 +180,22 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 		if (m.find()) {
 			String titles = m.group(1);
 			String surName = m.group(2).trim();
-			return getAbsentMemberByTitleAndSurName(titles, surName, members);
+			return getAbsentMemberByTitleAndSurName(startDate, titles, surName, members);
 		}
 
 		logger.info("name not recognized (pattern did not match): " + name);
 		return null;
 	}
 
-	private NationalCouncilMember getAbsentMemberByTitleAndSurName(String titles, String surName,
+	private NationalCouncilMember getAbsentMemberByTitleAndSurName(Date startDate, String titles, String surName,
 			Set<NationalCouncilMember> members) {
-		List<NationalCouncilMember> matchedMembers = getSurNameMatchingMembers(surName, members);
+		List<NationalCouncilMember> matchedMembers = getSurNameMatchingMembers(surName, startDate, members);
 
 		if (matchedMembers.size() == 0) {
 			String[] dashParts = surName.split("-");
 			if (dashParts.length > 1) {
 				for (String dashPart : dashParts) {
-					matchedMembers = getSurNameMatchingMembers(dashPart, members);
+					matchedMembers = getSurNameMatchingMembers(dashPart, startDate, members);
 					if (matchedMembers.size() == 1) {
 						return matchedMembers.get(0);
 					}
@@ -202,25 +204,27 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 
 			String[] nameParts = surName.split(" ");
 			if (nameParts.length > 1) {
-				matchedMembers = members.stream()
-						.filter(m -> m.getPolitician().getSurName().equalsIgnoreCase(nameParts[nameParts.length - 1]))
-						.collect(Collectors.toList());
+				matchedMembers = members
+						.stream()
+						.filter(m -> m.getPolitician().getNameAt(startDate).getSurName()
+								.equalsIgnoreCase(nameParts[nameParts.length - 1])).collect(Collectors.toList());
 
 				if (matchedMembers.size() > 1) {
 					matchedMembers = matchedMembers
 							.stream()
-							.filter(m -> m.getPolitician().getFirstName().toLowerCase()
+							.filter(m -> m.getPolitician().getNameAt(startDate).getFirstName().toLowerCase()
 									.contains(nameParts[0].toLowerCase())).collect(Collectors.toList());
 				}
 				if (matchedMembers.size() != 1) {
-					matchedMembers = members.stream()
-							.filter(m -> m.getPolitician().getSurName().equalsIgnoreCase(nameParts[0]))
-							.collect(Collectors.toList());
+					matchedMembers = members
+							.stream()
+							.filter(m -> m.getPolitician().getNameAt(startDate).getSurName()
+									.equalsIgnoreCase(nameParts[0])).collect(Collectors.toList());
 
 					if (matchedMembers.size() > 1) {
 						matchedMembers = matchedMembers
 								.stream()
-								.filter(m -> m.getPolitician().getFirstName().toLowerCase()
+								.filter(m -> m.getPolitician().getNameAt(startDate).getFirstName().toLowerCase()
 										.contains(nameParts[1].toLowerCase())).collect(Collectors.toList());
 					}
 				}
@@ -232,7 +236,8 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 		}
 		if (matchedMembers.size() > 1) {
 			if (titles.trim().isEmpty()) {
-				matchedMembers = matchedMembers.stream().filter(m -> m.getPolitician().getTitle().isEmpty())
+				matchedMembers = matchedMembers.stream()
+						.filter(m -> m.getPolitician().getNameAt(startDate).getTitle().isEmpty())
 						.collect(Collectors.toList());
 				if (matchedMembers.size() == 1) {
 					return matchedMembers.get(0);
@@ -241,9 +246,10 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 			else {
 				String[] titleArray = titles.split("[ -]");
 				for (String title : titleArray) {
-					matchedMembers = matchedMembers.stream()
-							.filter(m -> m.getPolitician().getTitle().toLowerCase().contains(title.toLowerCase()))
-							.collect(Collectors.toList());
+					matchedMembers = matchedMembers
+							.stream()
+							.filter(m -> m.getPolitician().getNameAt(startDate).getTitle().toLowerCase()
+									.contains(title.toLowerCase())).collect(Collectors.toList());
 					if (matchedMembers.size() == 1) {
 						return matchedMembers.get(0);
 					}
@@ -255,8 +261,10 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 		return null;
 	}
 
-	protected List<NationalCouncilMember> getSurNameMatchingMembers(String surName, Set<NationalCouncilMember> members) {
-		return members.stream().filter(m -> m.getPolitician().getSurName().equalsIgnoreCase(surName))
+	protected List<NationalCouncilMember> getSurNameMatchingMembers(String surName, Date startDate,
+			Set<NationalCouncilMember> members) {
+		return members.stream()
+				.filter(m -> m.getPolitician().getNameAt(startDate).getSurName().equalsIgnoreCase(surName))
 				.collect(Collectors.toList());
 	}
 
@@ -427,7 +435,7 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 
 		return discussions;
 	}
-	
+
 	protected List<Discussion> setSpeechTexts(Document protocol, List<Discussion> discussions) throws Exception {
 		Elements speechBeginnings = getSpeechBeginElements(protocol);
 		for (Element speechBegin : speechBeginnings) {
@@ -438,7 +446,7 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 
 				if (speechPartElement != null) {
 					Politician politician = getPoliticianOfSpeech(speechPartElement);
-					if (politician!=null) {
+					if (politician != null) {
 						String speechText = getSpeechText(speechPartElement);
 						if (speechText != null) {
 							setSpeechText(discussions, time, politician, speechText);
@@ -465,16 +473,20 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 
 	protected void checkIfAllSpeechTextsWereFound(List<Discussion> discussions) {
 		int speechCnt = discussions.stream().mapToInt(d -> d.getSpeeches().size()).sum();
-		int speechesWithTexts = Long.valueOf(discussions
-				.stream()
-				.mapToLong(d -> d.getSpeeches().stream().filter(sp -> sp.getText() != null || sp.getStartTime() == null).count())
-				.sum()).intValue();
+		int speechesWithTexts = Long
+				.valueOf(
+						discussions
+								.stream()
+								.mapToLong(
+										d -> d.getSpeeches().stream()
+												.filter(sp -> sp.getText() != null || sp.getStartTime() == null)
+												.count()).sum()).intValue();
 
 		if (speechCnt != speechesWithTexts) {
 			logger.warn("not all speechtexts found in protocol: found " + speechesWithTexts + " of " + speechCnt);
 		}
 	}
-	
+
 	protected Date getBeginTime(Element speechBeginElement) {
 		SimpleDateFormat timeFormat = new SimpleDateFormat("HH.mm");
 
@@ -489,12 +501,12 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 		}
 		return time;
 	}
-	
+
 	protected void setSpeechText(List<Discussion> discussions, Date time, Politician politician, String speechText) {
 		for (Discussion discussion : discussions) {
 			for (DiscussionSpeech speech : discussion.getSpeeches()) {
-				if (speech.getPolitician().equals(politician)
-						&& isTimeForSpeechCorrect(time, speech) && speech.getText() == null) {
+				if (speech.getPolitician().equals(politician) && isTimeForSpeechCorrect(time, speech)
+						&& speech.getText() == null) {
 					speech.setText(speechText);
 					return;
 				}
@@ -504,22 +516,24 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 	}
 
 	protected abstract Politician getPoliticianOfSpeech(Element firstSpeechTextElement) throws Exception;
-	
+
 	/**
 	 * returns the speech text
+	 * 
 	 * @param speechPartElement
 	 * @return
 	 */
 	protected abstract String getSpeechText(Element speechPartElement);
-	
+
 	/**
-	 * Gets element that contains the first part of the actual text of the speech
+	 * Gets element that contains the first part of the actual text of the
+	 * speech
 	 * 
 	 * @param speechBeginElement
 	 * @return
 	 */
 	protected abstract Element getFirstSpeechTextElement(Element speechBegin);
-	
+
 	/**
 	 * Get speech begin-elements that contain the time aka. 12.08
 	 * 
@@ -527,8 +541,6 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 	 * @return
 	 */
 	protected abstract Elements getSpeechBeginElements(Document protocol);
-	
-	
 
 	protected boolean isTimeForSpeechCorrect(Date time, DiscussionSpeech speech) {
 		if (speech.getStartTime() == null) {
