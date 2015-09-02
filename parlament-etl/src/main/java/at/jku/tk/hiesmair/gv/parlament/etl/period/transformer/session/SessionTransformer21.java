@@ -51,7 +51,7 @@ public class SessionTransformer21 extends AbstractSessionTransformer {
 	 */
 	@Override
 	protected Elements getSpeechBeginElements(Document protocol) {
-		Elements speechBeginAndEndElements = protocol.select("i:matches(^\\s*\\d{1,2}\\.\\d{1,2}\\s*$)");
+		Elements speechBeginAndEndElements = protocol.select("i:matches(^\\s*\\d{1,2}\\.\\d{2}\\s*$)");
 
 		return speechBeginAndEndElements;
 	}
