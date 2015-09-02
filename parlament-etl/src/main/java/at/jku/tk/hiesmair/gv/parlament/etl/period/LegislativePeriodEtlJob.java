@@ -38,7 +38,7 @@ public class LegislativePeriodEtlJob {
 
 	public void start(List<Integer> periods) throws Exception {
 		loadPoliticians();
-
+		
 		logger.info("LegislativePeriodEtlJob started...");
 
 		List<LegislativePeriod> legislativePeriods = new ArrayList<LegislativePeriod>();

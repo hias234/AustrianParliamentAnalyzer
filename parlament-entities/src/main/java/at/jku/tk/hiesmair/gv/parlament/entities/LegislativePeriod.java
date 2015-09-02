@@ -1,5 +1,6 @@
 package at.jku.tk.hiesmair.gv.parlament.entities;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -12,6 +13,8 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+
+import org.apache.commons.lang.time.DateUtils;
 
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.NationalCouncilMember;
 import at.jku.tk.hiesmair.gv.parlament.entities.session.Session;
@@ -63,9 +66,10 @@ public class LegislativePeriod {
 	}
 
 	public Set<NationalCouncilMember> getNationalCouncilMembersAt(Date date) {
-		return nationalCouncilMembers.stream()
-				.filter(ncm -> ParliamentDateUtils.isDateBetween(date, ncm.getValidFrom(), ncm.getValidUntil()))
-				.collect(Collectors.toSet());
+		return nationalCouncilMembers
+				.stream()
+				.filter(ncm -> ParliamentDateUtils.isDateBetween(DateUtils.truncate(date, Calendar.DATE),
+						ncm.getValidFrom(), ncm.getValidUntil())).collect(Collectors.toSet());
 	}
 
 	@Override

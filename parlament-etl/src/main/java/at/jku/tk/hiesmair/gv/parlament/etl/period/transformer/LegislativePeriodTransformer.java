@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.log4j.Logger;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +26,8 @@ import at.jku.tk.hiesmair.gv.parlament.etl.period.transformer.session.SessionTra
 @Component
 public class LegislativePeriodTransformer {
 
+	protected static final Logger logger = Logger.getLogger(LegislativePeriodTransformer.class.getSimpleName());
+
 	protected SessionTransformer22andUp sessionTransformer22andUp;
 	protected SessionTransformer21 sessionTransformer21;
 
@@ -39,13 +42,14 @@ public class LegislativePeriodTransformer {
 
 	public LegislativePeriod getLegislativePeriod(int period, List<ProtocolFeedItem> sessionProtocols) throws Exception {
 		LegislativePeriod legislativePeriod = cache.getLegislativePeriod(period);
+		
 		if (legislativePeriod == null) {
 			legislativePeriod = new LegislativePeriod(period);
 			cache.putLegislativePeriod(legislativePeriod);
 		}
 
 		legislativePeriod.setSessions(getSessions(legislativePeriod, sessionProtocols));
-
+		
 		return legislativePeriod;
 	}
 

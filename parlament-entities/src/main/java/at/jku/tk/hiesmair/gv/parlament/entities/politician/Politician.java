@@ -134,8 +134,8 @@ public class Politician {
 
 	public boolean isInNationalCouncilAt(Date date) {
 		return getNationalCouncilMemberships().stream().anyMatch(
-				ncm -> ParliamentDateUtils.isDateBetween(DateUtils.truncate(date, Calendar.DATE),
-						DateUtils.truncate(ncm.getValidFrom(), Calendar.DATE), DateUtils.truncate(ncm.getValidUntil(), Calendar.DATE)));
+				ncm -> ParliamentDateUtils.isDateBetween(DateUtils.truncate(date, Calendar.DATE), ncm.getValidFrom(),
+						ncm.getValidUntil()));
 	}
 
 	/**
