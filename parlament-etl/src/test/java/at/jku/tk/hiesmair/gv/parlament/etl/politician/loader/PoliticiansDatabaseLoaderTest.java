@@ -1,4 +1,4 @@
-package at.jku.tk.hiesmair.gv.parlament.politician.loader;
+package at.jku.tk.hiesmair.gv.parlament.etl.politician.loader;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -24,8 +24,8 @@ import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.club.ParliamentClub;
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.Mandate;
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.NationalCouncilMember;
+import at.jku.tk.hiesmair.gv.parlament.etl.politician.DummyPoliticianEtlApp;
 import at.jku.tk.hiesmair.gv.parlament.etl.politician.loader.db.PoliticiansDatabaseLoader;
-import at.jku.tk.hiesmair.gv.parlament.politician.DummyPoliticianEtlApp;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = { DummyDbApp.class, DummyEntitiesApp.class, DummyPoliticianEtlApp.class })

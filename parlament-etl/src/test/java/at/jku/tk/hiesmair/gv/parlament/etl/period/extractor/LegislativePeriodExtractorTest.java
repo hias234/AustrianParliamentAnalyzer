@@ -1,4 +1,4 @@
-package at.jku.tk.hiesmair.gv.parlament.period.extractor;
+package at.jku.tk.hiesmair.gv.parlament.etl.period.extractor;
 
 import static org.junit.Assert.assertTrue;
 

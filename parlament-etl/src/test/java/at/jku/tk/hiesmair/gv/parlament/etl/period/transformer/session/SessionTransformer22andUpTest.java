@@ -1,4 +1,4 @@
-package at.jku.tk.hiesmair.gv.parlament.period.transformer;
+package at.jku.tk.hiesmair.gv.parlament.etl.period.transformer.session;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -28,7 +28,7 @@ import at.jku.tk.hiesmair.gv.parlament.etl.politician.loader.PoliticiansLoader;
 import at.jku.tk.hiesmair.gv.parlament.etl.politician.transformer.PoliticianTransformer;
 import at.jku.tk.hiesmair.gv.parlament.etl.politician.transformer.PoliticiansTransformer;
 
-public class SessionTransformerTest {
+public class SessionTransformer22andUpTest {
 
 	private SimpleDateFormat dateFormat = new SimpleDateFormat(
 			"dd.MM.yyyy HH:mm");

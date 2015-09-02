@@ -1,4 +1,4 @@
-package at.jku.tk.hiesmair.gv.parlament.politician.extractor;
+package at.jku.tk.hiesmair.gv.parlament.etl.politician.extractor;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

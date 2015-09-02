@@ -1,4 +1,4 @@
-package at.jku.tk.hiesmair.gv.parlament.politician.transformer;
+package at.jku.tk.hiesmair.gv.parlament.etl.politician.transformer;
 
 import static org.junit.Assert.assertTrue;
 

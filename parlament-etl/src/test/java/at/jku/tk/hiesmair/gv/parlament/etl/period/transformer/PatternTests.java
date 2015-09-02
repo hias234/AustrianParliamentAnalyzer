@@ -1,4 +1,4 @@
-package at.jku.tk.hiesmair.gv.parlament.period.transformer;
+package at.jku.tk.hiesmair.gv.parlament.etl.period.transformer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
