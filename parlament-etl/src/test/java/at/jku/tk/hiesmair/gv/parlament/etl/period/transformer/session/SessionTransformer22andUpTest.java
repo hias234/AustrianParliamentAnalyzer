@@ -14,6 +14,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
 
+import at.jku.tk.hiesmair.gv.parlament.ParliamentTestUtil;
 import at.jku.tk.hiesmair.gv.parlament.cache.DataCache;
 import at.jku.tk.hiesmair.gv.parlament.cache.InMemoryDataCache;
 import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
@@ -52,7 +53,10 @@ public class SessionTransformer22andUpTest {
 		SessionTransformer22andUp extractor = new SessionTransformer22andUp(
 				cache);
 		Session session = extractor.getSession(cache.getLegislativePeriod(25),
-				getIndex(), getProtocol());
+				ParliamentTestUtil
+						.getDocumentFromClasspath("period25/index_25.html"),
+				ParliamentTestUtil
+						.getDocumentFromClasspath("period25/protocol_25.html"));
 
 		assertEquals("SessionNr of Session", 25, session.getSessionNr()
 				.intValue());
@@ -91,29 +95,5 @@ public class SessionTransformer22andUpTest {
 		//
 		// System.out.println();
 		// session.getDiscussions().forEach(d -> System.out.println(d));
-	}
-
-	protected Document getProtocol() throws IOException {
-		InputStream testProtocolStream = this.getClass().getClassLoader()
-				.getResourceAsStream("protocol_25.html");
-
-		StringWriter writer = new StringWriter();
-		IOUtils.copy(testProtocolStream, writer, "UTF-8");
-		String testProtocolString = writer.toString();
-
-		Document document = Jsoup.parse(testProtocolString);
-		return document;
-	}
-
-	protected Document getIndex() throws IOException {
-		InputStream testIndexStream = this.getClass().getClassLoader()
-				.getResourceAsStream("index_25.html");
-
-		StringWriter writer = new StringWriter();
-		IOUtils.copy(testIndexStream, writer, "UTF-8");
-		String testIndexString = writer.toString();
-
-		Document document = Jsoup.parse(testIndexString);
-		return document;
 	}
 }
