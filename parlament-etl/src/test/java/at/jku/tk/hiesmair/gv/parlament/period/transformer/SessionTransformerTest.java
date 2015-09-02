@@ -51,7 +51,7 @@ public class SessionTransformerTest {
 
 		SessionTransformer22andUp extractor = new SessionTransformer22andUp(
 				cache);
-		Session session = extractor.getSession(new LegislativePeriod(25),
+		Session session = extractor.getSession(cache.getLegislativePeriod(25),
 				getIndex(), getProtocol());
 
 		assertEquals("SessionNr of Session", 25, session.getSessionNr()
@@ -67,24 +67,30 @@ public class SessionTransformerTest {
 
 		assertEquals(3, chairMen.size());
 		assertEquals(1, chairMen.get(0).getPosition().intValue());
+		assertEquals("http://www.parlament.gv.at/WWER/PAD_04476/index.shtml",
+				chairMen.get(0).getPolitician().getId());
 		assertEquals(2, chairMen.get(1).getPosition().intValue());
+		assertEquals("http://www.parlament.gv.at/WWER/PAD_02822/index.shtml",
+				chairMen.get(1).getPolitician().getId());
 		assertEquals(3, chairMen.get(2).getPosition().intValue());
+		assertEquals("http://www.parlament.gv.at/WWER/PAD_35521/index.shtml",
+				chairMen.get(2).getPolitician().getId());
 
-		assertTrue("politicians of session", session
-				.getAbsentNationalCouncilMembers().size() > 0);
-
-		for (NationalCouncilMember ncm : session
-				.getPresentNationalCouncilMembers()) {
-			Politician p = ncm.getPolitician();
-			if (p.getSurName().equals("Kopf")) {
-				assertEquals("Karlheinz", p.getFirstName());
-				assertEquals("", p.getTitle());
-			}
-			System.out.println(p);
-		}
-
-		System.out.println();
-		session.getDiscussions().forEach(d -> System.out.println(d));
+		// assertTrue("politicians of session", session
+		// .getAbsentNationalCouncilMembers().size() > 0);
+		//
+		// for (NationalCouncilMember ncm : session
+		// .getPresentNationalCouncilMembers()) {
+		// Politician p = ncm.getPolitician();
+		// if (p.getSurName().equals("Kopf")) {
+		// assertEquals("Karlheinz", p.getFirstName());
+		// assertEquals("", p.getTitle());
+		// }
+		// System.out.println(p);
+		// }
+		//
+		// System.out.println();
+		// session.getDiscussions().forEach(d -> System.out.println(d));
 	}
 
 	protected Document getProtocol() throws IOException {
