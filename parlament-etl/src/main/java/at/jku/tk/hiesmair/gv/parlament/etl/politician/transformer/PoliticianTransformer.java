@@ -110,14 +110,14 @@ public class PoliticianTransformer extends AbstractTransformer {
 				maidenNameElement = maidenNameElement.nextElementSibling();
 				if (!maidenNameElement.children().isEmpty()) {
 					maidenNameElement = maidenNameElement.child(0);
-					String maidenNameText = maidenNameElement.text().replaceAll(NBSP_STRING, " ");
+					String maidenFullName = maidenNameElement.text().replaceAll(NBSP_STRING, " ");
 
-					if (maidenNameText.length() > 2) {
-						maidenNameText = maidenNameText.substring(1, maidenNameText.length() - 1);
-						String[] parts = maidenNameText.split(",");
-						maidenNameText = parts[0];
+					if (maidenFullName.length() > 2) {
+						maidenFullName = maidenFullName.substring(1, maidenFullName.length() - 1);
+						String[] parts = maidenFullName.split(",");
+						maidenFullName = parts[0];
 
-						Matcher m = MAIDEN_NAME_PATTERN.matcher(maidenNameText);
+						Matcher m = MAIDEN_NAME_PATTERN.matcher(maidenFullName);
 						if (m.find()) {
 							SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
 
@@ -151,17 +151,28 @@ public class PoliticianTransformer extends AbstractTransformer {
 	}
 
 	private Name getName(Document document) {
-		String text = getFullName(document);
-		String[] parts = text.split(",");
-		text = parts[0];
-		Matcher m = NAME_PATTERN.matcher(text);
+		String fullName = getFullName(document);
+		Name name = getName(fullName);
 
-		Name name = new Name();
-		if (parts.length > 1) {
-			name.setTitleAfter(parts[1]);
+		if (name != null) {
+			return name;
 		}
+		else {
+			logger.info("politician-name not found");
+		}
+		return new Name();
+	}
+
+	protected Name getName(String fullName) {
+		String[] parts = fullName.split(",");
+		fullName = parts[0];
+		Matcher m = NAME_PATTERN.matcher(fullName);
 
 		if (m.find()) {
+			Name name = new Name();
+			if (parts.length > 1) {
+				name.setTitleAfter(parts[1]);
+			}
 			if (m.group(1) != null) {
 				name.setTitle(m.group(1).trim());
 			}
@@ -171,11 +182,9 @@ public class PoliticianTransformer extends AbstractTransformer {
 			if (m.group(3) != null) {
 				name.setSurName(m.group(3).trim());
 			}
+			return name;
 		}
-		else{
-			logger.info("politician-name not found");
-		}
-		return name;
+		return null;
 	}
 
 	protected String getFullName(Document document) {

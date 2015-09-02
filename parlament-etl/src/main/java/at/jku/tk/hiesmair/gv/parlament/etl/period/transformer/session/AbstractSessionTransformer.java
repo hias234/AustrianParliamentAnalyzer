@@ -672,7 +672,7 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 		int position = 1;
 
 		Elements chairMenElements = protocol.select("p:matches(^Vorsitzender?:.*)");
-		if (chairMenElements.size() == 1) {
+		if (!chairMenElements.isEmpty()) {
 			Elements chairMenLinks = getPoliticianLinks(chairMenElements.first());
 			for (Element chairMenLink : chairMenLinks) {
 				String href = chairMenLink.attr("href");
