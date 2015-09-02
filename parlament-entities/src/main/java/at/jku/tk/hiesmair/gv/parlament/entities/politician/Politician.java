@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -26,21 +27,17 @@ public class Politician {
 	@Id
 	private String id;
 
-	private String title;
-	private String titleAfter;
-	private String firstName;
-	private String surName;
-
-	private String maidenSurName;
-
-	@Temporal(TemporalType.DATE)
-	private Date maidenNameValidUntil;
+	@Embedded
+	private Name name = new Name();
 
 	@Temporal(TemporalType.DATE)
 	private Date birthDate;
 
 	@OneToMany(mappedBy = "politician", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
 	private Set<Mandate> mandates = new HashSet<Mandate>();
+
+	@OneToMany(mappedBy = "politician", cascade = CascadeType.ALL)
+	private List<PoliticianName> previousNames = new ArrayList<PoliticianName>();
 
 	public String getId() {
 		return id;
@@ -50,32 +47,48 @@ public class Politician {
 		this.id = id;
 	}
 
+	public Name getName() {
+		return name;
+	}
+
+	public void setName(Name name) {
+		this.name = name;
+	}
+
 	public String getTitle() {
-		return title;
+		return name.getTitle();
 	}
 
 	public void setTitle(String title) {
-		this.title = title;
+		name.setTitle(title);
 	}
 
 	public String getFirstName() {
-		return firstName;
+		return name.getFirstName();
 	}
 
 	public void setFirstName(String firstName) {
-		this.firstName = firstName;
+		name.setFirstName(firstName);
 	}
 
 	public String getSurName() {
-		return surName;
+		return name.getSurName();
 	}
 
 	public void setSurName(String surName) {
-		this.surName = surName;
+		name.setSurName(surName);
 	}
 
 	public String getFullName() {
-		return firstName + " " + surName;
+		return name.getFullName();
+	}
+
+	public String getTitleAfter() {
+		return name.getTitleAfter();
+	}
+
+	public void setTitleAfter(String titleAfter) {
+		name.setTitleAfter(titleAfter);
 	}
 
 	public Date getBirthDate() {
@@ -94,35 +107,12 @@ public class Politician {
 		this.mandates = mandates;
 	}
 
-	public String getTitleAfter() {
-		return titleAfter;
+	public List<PoliticianName> getPreviousNames() {
+		return previousNames;
 	}
 
-	public void setTitleAfter(String titleAfter) {
-		this.titleAfter = titleAfter;
-	}
-
-	public String getMaidenSurName() {
-		return maidenSurName;
-	}
-
-	public void setMaidenSurName(String maidenSurName) {
-		this.maidenSurName = maidenSurName;
-	}
-
-	public Date getMaidenNameValidUntil() {
-		return maidenNameValidUntil;
-	}
-
-	public void setMaidenNameValidUntil(Date maidenNameValidUntil) {
-		this.maidenNameValidUntil = maidenNameValidUntil;
-	}
-	
-	public String getSurNameAt(Date date){
-		if (maidenNameValidUntil != null && date.compareTo(maidenNameValidUntil) <= 0){
-			return maidenSurName;
-		}
-		return surName;
+	public void setPreviousNames(List<PoliticianName> previousNames) {
+		this.previousNames = previousNames;
 	}
 
 	public List<NationalCouncilMember> getNationalCouncilMemberships() {
@@ -178,8 +168,8 @@ public class Politician {
 
 	@Override
 	public String toString() {
-		return "Politician [id=" + id + ", title=" + title + ", firstName=" + firstName + ", surName=" + surName
-				+ ", birthDate=" + birthDate + ", mandates (" + mandates.size() + ") =" + mandates + "]";
+		return "Politician [id=" + id + ", name=" + name + ", birthDate=" + birthDate + ", mandates ("
+				+ mandates.size() + ") =" + mandates + "]";
 	}
 
 }

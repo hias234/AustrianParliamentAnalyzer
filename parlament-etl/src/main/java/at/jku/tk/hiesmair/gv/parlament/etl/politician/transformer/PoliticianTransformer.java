@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -32,7 +33,9 @@ import at.jku.tk.hiesmair.gv.parlament.entities.mandate.FederalViceChancellor;
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.Mandate;
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.NationalCouncilMember;
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.NationalCouncilPresident;
+import at.jku.tk.hiesmair.gv.parlament.entities.politician.Name;
 import at.jku.tk.hiesmair.gv.parlament.entities.politician.Politician;
+import at.jku.tk.hiesmair.gv.parlament.entities.politician.PoliticianName;
 import at.jku.tk.hiesmair.gv.parlament.etl.AbstractTransformer;
 import at.jku.tk.hiesmair.gv.parlament.etl.politician.extractor.feed.PoliticianFeedItem;
 
@@ -45,10 +48,13 @@ public class PoliticianTransformer extends AbstractTransformer {
 
 	private static final Logger logger = Logger.getLogger(PoliticianTransformer.class.getSimpleName());
 
-	protected static final Pattern NAME_PATTERN = Pattern.compile("^((?:[\\wöäüÖÄÜß]+\\..?(?:\\(FH\\))?)*\\s)?((?:[\\wöäüÖÄÜß,-\\.]+(?:\\s.\\.)?\\s?)+)\\s([^\\s,(\\.:]+)$");;
-	protected static final Pattern MAIDEN_NAME_PATTERN = Pattern.compile("^\\(bis (\\d+\\.\\d+\\.\\d{4}): ((?:[\\wöäüÖÄÜß]+\\..?(?:\\(FH\\))?)*\\s)?((?:[\\wöäüÖÄÜß,-\\.]+(?:\\s.\\.)?\\s?)+)\\s([^\\s,()\\.:]+)\\)$");
+	protected static final Pattern NAME_PATTERN = Pattern
+			.compile("^((?:[\\wöäüÖÄÜß]+\\..?(?:\\(FH\\))?)*\\s)?((?:[\\wöäüÖÄÜß,-\\.]+(?:\\s.\\.)?\\s?)+)\\s([^\\s,(\\.:]+)$");;
+	protected static final Pattern MAIDEN_NAME_PATTERN = Pattern
+			.compile("^bis (\\d+\\.\\d+\\.\\d{4}): ((?:[\\wöäüÖÄÜß]+\\..?(?:\\(FH\\))?)*\\s)?((?:[\\wöäüÖÄÜß,-\\.]+(?:\\s.\\.)?\\s?)+)\\s([^\\s,()\\.:]+)$");
 	protected static final Pattern BIRTHDATE_PATTERN = Pattern.compile("Geb.:\\s(\\d+\\.\\d+\\.\\d{4})");
-	protected static final Pattern MANDATE_PATTERN = Pattern.compile("([^(,]*)(?:\\(([^\\.]+)\\.(?:.([^\\.]+)\\.)?\\sGP\\))?,? ?([^\\d]+)?\\s(\\d+\\.\\d+\\.\\d{4})( .)?\\s?(?:(\\d+\\.\\d+\\.\\d{4}))?");
+	protected static final Pattern MANDATE_PATTERN = Pattern
+			.compile("([^(,]*)(?:\\(([^\\.]+)\\.(?:.([^\\.]+)\\.)?\\sGP\\))?,? ?([^\\d]+)?\\s(\\d+\\.\\d+\\.\\d{4})( .)?\\s?(?:(\\d+\\.\\d+\\.\\d{4}))?");
 
 	protected final Converter romanNrConverter;
 
@@ -81,91 +87,95 @@ public class PoliticianTransformer extends AbstractTransformer {
 
 		Politician politician = new Politician();
 		politician.setId(url);
-		politician.setFirstName(getFirstName(document));
-		politician.setSurName(getSurName(document));
-		politician.setTitle(getTitle(document));
-		politician.setTitleAfter(getTitleAfter(document));
+		politician.setName(getName(document));
 		politician.setBirthDate(getBirthDate(fullText));
 		politician.setMandates(getMandates(politician, document));
-		politician.setMaidenSurName(getMaidenSurName(document));
-		politician.setMaidenNameValidUntil(getMaidenSurNameValidUntil(document));
+
+		PoliticianName previousName = getPreviousName(politician, document);
+		if (previousName != null) {
+			politician.setPreviousNames(Arrays.asList(previousName));
+		}
 
 		cache.putPolitician(politician);
 
 		return politician;
 	}
 
-	private String getMaidenSurName(Document document) {
-		Matcher m = matchMaidenName(document);
-		if (m != null && m.find()){
-			return m.group(4);
-		}
-		return null;
-	}
-	
-	private Date getMaidenSurNameValidUntil(Document document) {
-		Matcher m = matchMaidenName(document);
-		if (m != null && m.find()){
-			SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
-			try {
-				return sdf.parse(m.group(1));
-			} catch (ParseException e) {
-			}
-		}
-		return null;
-	}
-
-	private Matcher matchMaidenName(Document document) {
+	private PoliticianName getPreviousName(Politician politician, Document document) {
 		Elements headers = document.getElementsByTag("h1");
 		if (!headers.isEmpty()) {
 			Element header = headers.stream().findFirst().get();
 			Element maidenNameElement = header.nextElementSibling();
-			if (maidenNameElement != null){
+			if (maidenNameElement != null) {
 				maidenNameElement = maidenNameElement.nextElementSibling();
-				if (!maidenNameElement.children().isEmpty()){
+				if (!maidenNameElement.children().isEmpty()) {
 					maidenNameElement = maidenNameElement.child(0);
 					String maidenNameText = maidenNameElement.text().replaceAll(NBSP_STRING, " ");
-					
-					return MAIDEN_NAME_PATTERN.matcher(maidenNameText);
+
+					if (maidenNameText.length() > 2) {
+						maidenNameText = maidenNameText.substring(1, maidenNameText.length() - 1);
+						String[] parts = maidenNameText.split(",");
+						maidenNameText = parts[0];
+
+						Matcher m = MAIDEN_NAME_PATTERN.matcher(maidenNameText);
+						if (m.find()) {
+							SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+
+							PoliticianName name = new PoliticianName();
+							name.setPolitician(politician);
+							if (m.group(2) != null) {
+								name.setTitle(m.group(2).trim());
+							}
+							if (m.group(3) != null) {
+								name.setFirstName(m.group(3).trim());
+							}
+							if (m.group(4) != null) {
+								name.setSurName(m.group(4).trim());
+							}
+							if (parts.length > 1) {
+								name.setTitleAfter(parts[1].trim());
+							}
+
+							try {
+								name.setValidUntil(sdf.parse(m.group(1)));
+							} catch (ParseException e) {
+							}
+
+							return name;
+						}
+					}
 				}
 			}
 		}
 		return null;
 	}
 
-	private String getFirstName(Document document) {
-		Matcher m = matchName(document);
-		if (m.find()) {
-			return m.group(2).trim();
-		}
-		logger.info("firstName not found");
-		return "";
-	}
-
-	private String getSurName(Document document) {
-		Matcher m = matchName(document);
-		if (m.find()) {
-			return m.group(3).trim();
-		}
-		logger.info("surName not found");
-		return "";
-	}
-
-	protected String getTitleAfter(Document document) {
-		String fullName = getFullName(document);
-		String[] parts = fullName.split(",");
-		if (parts.length > 1) {
-			return parts[1].trim();
-		}
-		return "";
-	}
-
-	protected Matcher matchName(Document document) {
+	private Name getName(Document document) {
 		String text = getFullName(document);
-		text = text.split(",")[0];
-
+		String[] parts = text.split(",");
+		text = parts[0];
 		Matcher m = NAME_PATTERN.matcher(text);
-		return m;
+
+		Name name = new Name();
+		if (parts.length > 1) {
+			name.setTitleAfter(parts[1]);
+		}
+
+		if (m.find()) {
+			if (m.group(1) != null) {
+				name.setTitle(m.group(1).trim());
+			}
+			if (m.group(2) != null) {
+				name.setFirstName(m.group(2).trim());
+			}
+			if (m.group(3) != null) {
+				name.setSurName(m.group(3).trim());
+			}
+		}
+		else{
+			logger.info("politician-name not found");
+		}
+		return name;
 	}
 
 	protected String getFullName(Document document) {
@@ -176,17 +186,6 @@ public class PoliticianTransformer extends AbstractTransformer {
 			String text = header.text();
 			text = text.replaceAll(NBSP_STRING, " ");
 			return text;
-		}
-		return "";
-	}
-
-	private String getTitle(Document document) {
-		Matcher m = matchName(document);
-		if (m.find()) {
-			String title = m.group(1);
-			if (title != null) {
-				return title.trim();
-			}
 		}
 		return "";
 	}
