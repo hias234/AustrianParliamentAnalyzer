@@ -164,17 +164,15 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 	private NationalCouncilMember getAbsentMemberByTitleAndSurName(Date startDate, String name,
 			Set<NationalCouncilMember> members) {
 		name = name.trim().replaceAll(" als verhindert gemeldet", "");
-		name = name.replaceAll("unsere ", "");
+		name = name.replaceAll("unsere? ", "");
 		name = name.replaceAll("Herr ", "");
 		name = name.replaceAll("Frau ", "");
 		name = name.replaceAll("[Dd]ritter? ", "");
 		name = name.replaceAll("[Zz]weiter? ", "");
-		name = name.replaceAll("Präsident(in)? ", "");
-		name = name.replaceAll("Klubvorsitzender? ", "");
-		name = name.replaceAll("der ", "");
-		name = name.replaceAll("die ", "");
-		name = name.replaceAll("Abgeordneten?r? ", "");
-		name = name.replaceAll("Klubobmann ", "");
+		name = name.replaceAll("((der|die) )?Präsident(in)? ", "");
+		name = name.replaceAll("((der|die) )?Klubvorsitzender? ", "");
+		name = name.replaceAll("((der|die) )?Abgeordneten?r? ", "");
+		name = name.replaceAll("(der )?Klubobmann ", "");
 
 		Matcher m = absentMembersNamePattern.matcher(name.trim());
 		if (m.find()) {
