@@ -1,6 +1,7 @@
 package at.jku.tk.hiesmair.gv.parlament.entities.politician;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -16,10 +17,12 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.apache.commons.lang.time.DateUtils;
+
 import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.Mandate;
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.NationalCouncilMember;
-import at.jku.tk.hiesmair.gv.parlament.util.DateUtils;
+import at.jku.tk.hiesmair.gv.parlament.util.ParliamentDateUtils;
 
 @Entity
 public class Politician {
@@ -114,10 +117,10 @@ public class Politician {
 	public void setPreviousNames(List<PoliticianName> previousNames) {
 		this.previousNames = previousNames;
 	}
-	
-	public Name getNameAt(Date date){
-		for (PoliticianName politicianName : previousNames){
-			if (date.compareTo(politicianName.getValidUntil()) <= 0){
+
+	public Name getNameAt(Date date) {
+		for (PoliticianName politicianName : previousNames) {
+			if (date.compareTo(politicianName.getValidUntil()) <= 0) {
 				return politicianName.getName();
 			}
 		}
@@ -131,7 +134,8 @@ public class Politician {
 
 	public boolean isInNationalCouncilAt(Date date) {
 		return getNationalCouncilMemberships().stream().anyMatch(
-				ncm -> DateUtils.isDateBetween(date, ncm.getValidFrom(), ncm.getValidUntil()));
+				ncm -> ParliamentDateUtils.isDateBetween(DateUtils.truncate(date, Calendar.DATE),
+						DateUtils.truncate(ncm.getValidFrom(), Calendar.DATE), DateUtils.truncate(ncm.getValidUntil(), Calendar.DATE)));
 	}
 
 	/**

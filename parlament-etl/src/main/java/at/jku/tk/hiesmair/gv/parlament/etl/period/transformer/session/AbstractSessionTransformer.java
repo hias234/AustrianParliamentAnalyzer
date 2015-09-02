@@ -188,8 +188,8 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 	private NationalCouncilMember getAbsentMemberByTitleAndSurName(Date startDate, String titles, String surName,
 			Set<NationalCouncilMember> members) {
 		List<NationalCouncilMember> matchedMembers = getSurNameMatchingMembers(surName, startDate, members);
-
-		if (matchedMembers.size() == 0) {
+		
+		if (matchedMembers.isEmpty()) {
 			String[] dashParts = surName.split("-");
 			if (dashParts.length > 1) {
 				for (String dashPart : dashParts) {
@@ -232,6 +232,7 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 		if (matchedMembers.size() == 1) {
 			return matchedMembers.get(0);
 		}
+
 		if (matchedMembers.size() > 1) {
 			if (titles.trim().isEmpty()) {
 				matchedMembers = matchedMembers.stream()

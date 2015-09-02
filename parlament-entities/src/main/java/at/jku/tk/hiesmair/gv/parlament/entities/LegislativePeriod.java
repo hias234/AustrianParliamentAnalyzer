@@ -15,7 +15,7 @@ import javax.persistence.OneToMany;
 
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.NationalCouncilMember;
 import at.jku.tk.hiesmair.gv.parlament.entities.session.Session;
-import at.jku.tk.hiesmair.gv.parlament.util.DateUtils;
+import at.jku.tk.hiesmair.gv.parlament.util.ParliamentDateUtils;
 
 @Entity
 public class LegislativePeriod {
@@ -64,7 +64,7 @@ public class LegislativePeriod {
 
 	public Set<NationalCouncilMember> getNationalCouncilMembersAt(Date date) {
 		return nationalCouncilMembers.stream()
-				.filter(ncm -> DateUtils.isDateBetween(date, ncm.getValidFrom(), ncm.getValidUntil()))
+				.filter(ncm -> ParliamentDateUtils.isDateBetween(date, ncm.getValidFrom(), ncm.getValidUntil()))
 				.collect(Collectors.toSet());
 	}
 
