@@ -12,6 +12,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import at.jku.tk.hiesmair.gv.parlament.feed.parser.FeedItem;
+import at.jku.tk.hiesmair.gv.parlament.util.ParliamentUtil;
 
 /**
  * Holds all elements of a protocol
@@ -21,17 +22,17 @@ import at.jku.tk.hiesmair.gv.parlament.feed.parser.FeedItem;
 public class ProtocolFeedItem extends FeedItem {
 
 	private static final String PROTOCOL_CACHE_PREFIX = "protocol_";
-	protected static final String CACHE_PATH = "C:\\Temp\\parlament\\periods";
+	protected static final String CACHE_SPECIFIC_DIRECTORY = ".parliamentdata\\periods";
 	protected static final String CACHE_PREFIX = "index_";
-	
+
 	private volatile String protocolCacheName;
 	private volatile String protocolContent;
 	private volatile Document protocolDocument;
 
 	public ProtocolFeedItem() {
-		super(CACHE_PATH, CACHE_PREFIX);
+		super(CACHE_SPECIFIC_DIRECTORY, CACHE_PREFIX);
 	}
-	
+
 	/**
 	 * Generate the filename for the cache file
 	 * 
@@ -39,7 +40,8 @@ public class ProtocolFeedItem extends FeedItem {
 	 */
 	public String getProtocolCacheName() {
 		if (this.protocolCacheName == null) {
-			this.protocolCacheName = getCacheName(PROTOCOL_CACHE_PREFIX);
+			this.protocolCacheName = ParliamentUtil.getCachePath(
+					PROTOCOL_CACHE_PREFIX, "protocol_" + this.title + ".html");
 		}
 		return this.protocolCacheName;
 	}
@@ -74,7 +76,8 @@ public class ProtocolFeedItem extends FeedItem {
 			URL protocolUrl = new URL(protocolUrlStr);
 			InputStream in = protocolUrl.openStream();
 			this.protocolContent = IOUtils.toString(in);
-			FileUtils.writeStringToFile(getProtocolCacheFile(), this.protocolContent);
+			FileUtils.writeStringToFile(getProtocolCacheFile(),
+					this.protocolContent);
 		}
 	}
 
@@ -86,7 +89,8 @@ public class ProtocolFeedItem extends FeedItem {
 	@Override
 	protected void loadFromCache() throws IOException {
 		super.loadFromCache();
-		this.protocolContent = FileUtils.readFileToString(getProtocolCacheFile());
+		this.protocolContent = FileUtils
+				.readFileToString(getProtocolCacheFile());
 	}
 
 	/**
@@ -128,13 +132,18 @@ public class ProtocolFeedItem extends FeedItem {
 	/** find the URL for the actual protocol document */
 	public String findProtocolUrl() {
 		String hostpart = this.url.getProtocol() + "://" + this.url.getHost();
-		int locationProtocolHtml = this.description.indexOf("Protokoll HTML-Format:");
+		int locationProtocolHtml = this.description
+				.indexOf("Protokoll HTML-Format:");
 		if (locationProtocolHtml > 0) {
 			String hrefPattern = "<a href='";
-			int locationProtocolHref = this.description.indexOf(hrefPattern, locationProtocolHtml);
+			int locationProtocolHref = this.description.indexOf(hrefPattern,
+					locationProtocolHtml);
 			locationProtocolHref += hrefPattern.length();
-			int endLocationProtocolHref = this.description.indexOf('\'', locationProtocolHref);
-			return hostpart + this.description.substring(locationProtocolHref, endLocationProtocolHref);
+			int endLocationProtocolHref = this.description.indexOf('\'',
+					locationProtocolHref);
+			return hostpart
+					+ this.description.substring(locationProtocolHref,
+							endLocationProtocolHref);
 		}
 		return null;
 	}
@@ -183,9 +192,11 @@ public class ProtocolFeedItem extends FeedItem {
 
 	@Override
 	public String toString() {
-		return "Protocol [url=" + url + ", title=" + title + ", pubDate=" + pubDate + ", description=" + description
-				+ ", indexCacheName=" + indexCacheName + ", protocolCacheName=" + protocolCacheName + ", indexContent="
-				+ indexContent + ", protocolContent=" + protocolContent + "]";
+		return "Protocol [url=" + url + ", title=" + title + ", pubDate="
+				+ pubDate + ", description=" + description
+				+ ", indexCacheName=" + indexCacheName + ", protocolCacheName="
+				+ protocolCacheName + ", indexContent=" + indexContent
+				+ ", protocolContent=" + protocolContent + "]";
 	}
 
 }

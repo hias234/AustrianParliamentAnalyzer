@@ -19,6 +19,7 @@ import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.NationalCouncilMember;
 import at.jku.tk.hiesmair.gv.parlament.entities.session.Session;
+import at.jku.tk.hiesmair.gv.parlament.entities.session.SessionChairMan;
 import at.jku.tk.hiesmair.gv.parlament.etl.period.transformer.session.SessionTransformer22andUp;
 import at.jku.tk.hiesmair.gv.parlament.etl.politician.PoliticiansEtlJob;
 import at.jku.tk.hiesmair.gv.parlament.etl.politician.extractor.PoliticiansExtractor;
@@ -48,6 +49,11 @@ public class SessionTransformerTest {
 		assertEquals("StartDate of Session", "20.05.2014 09:05", dateFormat.format(session.getStartDate()));
 		assertEquals("EndDate of Session", "20.05.2014 22:04", dateFormat.format(session.getEndDate()));
 
+		List<SessionChairMan> chairMen = session.getChairMen();
+		chairMen.sort((cm1, cm2) -> cm1.getPosition().compareTo(cm2.getPosition()));
+		
+		assertEquals(3, chairMen.size());
+		
 		assertTrue("politicians of session", session.getAbsentNationalCouncilMembers().size() > 0);
 
 		for (NationalCouncilMember ncm : session.getPresentNationalCouncilMembers()) {

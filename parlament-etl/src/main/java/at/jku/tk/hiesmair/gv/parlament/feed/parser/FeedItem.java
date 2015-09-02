@@ -11,6 +11,8 @@ import org.apache.commons.io.IOUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import at.jku.tk.hiesmair.gv.parlament.util.ParliamentUtil;
+
 /**
  * Item of the feed - loads the html-file
  * 
@@ -18,22 +20,23 @@ import org.jsoup.nodes.Document;
  *
  */
 public class FeedItem {
-	protected String cachePath;
-	protected String indexCachePrefix;
 
 	protected URL url;
 	protected String title;
 	protected Date pubDate;
 	protected String description;
 
+	protected String indexCachePrefix;
+	protected volatile String specificCacheDirectory;
+
 	protected volatile String indexCacheName;
 
 	protected volatile String indexContent;
 	protected volatile Document indexDocument;
 
-	public FeedItem(String cachePath, String indexCachePrefix) {
+	public FeedItem(String spectivicCacheDirectory, String indexCachePrefix) {
 		super();
-		this.cachePath = cachePath;
+		this.specificCacheDirectory = spectivicCacheDirectory;
 		this.indexCachePrefix = indexCachePrefix;
 	}
 
@@ -44,21 +47,11 @@ public class FeedItem {
 	 */
 	public String getIndexCacheName() {
 		if (this.indexCacheName == null) {
-			this.indexCacheName = getCacheName(indexCachePrefix);
+			this.indexCacheName = ParliamentUtil.getCachePath(
+					specificCacheDirectory, indexCachePrefix + this.title
+							+ ".html");
 		}
 		return this.indexCacheName;
-	}
-
-	protected String getCacheName(String cachePrefix) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(cachePath);
-		if (!cachePath.endsWith(File.separator)) {
-			sb.append(File.separatorChar);
-		}
-		sb.append(cachePrefix);
-		sb.append(this.title);
-		sb.append(".html");
-		return sb.toString();
 	}
 
 	/**
@@ -104,8 +97,7 @@ public class FeedItem {
 		if (this.indexContent == null) {
 			if (this.isCached()) {
 				loadFromCache();
-			}
-			else {
+			} else {
 				loadFromWeb();
 			}
 		}
