@@ -6,6 +6,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import at.jku.tk.hiesmair.gv.parlament.cache.DataCache;
+import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 
 /**
  * Transforms the Protocols of a Session into a session object
@@ -57,8 +58,9 @@ public class SessionTransformer22andUp extends AbstractSessionTransformer {
 			
 			speechPart = getNextPossibleStartTextElement(speechPart);
 		}
-		if (speechPart.className().equals("RE")){
-			logger.info("did not find first speechText-Element -> reached SpeechEndElement");
+	
+		if (speechPart == null || speechPart.className().equals("RE")){
+			logger.debug("did not find first speechText-Element -> reached SpeechEndElement");
 			return null;
 		}
 		return speechPart;
@@ -74,13 +76,24 @@ public class SessionTransformer22andUp extends AbstractSessionTransformer {
 			while (speechPart != null && speechPart.children().isEmpty()){
 				speechPart = speechPart.nextElementSibling();
 			}
-			speechPart = speechPart.child(0);
+			if (speechPart != null){
+				speechPart = speechPart.child(0);
+			}
 		}
 		return speechPart;
 	}
 
 	@Override
 	protected Elements getSpeechBeginElements(Document protocol) {
-		return protocol.select("p.RB:matches(^\\s*\\d{1,2}\\.\\d{2}.*)");
+		return protocol.select("p:matches(^\\s*\\d{1,2}\\.\\d{2})");
+	}
+
+	@Override
+	protected Politician getPoliticianOfSpeech(Element firstSpeechTextElement) throws Exception {
+		Elements politicianLinks = getPoliticianLinks(firstSpeechTextElement);
+		if (!politicianLinks.isEmpty()){
+			return getPolitician(politicianLinks.get(0).attr("href"));
+		}
+		return null;
 	}
 }

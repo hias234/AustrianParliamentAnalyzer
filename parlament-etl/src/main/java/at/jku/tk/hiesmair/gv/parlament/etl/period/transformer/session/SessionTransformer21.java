@@ -6,6 +6,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import at.jku.tk.hiesmair.gv.parlament.cache.DataCache;
+import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 
 public class SessionTransformer21 extends AbstractSessionTransformer {
 
@@ -41,7 +42,7 @@ public class SessionTransformer21 extends AbstractSessionTransformer {
 			}
 		}
 
-		logger.info("no firstspeechTextElement found");
+		logger.debug("no firstspeechTextElement found");
 		return null;
 	}
 
@@ -54,6 +55,15 @@ public class SessionTransformer21 extends AbstractSessionTransformer {
 		Elements speechBeginAndEndElements = protocol.select("i:matches(^\\s*\\d{1,2}\\.\\d{2}\\s*$)");
 
 		return speechBeginAndEndElements;
+	}
+
+	@Override
+	protected Politician getPoliticianOfSpeech(Element firstSpeechTextElement) throws Exception {
+		Elements politicianLinks = getPoliticianLinks(firstSpeechTextElement);
+		if (!politicianLinks.isEmpty()){
+			return getPolitician(politicianLinks.get(0).attr("href"));
+		}
+		return null;
 	}
 
 }

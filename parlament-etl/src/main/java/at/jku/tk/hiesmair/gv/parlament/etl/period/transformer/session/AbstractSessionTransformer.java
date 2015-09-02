@@ -421,9 +421,6 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 		}
 
 		if (discussions.size() > 0) {
-			if (session.getSessionNr().equals(97)){
-				int i = 0;
-			}
 			discussions = setSpeechTexts(protocol, discussions);
 			checkIfAllSpeechTextsWereFound(discussions);
 		}
@@ -440,23 +437,22 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 				Element speechPartElement = getFirstSpeechTextElement(speechBegin);
 
 				if (speechPartElement != null) {
-					Elements politicianLinks = getPoliticianLinks(speechPartElement);
-					if (politicianLinks.size() > 0) {
-						Politician politician = getPolitician(politicianLinks.get(0).attr("href"));
+					Politician politician = getPoliticianOfSpeech(speechPartElement);
+					if (politician!=null) {
 						String speechText = getSpeechText(speechPartElement);
 						if (speechText != null) {
 							setSpeechText(discussions, time, politician, speechText);
 						}
 						else {
-							logger.info("no colon " + speechPartElement);
+							logger.debug("no colon " + speechPartElement);
 						}
 					}
 					else {
-						logger.info("no politician-link " + speechPartElement);
+						logger.debug("did not find politician: " + speechPartElement);
 					}
 				}
 				else {
-					logger.info("speechPart-Tag is null");
+					logger.debug("speechPart-Tag is null");
 				}
 			}
 			else {
@@ -504,9 +500,16 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 				}
 			}
 		}
-		logger.info("did not find corresponding speech (" + politician.getSurName() + ", " + time);
+		logger.debug("did not find corresponding speech (" + politician.getSurName() + ", " + time);
 	}
 
+	protected abstract Politician getPoliticianOfSpeech(Element firstSpeechTextElement) throws Exception;
+	
+	/**
+	 * returns the speech text
+	 * @param speechPartElement
+	 * @return
+	 */
 	protected abstract String getSpeechText(Element speechPartElement);
 	
 	/**
