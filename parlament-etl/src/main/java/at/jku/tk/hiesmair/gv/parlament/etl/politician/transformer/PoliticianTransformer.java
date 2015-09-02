@@ -45,9 +45,10 @@ public class PoliticianTransformer extends AbstractTransformer {
 
 	private static final Logger logger = Logger.getLogger(PoliticianTransformer.class.getSimpleName());
 
-	protected final Pattern namePattern;
-	protected final Pattern birthDatePattern;
-	protected final Pattern mandatePattern;
+	protected static final Pattern NAME_PATTERN = Pattern.compile("^((?:[\\wöäüÖÄÜß]+\\..?(?:\\(FH\\))?)*\\s)?((?:[\\wöäüÖÄÜß,-\\.]+(?:\\s.\\.)?\\s?)+)\\s([^\\s,(\\.:]+)$");;
+	protected static final Pattern MAIDEN_NAME_PATTERN = Pattern.compile("^\\(bis (\\d+\\.\\d+\\.\\d{4}): ((?:[\\wöäüÖÄÜß]+\\..?(?:\\(FH\\))?)*\\s)?((?:[\\wöäüÖÄÜß,-\\.]+(?:\\s.\\.)?\\s?)+)\\s([^\\s,()\\.:]+)\\)$");
+	protected static final Pattern BIRTHDATE_PATTERN = Pattern.compile("Geb.:\\s(\\d+\\.\\d+\\.\\d{4})");
+	protected static final Pattern MANDATE_PATTERN = Pattern.compile("([^(,]*)(?:\\(([^\\.]+)\\.(?:.([^\\.]+)\\.)?\\sGP\\))?,? ?([^\\d]+)?\\s(\\d+\\.\\d+\\.\\d{4})( .)?\\s?(?:(\\d+\\.\\d+\\.\\d{4}))?");
 
 	protected final Converter romanNrConverter;
 
@@ -56,10 +57,6 @@ public class PoliticianTransformer extends AbstractTransformer {
 	@Inject
 	public PoliticianTransformer(DataCache cache) {
 		this.cache = cache;
-		this.namePattern = Pattern.compile("^((?:[\\wöäüÖÄÜß]+\\..?(?:\\(FH\\))?)*\\s)?((?:[\\wöäüÖÄÜß,-\\.]+(?:\\s.\\.)?\\s?)+)\\s([^\\s,(\\.:]+)$");
-		this.mandatePattern = Pattern
-				.compile("([^(,]*)(?:\\(([^\\.]+)\\.(?:.([^\\.]+)\\.)?\\sGP\\))?,? ?([^\\d]+)?\\s(\\d+\\.\\d+\\.\\d{4})( .)?\\s?(?:(\\d+\\.\\d+\\.\\d{4}))?");
-		this.birthDatePattern = Pattern.compile("Geb.:\\s(\\d+\\.\\d+\\.\\d{4})");
 
 		this.romanNrConverter = new Converter();
 	}
@@ -79,7 +76,7 @@ public class PoliticianTransformer extends AbstractTransformer {
 
 	protected Politician getPolitician(String url, Document document) {
 		logger.debug("transforming politician " + url);
-		
+
 		String fullText = document.text();
 
 		Politician politician = new Politician();
@@ -90,10 +87,50 @@ public class PoliticianTransformer extends AbstractTransformer {
 		politician.setTitleAfter(getTitleAfter(document));
 		politician.setBirthDate(getBirthDate(fullText));
 		politician.setMandates(getMandates(politician, document));
+		politician.setMaidenSurName(getMaidenSurName(document));
+		politician.setMaidenNameValidUntil(getMaidenSurNameValidUntil(document));
 
 		cache.putPolitician(politician);
 
 		return politician;
+	}
+
+	private String getMaidenSurName(Document document) {
+		Matcher m = matchMaidenName(document);
+		if (m != null && m.find()){
+			return m.group(4);
+		}
+		return null;
+	}
+	
+	private Date getMaidenSurNameValidUntil(Document document) {
+		Matcher m = matchMaidenName(document);
+		if (m != null && m.find()){
+			SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+			try {
+				return sdf.parse(m.group(1));
+			} catch (ParseException e) {
+			}
+		}
+		return null;
+	}
+
+	private Matcher matchMaidenName(Document document) {
+		Elements headers = document.getElementsByTag("h1");
+		if (!headers.isEmpty()) {
+			Element header = headers.stream().findFirst().get();
+			Element maidenNameElement = header.nextElementSibling();
+			if (maidenNameElement != null){
+				maidenNameElement = maidenNameElement.nextElementSibling();
+				if (!maidenNameElement.children().isEmpty()){
+					maidenNameElement = maidenNameElement.child(0);
+					String maidenNameText = maidenNameElement.text().replaceAll(NBSP_STRING, " ");
+					
+					return MAIDEN_NAME_PATTERN.matcher(maidenNameText);
+				}
+			}
+		}
+		return null;
 	}
 
 	private String getFirstName(Document document) {
@@ -127,7 +164,7 @@ public class PoliticianTransformer extends AbstractTransformer {
 		String text = getFullName(document);
 		text = text.split(",")[0];
 
-		Matcher m = namePattern.matcher(text);
+		Matcher m = NAME_PATTERN.matcher(text);
 		return m;
 	}
 
@@ -155,7 +192,7 @@ public class PoliticianTransformer extends AbstractTransformer {
 	}
 
 	private Date getBirthDate(String fullText) {
-		Matcher m = birthDatePattern.matcher(fullText);
+		Matcher m = BIRTHDATE_PATTERN.matcher(fullText);
 		if (m.find()) {
 			String birthDateString = m.group(1);
 			try {
@@ -179,7 +216,7 @@ public class PoliticianTransformer extends AbstractTransformer {
 		Elements polMandate = polMandateHeader.nextElementSibling().children();
 		for (Element polMandat : polMandate) {
 			String text = polMandat.text().replaceAll(NBSP_STRING, " ");
-			Matcher m = mandatePattern.matcher(text);
+			Matcher m = MANDATE_PATTERN.matcher(text);
 			if (m.find()) {
 				String description = m.group(1).trim();
 				String periodFrom = m.group(2);
@@ -211,7 +248,8 @@ public class PoliticianTransformer extends AbstractTransformer {
 			if (description.contains(" zum Nationalrat")) {
 				mandate = new NationalCouncilMember();
 				((NationalCouncilMember) mandate).setClub(getClub(clubShortName.trim()));
-				((NationalCouncilMember) mandate).setPeriods(getPeriods(((NationalCouncilMember) mandate), periodFrom, periodTo));
+				((NationalCouncilMember) mandate).setPeriods(getPeriods(((NationalCouncilMember) mandate), periodFrom,
+						periodTo));
 			}
 		}
 		else if (description.contains("Mitglied des Bundesrates")) {
