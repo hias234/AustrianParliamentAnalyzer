@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
+import at.jku.tk.hiesmair.gv.parlament.entities.politician.Politician;
 
 /**
  * Doesn't do anything after extracting politicians

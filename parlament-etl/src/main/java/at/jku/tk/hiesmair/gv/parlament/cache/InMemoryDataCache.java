@@ -8,8 +8,8 @@ import javax.inject.Singleton;
 import org.springframework.stereotype.Component;
 
 import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
-import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.club.ParliamentClub;
+import at.jku.tk.hiesmair.gv.parlament.entities.politician.Politician;
 
 /**
  * caching of politicians and clubs so that it does not have to load it several times.

@@ -11,7 +11,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import at.jku.tk.hiesmair.gv.parlament.cache.InMemoryDataCache;
-import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
+import at.jku.tk.hiesmair.gv.parlament.entities.politician.Politician;
 import at.jku.tk.hiesmair.gv.parlament.etl.politician.extractor.PoliticiansExtractor;
 import at.jku.tk.hiesmair.gv.parlament.etl.politician.extractor.feed.PoliticianFeedItem;
 import at.jku.tk.hiesmair.gv.parlament.etl.politician.transformer.PoliticianTransformer;

@@ -7,7 +7,7 @@ import javax.inject.Inject;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
+import at.jku.tk.hiesmair.gv.parlament.entities.politician.Politician;
 import at.jku.tk.hiesmair.gv.parlament.etl.politician.extractor.PoliticiansExtractor;
 import at.jku.tk.hiesmair.gv.parlament.etl.politician.extractor.feed.PoliticianFeedItem;
 import at.jku.tk.hiesmair.gv.parlament.etl.politician.loader.PoliticiansLoader;

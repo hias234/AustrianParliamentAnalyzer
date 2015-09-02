@@ -1,4 +1,4 @@
-package at.jku.tk.hiesmair.gv.parlament.entities;
+package at.jku.tk.hiesmair.gv.parlament.entities.politician;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,6 +15,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.Mandate;
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.NationalCouncilMember;
 import at.jku.tk.hiesmair.gv.parlament.util.DateUtils;
@@ -29,6 +30,11 @@ public class Politician {
 	private String titleAfter;
 	private String firstName;
 	private String surName;
+
+	private String maidenSurName;
+
+	@Temporal(TemporalType.DATE)
+	private Date maidenNameValidUntil;
 
 	@Temporal(TemporalType.DATE)
 	private Date birthDate;
@@ -94,6 +100,29 @@ public class Politician {
 
 	public void setTitleAfter(String titleAfter) {
 		this.titleAfter = titleAfter;
+	}
+
+	public String getMaidenSurName() {
+		return maidenSurName;
+	}
+
+	public void setMaidenSurName(String maidenSurName) {
+		this.maidenSurName = maidenSurName;
+	}
+
+	public Date getMaidenNameValidUntil() {
+		return maidenNameValidUntil;
+	}
+
+	public void setMaidenNameValidUntil(Date maidenNameValidUntil) {
+		this.maidenNameValidUntil = maidenNameValidUntil;
+	}
+	
+	public String getSurNameAt(Date date){
+		if (maidenNameValidUntil != null && date.compareTo(maidenNameValidUntil) <= 0){
+			return maidenSurName;
+		}
+		return surName;
 	}
 
 	public List<NationalCouncilMember> getNationalCouncilMemberships() {

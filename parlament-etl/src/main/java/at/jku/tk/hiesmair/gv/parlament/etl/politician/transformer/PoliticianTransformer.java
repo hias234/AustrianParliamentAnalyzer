@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
 
 import at.jku.tk.hiesmair.gv.parlament.cache.DataCache;
 import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
-import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.club.ParliamentClub;
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.EuropeanParliamentMember;
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.FederalChancellor;
@@ -33,6 +32,7 @@ import at.jku.tk.hiesmair.gv.parlament.entities.mandate.FederalViceChancellor;
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.Mandate;
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.NationalCouncilMember;
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.NationalCouncilPresident;
+import at.jku.tk.hiesmair.gv.parlament.entities.politician.Politician;
 import at.jku.tk.hiesmair.gv.parlament.etl.AbstractTransformer;
 import at.jku.tk.hiesmair.gv.parlament.etl.politician.extractor.feed.PoliticianFeedItem;
 

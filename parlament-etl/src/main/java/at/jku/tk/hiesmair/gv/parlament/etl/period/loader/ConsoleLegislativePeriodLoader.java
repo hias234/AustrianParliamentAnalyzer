@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
-import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.discussion.Discussion;
+import at.jku.tk.hiesmair.gv.parlament.entities.politician.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.session.Session;
 
 public class ConsoleLegislativePeriodLoader implements LegislativePeriodLoader {

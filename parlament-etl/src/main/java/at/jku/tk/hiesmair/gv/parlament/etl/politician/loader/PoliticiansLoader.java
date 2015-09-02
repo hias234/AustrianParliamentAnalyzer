@@ -2,7 +2,7 @@ package at.jku.tk.hiesmair.gv.parlament.etl.politician.loader;
 
 import java.util.List;
 
-import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
+import at.jku.tk.hiesmair.gv.parlament.entities.politician.Politician;
 
 public interface PoliticiansLoader {
 

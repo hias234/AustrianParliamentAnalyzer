@@ -9,10 +9,10 @@ import at.jku.tk.hiesmair.gv.parlament.db.MandateRepository;
 import at.jku.tk.hiesmair.gv.parlament.db.ParliamentClubRepository;
 import at.jku.tk.hiesmair.gv.parlament.db.PoliticianRepository;
 import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
-import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.CouncilMember;
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.Mandate;
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.NationalCouncilMember;
+import at.jku.tk.hiesmair.gv.parlament.entities.politician.Politician;
 import at.jku.tk.hiesmair.gv.parlament.etl.politician.loader.PoliticiansLoader;
 
 public class PoliticiansDatabaseLoader implements PoliticiansLoader {

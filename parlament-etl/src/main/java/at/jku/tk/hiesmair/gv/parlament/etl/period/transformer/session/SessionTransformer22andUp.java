@@ -6,7 +6,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import at.jku.tk.hiesmair.gv.parlament.cache.DataCache;
-import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
+import at.jku.tk.hiesmair.gv.parlament.entities.politician.Politician;
 
 /**
  * Transforms the Protocols of a Session into a session object

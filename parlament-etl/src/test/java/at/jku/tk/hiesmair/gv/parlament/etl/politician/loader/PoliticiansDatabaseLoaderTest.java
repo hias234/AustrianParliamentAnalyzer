@@ -20,10 +20,10 @@ import at.jku.tk.hiesmair.gv.parlament.db.DummyDbApp;
 import at.jku.tk.hiesmair.gv.parlament.db.PoliticianRepository;
 import at.jku.tk.hiesmair.gv.parlament.entities.DummyEntitiesApp;
 import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
-import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.club.ParliamentClub;
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.Mandate;
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.NationalCouncilMember;
+import at.jku.tk.hiesmair.gv.parlament.entities.politician.Politician;
 import at.jku.tk.hiesmair.gv.parlament.etl.politician.DummyPoliticianEtlApp;
 import at.jku.tk.hiesmair.gv.parlament.etl.politician.loader.db.PoliticiansDatabaseLoader;
 

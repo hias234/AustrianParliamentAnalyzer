@@ -10,8 +10,8 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 
 import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
-import at.jku.tk.hiesmair.gv.parlament.entities.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.club.ParliamentClub;
+import at.jku.tk.hiesmair.gv.parlament.entities.politician.Politician;
 
 @Entity
 @DiscriminatorValue("NationalCouncilMember")
