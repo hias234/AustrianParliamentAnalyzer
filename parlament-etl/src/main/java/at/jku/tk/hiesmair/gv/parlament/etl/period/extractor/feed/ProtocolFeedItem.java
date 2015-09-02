@@ -41,7 +41,7 @@ public class ProtocolFeedItem extends FeedItem {
 	public String getProtocolCacheName() {
 		if (this.protocolCacheName == null) {
 			this.protocolCacheName = ParliamentUtil.getCachePath(
-					PROTOCOL_CACHE_PREFIX, "protocol_" + this.title + ".html");
+					CACHE_SPECIFIC_DIRECTORY, PROTOCOL_CACHE_PREFIX + this.title + ".html");
 		}
 		return this.protocolCacheName;
 	}

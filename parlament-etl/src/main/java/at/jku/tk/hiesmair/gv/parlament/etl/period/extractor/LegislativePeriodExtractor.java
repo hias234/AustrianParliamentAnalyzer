@@ -40,7 +40,7 @@ public class LegislativePeriodExtractor {
 		LegislativePeriodFeedParser parser = new LegislativePeriodFeedParser(feedContent, new SessionTitleParser(
 				converter.toRomanNumerals(period)));
 
-		return parser.getProtocols();
+		return parser.getItems();
 	}
 
 	protected String getFeedContent(int period) throws MalformedURLException, IOException, InterruptedException {
