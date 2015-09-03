@@ -14,13 +14,15 @@ import at.jku.tk.hiesmair.gv.parlament.etl.politician.transformer.PoliticianTran
 @Component
 public class DiscussionTransformer22andUp extends AbstractDiscussionTransformer {
 
-	private static final Logger logger = Logger.getLogger(DiscussionTransformer22andUp.class.getSimpleName());
+	private static final Logger logger = Logger.getLogger(DiscussionTransformer22andUpTest.class.getSimpleName());
+
+	protected static final String SPEECH_END_CLASSNAME = "RE";
 	
 	@Inject
 	public DiscussionTransformer22andUp(PoliticianTransformer politicianTransformer) {
 		super(politicianTransformer);
 	}
-	
+
 	@Override
 	protected String getSpeechText(Element speechPartElement) {
 		String speechText = null;
@@ -31,7 +33,7 @@ public class DiscussionTransformer22andUp extends AbstractDiscussionTransformer 
 			speechText = firstText.substring(indexOfColon + 1).trim();
 
 			speechPartElement = speechPartElement.nextElementSibling();
-			for (; speechPartElement != null && !speechPartElement.className().equals("RE"); speechPartElement = speechPartElement
+			for (; speechPartElement != null && !speechPartElement.className().equals(SPEECH_END_CLASSNAME); speechPartElement = speechPartElement
 					.nextElementSibling()) {
 				speechText += "\n\n" + speechPartElement.text();
 			}
@@ -42,15 +44,15 @@ public class DiscussionTransformer22andUp extends AbstractDiscussionTransformer 
 	@Override
 	protected Element getFirstSpeechTextElement(Element speechBegin) {
 		Element speechPart = getNextPossibleStartTextElement(speechBegin);
-		while (speechPart != null && !speechPart.className().equals("RE")){
-			if (!politicianTransformer.getPoliticianLinks(speechPart).isEmpty()){
+		while (speechPart != null && !speechPart.className().equals(SPEECH_END_CLASSNAME)) {
+			if (!politicianTransformer.getPoliticianLinks(speechPart).isEmpty()) {
 				return speechPart;
 			}
-			
+
 			speechPart = getNextPossibleStartTextElement(speechPart);
 		}
-	
-		if (speechPart == null || speechPart.className().equals("RE")){
+
+		if (speechPart == null || speechPart.className().equals(SPEECH_END_CLASSNAME)) {
 			logger.debug("did not find first speechText-Element -> reached SpeechEndElement");
 			return null;
 		}
@@ -59,15 +61,15 @@ public class DiscussionTransformer22andUp extends AbstractDiscussionTransformer 
 
 	protected Element getNextPossibleStartTextElement(Element speechPart) {
 		Element nextSibling = speechPart.nextElementSibling();
-		if (nextSibling != null){
+		if (nextSibling != null) {
 			speechPart = nextSibling;
 		}
 		else {
 			speechPart = speechPart.parent().nextElementSibling();
-			while (speechPart != null && speechPart.children().isEmpty()){
+			while (speechPart != null && speechPart.children().isEmpty()) {
 				speechPart = speechPart.nextElementSibling();
 			}
-			if (speechPart != null){
+			if (speechPart != null) {
 				speechPart = speechPart.child(0);
 			}
 		}
@@ -82,7 +84,7 @@ public class DiscussionTransformer22andUp extends AbstractDiscussionTransformer 
 	@Override
 	protected Politician getPoliticianOfSpeech(Element firstSpeechTextElement) throws Exception {
 		Elements politicianLinks = politicianTransformer.getPoliticianLinks(firstSpeechTextElement);
-		if (!politicianLinks.isEmpty()){
+		if (!politicianLinks.isEmpty()) {
 			return politicianTransformer.getPolitician(politicianLinks.get(0).attr("href"));
 		}
 		return null;
