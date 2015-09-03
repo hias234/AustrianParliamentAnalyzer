@@ -37,27 +37,17 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 	protected static final Pattern DISCUSSION_TYPE_PATTERN = Pattern
 			.compile("Einzelredezeitbeschränkung:\\s+((?:\\d+)|.)\\s+min\\s+(.+)");
 
-	protected final List<String> topicExceptions;
+	protected static final List<String> TOPIC_EXCEPTIONS = Arrays.asList("Sitzung des Nationalrates",
+			"Sitzungsunterbrechung", "Verhandlungsgegenstände Suchhilfen", "Blockredezeit der Debatte",
+			"Blockredezeit der Sitzung");
 
-	protected PoliticianTransformer politicianTransformer;
+	protected final PoliticianTransformer politicianTransformer;
 
 	@Inject
 	public AbstractDiscussionTransformer(PoliticianTransformer politicianTransformer) {
 		this.politicianTransformer = politicianTransformer;
-
-		this.topicExceptions = Arrays.asList("Sitzung des Nationalrates", "Sitzungsunterbrechung",
-				"Verhandlungsgegenstände Suchhilfen", "Blockredezeit der Debatte", "Blockredezeit der Sitzung");
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * at.jku.tk.hiesmair.gv.parlament.etl.period.transformer.session.discussion
-	 * .DiscussionTransformer#getDiscussions(org.jsoup.nodes.Document,
-	 * org.jsoup.nodes.Document,
-	 * at.jku.tk.hiesmair.gv.parlament.entities.session.Session)
-	 */
 	@Override
 	public List<Discussion> getDiscussions(Document index, Document protocol, Session session) throws Exception {
 		List<Discussion> discussions = new ArrayList<Discussion>();
@@ -321,7 +311,7 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 	}
 
 	protected boolean isTopicRelevant(String text) {
-		return !topicExceptions.stream().anyMatch(te -> text.contains(te));
+		return !TOPIC_EXCEPTIONS.stream().anyMatch(te -> text.contains(te));
 	}
 
 }

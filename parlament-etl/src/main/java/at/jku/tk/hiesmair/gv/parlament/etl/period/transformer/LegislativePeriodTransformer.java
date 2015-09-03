@@ -28,10 +28,10 @@ public class LegislativePeriodTransformer {
 
 	protected static final Logger logger = Logger.getLogger(LegislativePeriodTransformer.class.getSimpleName());
 
-	protected SessionTransformer22andUp sessionTransformer22andUp;
-	protected SessionTransformer21 sessionTransformer21;
+	protected final SessionTransformer22andUp sessionTransformer22andUp;
+	protected final SessionTransformer21 sessionTransformer21;
 
-	protected DataCache cache;
+	protected final DataCache cache;
 
 	@Inject
 	public LegislativePeriodTransformer(DataCache cache, SessionTransformer21 sessionTransformer21, SessionTransformer22andUp sessionTransformer22andUp) {
