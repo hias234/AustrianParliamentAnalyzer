@@ -32,29 +32,25 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 
 	protected static final String DATE_FORMAT_PATTERN = "dd.MM.yyyy HH:mm";
 
+	protected static final Pattern SESSION_NR_PATTERN = Pattern.compile("(\\d+)\\.\\sSitzung\\sdes\\sNationalrates");
+	protected static final Pattern START_END_DATE_PATTERN = Pattern
+			.compile("[\\wäüöÄÜÖ]+, (\\d+)\\.\\s([\\wäüöÄÜÖ]+) (\\d{4}):\\s+(\\d+)\\.(\\d+).+ (\\d+)\\.(\\d+).*Uhr");
+	protected static final Pattern ABSENT_MEMBERS_PATTERN = Pattern
+			.compile("(?:Abgeordneten?r? |: )((?:(?:\\s*[\\wäöüÄÖÜßáé]+\\.( |-)(\\(FH\\))?)*(?:\\s*[\\wäöüÄÖÜßáé-]+)(?:(?:,)|(?: und)|))+)(?:\\.| als verhindert gemeldet\\.)");
+	protected static final Pattern ABSENT_MEMBERS_NAME_PATTERN = Pattern
+			.compile("^((?:(?:[\\wäöüÄÖÜßáé]+\\.(?: |-))(?:\\(FH\\))?)*)\\s*([\\s\\wäöüÄÖÜßáé-]+)$");
+
 	protected final List<String> monthNames;
-
-	protected final Pattern sessionNrPattern;
-	protected final Pattern startEndDatePattern;
-	protected final Pattern absentMembersPattern;
-	protected final Pattern absentMembersNamePattern;
-
+	
 	protected PoliticianTransformer politicianTransformer;
 	protected DiscussionTransformer discussionTransformer;
 
 	public AbstractSessionTransformer(PoliticianTransformer politicianTransformer, DiscussionTransformer discussionTransformer) {
 		this.discussionTransformer = discussionTransformer;
 		this.politicianTransformer = politicianTransformer;
+		
 		this.monthNames = Arrays.asList("Jänner", "Februar", "März", "April", "Mai", "Juni", "Juli", "August",
 				"September", "Oktober", "November", "Dezember");
-
-		this.sessionNrPattern = Pattern.compile("(\\d+)\\.\\sSitzung\\sdes\\sNationalrates");
-		this.startEndDatePattern = Pattern
-				.compile("[\\wäüöÄÜÖ]+, (\\d+)\\.\\s([\\wäüöÄÜÖ]+) (\\d{4}):\\s+(\\d+)\\.(\\d+).+ (\\d+)\\.(\\d+).*Uhr");
-		this.absentMembersPattern = Pattern
-				.compile("(?:Abgeordneten?r? |: )((?:(?:\\s*[\\wäöüÄÖÜßáé]+\\.( |-)(\\(FH\\))?)*(?:\\s*[\\wäöüÄÖÜßáé-]+)(?:(?:,)|(?: und)|))+)(?:\\.| als verhindert gemeldet\\.)");
-		this.absentMembersNamePattern = Pattern
-				.compile("^((?:(?:[\\wäöüÄÖÜßáé]+\\.(?: |-))(?:\\(FH\\))?)*)\\s*([\\s\\wäöüÄÖÜßáé-]+)$");
 	}
 
 	public Session getSession(LegislativePeriod period, Document index, Document protocol) throws Exception {
@@ -104,7 +100,7 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 		if (absentMembersElement != null) {
 			String elementText = getAbsentElementText(absentMembersElement);
 
-			Matcher m = absentMembersPattern.matcher(elementText);
+			Matcher m = ABSENT_MEMBERS_PATTERN.matcher(elementText);
 			if (m.find()) {
 				String match = m.group(1);
 				String[] names = match.split("((, )|( und )|( sowie ))");
@@ -157,7 +153,7 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 		name = name.replaceAll("((der|die) )?Abgeordneten?r? ", "");
 		name = name.replaceAll("(der )?Klubobmann ", "");
 
-		Matcher m = absentMembersNamePattern.matcher(name.trim());
+		Matcher m = ABSENT_MEMBERS_NAME_PATTERN.matcher(name.trim());
 		if (m.find()) {
 			String titles = m.group(1);
 			String surName = m.group(2).trim();
@@ -274,7 +270,7 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 	 * @return
 	 */
 	protected Integer getSessionNr(String protocolText) {
-		Matcher matcher = sessionNrPattern.matcher(protocolText);
+		Matcher matcher = SESSION_NR_PATTERN.matcher(protocolText);
 
 		if (matcher.find()) {
 			String sessionNr = matcher.group(1);
@@ -290,7 +286,7 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 	}
 
 	protected Date getStartDate(String protocolText) {
-		Matcher matcher = startEndDatePattern.matcher(protocolText);
+		Matcher matcher = START_END_DATE_PATTERN.matcher(protocolText);
 
 		if (matcher.find()) {
 			String day = matcher.group(1);
@@ -325,7 +321,7 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 	}
 
 	protected Date getEndDate(String protocolText) {
-		Matcher matcher = startEndDatePattern.matcher(protocolText);
+		Matcher matcher = START_END_DATE_PATTERN.matcher(protocolText);
 
 		if (matcher.find()) {
 			String day = matcher.group(1);
