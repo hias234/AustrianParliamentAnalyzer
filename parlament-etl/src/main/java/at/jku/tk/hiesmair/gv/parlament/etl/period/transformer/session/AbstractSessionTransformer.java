@@ -17,7 +17,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import at.jku.tk.hiesmair.gv.parlament.cache.DataCache;
 import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.NationalCouncilMember;
 import at.jku.tk.hiesmair.gv.parlament.entities.politician.Politician;
@@ -41,14 +40,11 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 	protected final Pattern absentMembersNamePattern;
 
 	protected PoliticianTransformer politicianTransformer;
-
 	protected DiscussionTransformer discussionTransformer;
 
-	protected DataCache cache;
-
-	public AbstractSessionTransformer(DataCache cache, DiscussionTransformer discussionTransformer) {
-		this.cache = cache;
+	public AbstractSessionTransformer(PoliticianTransformer politicianTransformer, DiscussionTransformer discussionTransformer) {
 		this.discussionTransformer = discussionTransformer;
+		this.politicianTransformer = politicianTransformer;
 		this.monthNames = Arrays.asList("Jänner", "Februar", "März", "April", "Mai", "Juni", "Juli", "August",
 				"September", "Oktober", "November", "Dezember");
 
@@ -59,8 +55,6 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 				.compile("(?:Abgeordneten?r? |: )((?:(?:\\s*[\\wäöüÄÖÜßáé]+\\.( |-)(\\(FH\\))?)*(?:\\s*[\\wäöüÄÖÜßáé-]+)(?:(?:,)|(?: und)|))+)(?:\\.| als verhindert gemeldet\\.)");
 		this.absentMembersNamePattern = Pattern
 				.compile("^((?:(?:[\\wäöüÄÖÜßáé]+\\.(?: |-))(?:\\(FH\\))?)*)\\s*([\\s\\wäöüÄÖÜßáé-]+)$");
-
-		politicianTransformer = new PoliticianTransformer(cache);
 	}
 
 	public Session getSession(LegislativePeriod period, Document index, Document protocol) throws Exception {

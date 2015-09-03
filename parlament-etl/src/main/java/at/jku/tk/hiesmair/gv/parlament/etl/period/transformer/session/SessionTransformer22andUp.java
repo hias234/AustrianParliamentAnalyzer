@@ -6,7 +6,6 @@ import org.apache.log4j.Logger;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 
-import at.jku.tk.hiesmair.gv.parlament.cache.DataCache;
 import at.jku.tk.hiesmair.gv.parlament.etl.period.transformer.session.discussion.DiscussionTransformer22andUp;
 import at.jku.tk.hiesmair.gv.parlament.etl.politician.transformer.PoliticianTransformer;
 
@@ -22,8 +21,8 @@ public class SessionTransformer22andUp extends AbstractSessionTransformer {
 	private static final Logger logger = Logger.getLogger(SessionTransformer22andUp.class.getSimpleName());
 
 	@Inject
-	public SessionTransformer22andUp(DataCache cache, PoliticianTransformer politicianTransformer) {
-		super(cache, new DiscussionTransformer22andUp(politicianTransformer));
+	public SessionTransformer22andUp(PoliticianTransformer politicianTransformer, DiscussionTransformer22andUp discussionTransformer) {
+		super(politicianTransformer, discussionTransformer);
 	}
 
 	@Override
