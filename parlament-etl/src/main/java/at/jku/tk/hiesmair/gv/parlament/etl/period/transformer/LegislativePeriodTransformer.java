@@ -34,10 +34,10 @@ public class LegislativePeriodTransformer {
 	protected DataCache cache;
 
 	@Inject
-	public LegislativePeriodTransformer(DataCache cache) {
+	public LegislativePeriodTransformer(DataCache cache, SessionTransformer21 sessionTransformer21, SessionTransformer22andUp sessionTransformer22andUp) {
 		this.cache = cache;
-		this.sessionTransformer22andUp = new SessionTransformer22andUp(cache);
-		this.sessionTransformer21 = new SessionTransformer21(cache);
+		this.sessionTransformer21 = sessionTransformer21;
+		this.sessionTransformer22andUp = sessionTransformer22andUp;
 	}
 
 	public LegislativePeriod getLegislativePeriod(int period, List<ProtocolFeedItem> sessionProtocols) throws Exception {

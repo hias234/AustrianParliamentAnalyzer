@@ -4,7 +4,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -14,58 +13,48 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import at.jku.tk.hiesmair.gv.parlament.Settings;
 import at.jku.tk.hiesmair.gv.parlament.cache.DataCache;
 import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
-import at.jku.tk.hiesmair.gv.parlament.entities.discussion.Discussion;
-import at.jku.tk.hiesmair.gv.parlament.entities.discussion.DiscussionSpeech;
-import at.jku.tk.hiesmair.gv.parlament.entities.discussion.SpeechType;
 import at.jku.tk.hiesmair.gv.parlament.entities.mandate.NationalCouncilMember;
 import at.jku.tk.hiesmair.gv.parlament.entities.politician.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.session.Session;
 import at.jku.tk.hiesmair.gv.parlament.entities.session.SessionChairMan;
 import at.jku.tk.hiesmair.gv.parlament.etl.AbstractTransformer;
+import at.jku.tk.hiesmair.gv.parlament.etl.period.transformer.session.discussion.DiscussionTransformer;
 import at.jku.tk.hiesmair.gv.parlament.etl.politician.transformer.PoliticianTransformer;
 
 public abstract class AbstractSessionTransformer extends AbstractTransformer {
 
 	private static final Logger logger = Logger.getLogger(AbstractSessionTransformer.class.getSimpleName());
 
-	protected static final int SPEECH_TIME_TOLERANCE_IN_MS = 60000 * 10; // 10
-																			// min
 	protected static final String DATE_FORMAT_PATTERN = "dd.MM.yyyy HH:mm";
 
 	protected final List<String> monthNames;
-	protected final List<String> topicExceptions;
 
 	protected final Pattern sessionNrPattern;
 	protected final Pattern startEndDatePattern;
-	protected final Pattern discussionTypePattern;
-	protected final Pattern speechBeginPattern;
 	protected final Pattern absentMembersPattern;
 	protected final Pattern absentMembersNamePattern;
 
 	protected PoliticianTransformer politicianTransformer;
 
+	protected DiscussionTransformer discussionTransformer;
+
 	protected DataCache cache;
 
-	public AbstractSessionTransformer(DataCache cache) {
+	public AbstractSessionTransformer(DataCache cache, DiscussionTransformer discussionTransformer) {
 		this.cache = cache;
+		this.discussionTransformer = discussionTransformer;
 		this.monthNames = Arrays.asList("Jänner", "Februar", "März", "April", "Mai", "Juni", "Juli", "August",
 				"September", "Oktober", "November", "Dezember");
-		this.topicExceptions = Arrays.asList("Sitzung des Nationalrates", "Sitzungsunterbrechung",
-				"Verhandlungsgegenstände Suchhilfen", "Blockredezeit der Debatte", "Blockredezeit der Sitzung");
 
 		this.sessionNrPattern = Pattern.compile("(\\d+)\\.\\sSitzung\\sdes\\sNationalrates");
 		this.startEndDatePattern = Pattern
 				.compile("[\\wäüöÄÜÖ]+, (\\d+)\\.\\s([\\wäüöÄÜÖ]+) (\\d{4}):\\s+(\\d+)\\.(\\d+).+ (\\d+)\\.(\\d+).*Uhr");
-		this.discussionTypePattern = Pattern.compile("Einzelredezeitbeschränkung:\\s+((?:\\d+)|.)\\s+min\\s+(.+)");
-		this.speechBeginPattern = Pattern.compile("(\\d{1,2})\\.\\d{1,2}");
 		this.absentMembersPattern = Pattern
 				.compile("(?:Abgeordneten?r? |: )((?:(?:\\s*[\\wäöüÄÖÜßáé]+\\.( |-)(\\(FH\\))?)*(?:\\s*[\\wäöüÄÖÜßáé-]+)(?:(?:,)|(?: und)|))+)(?:\\.| als verhindert gemeldet\\.)");
 		this.absentMembersNamePattern = Pattern
@@ -89,7 +78,7 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 
 		session.setEndDate(getEndDate(protocolText));
 		session.setChairMen(getChairMen(protocol, session));
-		session.setDiscussions(getDiscussions(index, protocol, session));
+		session.setDiscussions(discussionTransformer.getDiscussions(index, protocol, session));
 
 		if (session.getStartDate() != null) {
 			Set<NationalCouncilMember> membersWhoShouldBePresent = period.getNationalCouncilMembersAt(session
@@ -188,7 +177,7 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 	private NationalCouncilMember getAbsentMemberByTitleAndSurName(Date startDate, String titles, String surName,
 			Set<NationalCouncilMember> members) {
 		List<NationalCouncilMember> matchedMembers = getSurNameMatchingMembers(surName, startDate, members);
-		
+
 		if (matchedMembers.isEmpty()) {
 			String[] dashParts = surName.split("-");
 			if (dashParts.length > 1) {
@@ -395,288 +384,6 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 	// return politicians;
 	// }
 
-	protected Elements getPoliticianLinks(Element document) {
-		return document.select("a[href*=WWER/PAD]");
-	}
-
-	protected Politician getPolitician(String href) throws Exception {
-		String url = Settings.BASE_URL + href;
-		if (!href.endsWith("index.shtml")) {
-			url += "index.shtml";
-		}
-
-		Politician politician = cache.getPolitician(url);
-		if (politician == null) {
-			politician = politicianTransformer.getPolitician(url);
-		}
-		return politician;
-	}
-
-	protected List<Discussion> getDiscussions(Document index, Document protocol, Session session) throws Exception {
-		List<Discussion> discussions = new ArrayList<Discussion>();
-
-		Elements headers = index.select("h3");
-		int order = 1;
-		for (Element header : headers) {
-			String text = header.text().replaceAll(NBSP_STRING, " ");
-
-			if (isTopicRelevant(text)) {
-				Discussion discussion = getDiscussion(header, text, session, order);
-				discussions.add(discussion);
-				order++;
-			}
-		}
-
-		if (discussions.size() > 0) {
-			discussions = setSpeechTexts(protocol, discussions);
-			checkIfAllSpeechTextsWereFound(discussions);
-		}
-
-		return discussions;
-	}
-
-	protected List<Discussion> setSpeechTexts(Document protocol, List<Discussion> discussions) throws Exception {
-		Elements speechBeginnings = getSpeechBeginElements(protocol);
-		for (Element speechBegin : speechBeginnings) {
-			Date time = getBeginTime(speechBegin);
-
-			if (time != null) {
-				Element speechPartElement = getFirstSpeechTextElement(speechBegin);
-
-				if (speechPartElement != null) {
-					Politician politician = getPoliticianOfSpeech(speechPartElement);
-					if (politician != null) {
-						String speechText = getSpeechText(speechPartElement);
-						if (speechText != null) {
-							setSpeechText(discussions, time, politician, speechText);
-						}
-						else {
-							logger.debug("no colon " + speechPartElement);
-						}
-					}
-					else {
-						logger.debug("did not find politician: " + speechPartElement);
-					}
-				}
-				else {
-					logger.debug("speechPart-Tag is null");
-				}
-			}
-			else {
-				logger.info("unable to parse start time");
-			}
-		}
-
-		return discussions;
-	}
-
-	protected void checkIfAllSpeechTextsWereFound(List<Discussion> discussions) {
-		int speechCnt = discussions.stream().mapToInt(d -> d.getSpeeches().size()).sum();
-		int speechesWithTexts = Long
-				.valueOf(
-						discussions
-								.stream()
-								.mapToLong(
-										d -> d.getSpeeches().stream()
-												.filter(sp -> sp.getText() != null || sp.getStartTime() == null)
-												.count()).sum()).intValue();
-
-		if (speechCnt != speechesWithTexts) {
-			logger.warn("not all speechtexts found in protocol: found " + speechesWithTexts + " of " + speechCnt);
-		}
-	}
-
-	protected Date getBeginTime(Element speechBeginElement) {
-		SimpleDateFormat timeFormat = new SimpleDateFormat("HH.mm");
-
-		String timeStr = speechBeginElement.text().replace(NBSP_STRING, " ").trim();
-		Matcher m = speechBeginPattern.matcher(timeStr);
-		Date time = null;
-		if (m.find()) {
-			try {
-				time = timeFormat.parse(m.group(0));
-			} catch (ParseException pe) {
-			}
-		}
-		return time;
-	}
-
-	protected void setSpeechText(List<Discussion> discussions, Date time, Politician politician, String speechText) {
-		for (Discussion discussion : discussions) {
-			for (DiscussionSpeech speech : discussion.getSpeeches()) {
-				if (speech.getPolitician().equals(politician) && isTimeForSpeechCorrect(time, speech)
-						&& speech.getText() == null) {
-					speech.setText(speechText);
-					return;
-				}
-			}
-		}
-		logger.debug("did not find corresponding speech (" + politician.getSurName() + ", " + time);
-	}
-
-	protected abstract Politician getPoliticianOfSpeech(Element firstSpeechTextElement) throws Exception;
-
-	/**
-	 * returns the speech text
-	 * 
-	 * @param speechPartElement
-	 * @return
-	 */
-	protected abstract String getSpeechText(Element speechPartElement);
-
-	/**
-	 * Gets element that contains the first part of the actual text of the
-	 * speech
-	 * 
-	 * @param speechBeginElement
-	 * @return
-	 */
-	protected abstract Element getFirstSpeechTextElement(Element speechBegin);
-
-	/**
-	 * Get speech begin-elements that contain the time aka. 12.08
-	 * 
-	 * @param protocol
-	 * @return
-	 */
-	protected abstract Elements getSpeechBeginElements(Document protocol);
-
-	protected boolean isTimeForSpeechCorrect(Date time, DiscussionSpeech speech) {
-		if (speech.getStartTime() == null) {
-			return false;
-		}
-		return time.getTime() >= speech.getStartTime().getTime() - SPEECH_TIME_TOLERANCE_IN_MS
-				&& time.getTime() <= speech.getStartTime().getTime() + SPEECH_TIME_TOLERANCE_IN_MS;
-	}
-
-	protected Discussion getDiscussion(Element header, String text, Session session, int order) throws Exception {
-		Discussion discussion = new Discussion();
-		discussion.setSession(session);
-		discussion.setTopic(text);
-		discussion.setOrder(order);
-
-		Element nextElement = header.nextElementSibling();
-		discussion.setType(getDiscussionType(header, nextElement, discussion));
-
-		nextElement = getNextTableElement(nextElement);
-
-		if (nextElement != null && nextElement.tagName().equals("table")) {
-			List<DiscussionSpeech> speeches = getDiscussionSpeeches(discussion, nextElement);
-			discussion.setSpeeches(speeches);
-		}
-
-		return discussion;
-	}
-
-	protected List<DiscussionSpeech> getDiscussionSpeeches(Discussion discussion, Element tableElement)
-			throws Exception {
-		List<DiscussionSpeech> speeches = new ArrayList<DiscussionSpeech>();
-
-		Elements rows = tableElement.select("tbody tr");
-		for (Element tr : rows) {
-			Elements tds = tr.select("td");
-
-			if (!tds.get(1).text().contains("n. anw.")) {
-				DiscussionSpeech speech = getDiscussionSpeech(discussion, tds);
-				speeches.add(speech);
-			}
-		}
-		return speeches;
-	}
-
-	protected DiscussionSpeech getDiscussionSpeech(Discussion discussion, Elements tds) throws Exception {
-		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-
-		DiscussionSpeech speech = new DiscussionSpeech();
-		speech.setDiscussion(discussion);
-
-		Elements links = getPoliticianLinks(tds.get(2));
-		if (links != null && links.size() >= 1) {
-			String href = links.first().attr("href");
-			speech.setPolitician(getPolitician(href));
-		}
-		else {
-			logger.warn("no politician link in speech");
-		}
-
-		String speechType = tds.get(4).text();
-		String speechOrder = tds.get(0).text().trim();
-		try {
-			speech.setOrder(Integer.parseInt(speechOrder));
-		} catch (NumberFormatException nfe) {
-			logger.info("speech order nr invalid");
-		}
-		speech.setType(SpeechType.getSpeechType(speechType));
-
-		String start = tds.get(5).text();
-
-		try {
-			Date startTime = timeFormat.parse(start);
-			speech.setStartTime(startTime);
-
-			String duration = tds.get(5).text();
-			String[] parts = duration.split(":");
-			Integer minutes = Integer.parseInt(parts[0]);
-			Integer seconds = Integer.parseInt(parts[1]);
-
-			Calendar endDate = Calendar.getInstance();
-			endDate.setTime(startTime);
-			endDate.add(Calendar.MINUTE, minutes);
-			endDate.add(Calendar.SECOND, seconds);
-			speech.setEndTime(endDate.getTime());
-		} catch (ParseException | NumberFormatException e) {
-			logger.info("discussion date parse error: " + e.getMessage());
-		}
-		return speech;
-	}
-
-	protected Element getNextTableElement(Element nextElement) {
-		while (nextElement != null) {
-			String tagName = nextElement.tagName();
-			String text = nextElement.text();
-
-			if (tagName.equals("h3")) {
-				if (isTopicRelevant(text)) {
-					break;
-				}
-				else {
-					nextElement = nextElement.nextElementSibling();
-					if (nextElement == null) {
-						break;
-					}
-					nextElement = nextElement.nextElementSibling();
-				}
-			}
-			else if (tagName.equals("table")) {
-				break;
-			}
-			else {
-				nextElement = nextElement.nextElementSibling();
-			}
-		}
-		return nextElement;
-	}
-
-	protected String getDiscussionType(Element header, Element nextElement, Discussion discussion) {
-		String descriptionText = Jsoup.parse(header.nextSibling().toString()).text().replaceAll(NBSP_STRING, " ");
-
-		if (nextElement != null && nextElement.tag().toString().equals("a")) {
-			descriptionText += " " + nextElement.text().replaceAll(NBSP_STRING, " ");
-		}
-
-		Matcher m = discussionTypePattern.matcher(descriptionText);
-		if (m.find()) {
-			return m.group(2).trim();
-		}
-
-		logger.info("did not find discussionType");
-		return null;
-	}
-
-	protected boolean isTopicRelevant(String text) {
-		return !topicExceptions.stream().anyMatch(te -> text.contains(te));
-	}
-
 	protected List<SessionChairMan> getChairMen(Document protocol, Session session) throws Exception {
 		List<SessionChairMan> chairMenList = new ArrayList<SessionChairMan>();
 
@@ -684,10 +391,10 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 
 		Elements chairMenElements = protocol.select("p:matches(^Vorsitzender?:.*)");
 		if (!chairMenElements.isEmpty()) {
-			Elements chairMenLinks = getPoliticianLinks(chairMenElements.first());
+			Elements chairMenLinks = politicianTransformer.getPoliticianLinks(chairMenElements.first());
 			for (Element chairMenLink : chairMenLinks) {
 				String href = chairMenLink.attr("href");
-				Politician politician = getPolitician(href);
+				Politician politician = politicianTransformer.getPolitician(href);
 				chairMenList.add(new SessionChairMan(position, politician, session));
 				position++;
 			}

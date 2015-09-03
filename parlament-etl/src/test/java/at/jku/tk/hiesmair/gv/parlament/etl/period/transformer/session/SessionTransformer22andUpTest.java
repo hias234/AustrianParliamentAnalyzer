@@ -1,28 +1,18 @@
 package at.jku.tk.hiesmair.gv.parlament.etl.period.transformer.session;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.junit.Test;
 
 import at.jku.tk.hiesmair.gv.parlament.ParliamentTestUtil;
 import at.jku.tk.hiesmair.gv.parlament.cache.DataCache;
 import at.jku.tk.hiesmair.gv.parlament.cache.InMemoryDataCache;
-import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
-import at.jku.tk.hiesmair.gv.parlament.entities.mandate.NationalCouncilMember;
 import at.jku.tk.hiesmair.gv.parlament.entities.politician.Politician;
 import at.jku.tk.hiesmair.gv.parlament.entities.session.Session;
 import at.jku.tk.hiesmair.gv.parlament.entities.session.SessionChairMan;
-import at.jku.tk.hiesmair.gv.parlament.etl.period.transformer.session.SessionTransformer22andUp;
 import at.jku.tk.hiesmair.gv.parlament.etl.politician.PoliticiansEtlJob;
 import at.jku.tk.hiesmair.gv.parlament.etl.politician.extractor.PoliticiansExtractor;
 import at.jku.tk.hiesmair.gv.parlament.etl.politician.loader.PoliticiansLoader;
@@ -51,7 +41,7 @@ public class SessionTransformer22andUpTest {
 		politicianJob.start();
 
 		SessionTransformer22andUp extractor = new SessionTransformer22andUp(
-				cache);
+				cache, new PoliticianTransformer(cache));
 		Session session = extractor.getSession(cache.getLegislativePeriod(25),
 				ParliamentTestUtil
 						.getDocumentFromClasspath("period25/index_25.html"),

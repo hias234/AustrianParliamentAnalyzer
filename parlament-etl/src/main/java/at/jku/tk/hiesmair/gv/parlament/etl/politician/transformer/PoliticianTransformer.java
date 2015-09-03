@@ -19,6 +19,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
+import at.jku.tk.hiesmair.gv.parlament.Settings;
 import at.jku.tk.hiesmair.gv.parlament.cache.DataCache;
 import at.jku.tk.hiesmair.gv.parlament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parlament.entities.club.ParliamentClub;
@@ -69,6 +70,18 @@ public class PoliticianTransformer extends AbstractTransformer {
 
 	public Politician getPolitician(String url) throws Exception {
 		PoliticianFeedItem item = new PoliticianFeedItem();
+		
+		if (!url.startsWith(Settings.BASE_URL)){
+			url = Settings.BASE_URL + url;
+		}
+		if (!url.endsWith("index.shtml")) {
+			url += "index.shtml";
+		}
+		Politician politician = cache.getPolitician(url);
+		if (politician != null) {
+			return politician;
+		}
+		
 		item.setUrl(new URL(url));
 		item.setTitle(url.replaceAll("[ \\/\\.\\(\\):]", ""));
 
@@ -79,7 +92,11 @@ public class PoliticianTransformer extends AbstractTransformer {
 		Document document = feedItem.getIndexDocument();
 		return getPolitician(feedItem.getUrl().toString(), document);
 	}
-
+	
+	public Elements getPoliticianLinks(Element document) {
+		return document.select("a[href*=WWER/PAD]");
+	}
+	
 	protected Politician getPolitician(String url, Document document) {
 		logger.debug("transforming politician " + url);
 
