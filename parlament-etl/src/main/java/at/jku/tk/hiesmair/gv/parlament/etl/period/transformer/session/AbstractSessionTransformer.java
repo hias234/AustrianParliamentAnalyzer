@@ -40,19 +40,17 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 	protected static final Pattern ABSENT_MEMBERS_NAME_PATTERN = Pattern
 			.compile("^((?:(?:[\\wäöüÄÖÜßáé]+\\.(?: |-))(?:\\(FH\\))?)*)\\s*([\\s\\wäöüÄÖÜßáé-]+)$");
 
-	protected final List<String> monthNames;
+	protected static final List<String> MONTH_NAMES = Arrays.asList("Jänner", "Februar", "März", "April", "Mai", "Juni", "Juli", "August",
+			"September", "Oktober", "November", "Dezember");
 	
-	protected PoliticianTransformer politicianTransformer;
-	protected DiscussionTransformer discussionTransformer;
+	protected final PoliticianTransformer politicianTransformer;
+	protected final DiscussionTransformer discussionTransformer;
 
 	public AbstractSessionTransformer(PoliticianTransformer politicianTransformer, DiscussionTransformer discussionTransformer) {
 		this.discussionTransformer = discussionTransformer;
 		this.politicianTransformer = politicianTransformer;
-		
-		this.monthNames = Arrays.asList("Jänner", "Februar", "März", "April", "Mai", "Juni", "Juli", "August",
-				"September", "Oktober", "November", "Dezember");
 	}
-
+	
 	public Session getSession(LegislativePeriod period, Document index, Document protocol) throws Exception {
 		protocol = filterPageBreaks(protocol);
 
@@ -304,7 +302,7 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 	}
 
 	protected Integer getMonthIndex(String month) {
-		Integer monthIndex = 1 + monthNames.indexOf(month);
+		Integer monthIndex = 1 + MONTH_NAMES.indexOf(month);
 		if (monthIndex == 0) {
 			if (month.equals("Januar")) {
 				monthIndex = 1;
