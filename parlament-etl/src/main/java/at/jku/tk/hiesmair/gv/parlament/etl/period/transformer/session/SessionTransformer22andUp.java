@@ -3,7 +3,6 @@ package at.jku.tk.hiesmair.gv.parlament.etl.period.transformer.session;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 
 import at.jku.tk.hiesmair.gv.parlament.etl.period.transformer.session.discussion.DiscussionTransformer22andUp;
@@ -23,14 +22,6 @@ public class SessionTransformer22andUp extends AbstractSessionTransformer {
 	@Inject
 	public SessionTransformer22andUp(PoliticianTransformer politicianTransformer, DiscussionTransformer22andUp discussionTransformer) {
 		super(politicianTransformer, discussionTransformer);
-	}
-
-	@Override
-	protected Document filterPageBreaks(Document protocol) {
-		protocol.select("hr").remove();
-		protocol.select("span.threecol").remove();
-
-		return protocol;
 	}
 
 	

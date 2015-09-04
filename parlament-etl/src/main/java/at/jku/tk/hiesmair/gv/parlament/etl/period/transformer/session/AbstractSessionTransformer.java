@@ -52,7 +52,7 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 	}
 	
 	public Session getSession(LegislativePeriod period, Document index, Document protocol) throws Exception {
-		protocol = filterPageBreaks(protocol);
+		protocol = filterPageBreaks(period.getPeriod(), protocol);
 
 		String protocolText = protocol.text().replaceAll(NBSP_STRING, " ");
 
@@ -88,7 +88,18 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 		return session;
 	}
 
-	protected abstract Document filterPageBreaks(Document protocol);
+	protected Document filterPageBreaks(Integer period, Document protocol) {
+		if (period <= 22) {
+			protocol.select("hr + table:matches(^Nationalrat, )").remove();
+			protocol.select("hr").remove();
+		}
+		else{
+			protocol.select("hr").remove();
+			protocol.select("span.threecol").remove();
+		}
+		
+		return protocol;
+	}
 
 	protected Set<NationalCouncilMember> getAbsentNationalCouncilMembers(Document protocol, Date startDate,
 			Set<NationalCouncilMember> membersWhoShouldBePresent) {
