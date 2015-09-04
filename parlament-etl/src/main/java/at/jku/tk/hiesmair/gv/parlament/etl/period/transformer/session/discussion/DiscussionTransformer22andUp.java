@@ -14,7 +14,7 @@ import at.jku.tk.hiesmair.gv.parlament.etl.politician.transformer.PoliticianTran
 @Component
 public class DiscussionTransformer22andUp extends AbstractDiscussionTransformer {
 
-	private static final Logger logger = Logger.getLogger(DiscussionTransformer22andUpTest.class.getSimpleName());
+	private static final Logger logger = Logger.getLogger(DiscussionTransformer22andUp.class.getSimpleName());
 
 	protected static final String SPEECH_END_CLASSNAME = "RE";
 	
