@@ -3,11 +3,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>at.jku.tk.hiesmair.gv</groupId>
-	<artifactId>parlament-etl</artifactId>
+	<artifactId>parliament-etl</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>parlament-etl</name>
+	<name>parliament-etl</name>
 	<url>http://maven.apache.org</url>
 
 	<properties>
@@ -46,12 +46,12 @@
 		<!-- own projects -->
 		<dependency>
 			<groupId>at.jku.tk.hiesmair.gv</groupId>
-			<artifactId>parlament-entities</artifactId>
+			<artifactId>parliament-entities</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>at.jku.tk.hiesmair.gv</groupId>
-			<artifactId>parlament-database</artifactId>
+			<artifactId>parliament-database</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
