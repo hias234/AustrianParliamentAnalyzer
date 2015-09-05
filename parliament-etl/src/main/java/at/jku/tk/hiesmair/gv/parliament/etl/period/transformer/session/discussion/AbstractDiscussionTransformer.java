@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
@@ -19,11 +20,14 @@ import org.jsoup.select.Elements;
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.Discussion;
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.DiscussionSpeech;
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.SpeechType;
+import at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.sentiment.DiscussionSpeechSentiment;
+import at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.sentiment.Sentiment;
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 import at.jku.tk.hiesmair.gv.parliament.entities.session.Session;
 import at.jku.tk.hiesmair.gv.parliament.etl.AbstractTransformer;
 import at.jku.tk.hiesmair.gv.parliament.etl.politician.transformer.PoliticianTransformer;
 import at.jku.tk.hiesmair.gv.parliament.sentiment.SentimentAnalyzer;
+import at.jku.tk.hiesmair.gv.parliament.sentiment.SentimentAnalyzerException;
 
 public abstract class AbstractDiscussionTransformer extends AbstractTransformer implements DiscussionTransformer {
 
@@ -150,12 +154,24 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 				if (speech.getPolitician().equals(politician) && isTimeForSpeechCorrect(time, speech)
 						&& speech.getText() == null) {
 					speech.setText(speechText);
-					
+					speech.setSentiments(getSentiments(speech, speechText));
 					return;
 				}
 			}
 		}
 		logger.debug("did not find corresponding speech (" + politician.getSurName() + ", " + time);
+	}
+
+	private List<DiscussionSpeechSentiment> getSentiments(DiscussionSpeech speech, String speechText) {
+		try {
+			List<Sentiment> sentiments = sentimentAnalyzer.getSentiments(speechText);
+			return sentiments.stream().map(s -> new DiscussionSpeechSentiment(speech, s)).collect(Collectors.toList());
+		}
+		catch (SentimentAnalyzerException se){
+			logger.info("unsuccessful sentiment analysis for speech: " + speech.getPolitician().getSurName() + " - " + speech.getStartTime());
+		}
+		
+		return new ArrayList<DiscussionSpeechSentiment>();
 	}
 
 	protected abstract Politician getPoliticianOfSpeech(Element firstSpeechTextElement) throws Exception;

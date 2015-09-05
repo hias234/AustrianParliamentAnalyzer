@@ -52,7 +52,7 @@ public class StanbolSentimentAnalyzerTest {
 
 	@Test
 	public void testGetSentiment() throws Exception {
-		StanbolSentimentAnalyzer analyzer = new StanbolSentimentAnalyzer(STANBOL_ENDPOINT, STANBOL_CHAINNAME);
+		StanbolSentimentAnalyzer analyzer = new StanbolSentimentAnalyzer(STANBOL_ENDPOINT, STANBOL_CHAINNAME, 10);
 
 		Sentiment sentiment = analyzer.getSentiments(TEXT1).get(0);
 		System.out.println("sentiment-text1: " + sentiment);

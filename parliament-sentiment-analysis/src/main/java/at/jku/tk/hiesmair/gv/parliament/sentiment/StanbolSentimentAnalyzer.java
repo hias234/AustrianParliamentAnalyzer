@@ -30,11 +30,13 @@ public class StanbolSentimentAnalyzer implements SentimentAnalyzer {
 
 	protected final Enhancer enhancer;
 	protected final EnhancerParametersBuilder parameterBuilder;
-	protected final Integer retryCycles = 5;
+	protected final Integer retryCycles;
 
 	@Inject
-	public StanbolSentimentAnalyzer(@Value("stanbol.endpointurl") String endpointUrl,
-			@Value("stanbol.chainname") String chainName) {
+	public StanbolSentimentAnalyzer(@Value("${stanbol.endpointurl}") String endpointUrl,
+			@Value("${stanbol.chainname}") String chainName, @Value("${stanbol.retryCycles}") Integer retryCycles) {
+		this.retryCycles = retryCycles;
+		
 		StanbolClientFactory factory = new StanbolClientFactory(endpointUrl);
 		enhancer = factory.createEnhancerClient();
 		parameterBuilder = EnhancerParameters.builder().setChain(chainName).setOutputFormat(OutputFormat.RDFXML);
