@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class DiscussionSpeechSentiment {
@@ -12,8 +13,11 @@ public class DiscussionSpeechSentiment {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
 
+	@ManyToOne(optional = false)
+	private DiscussionSpeech speech;
+
 	private String generator;
-	
+
 	private Double sentiment;
 	private Double positiveSentiment;
 	private Double negativeSentiment;
@@ -22,9 +26,10 @@ public class DiscussionSpeechSentiment {
 		super();
 	}
 
-	public DiscussionSpeechSentiment(String generator, Double sentiment, Double positiveSentiment,
-			Double negativeSentiment) {
+	public DiscussionSpeechSentiment(DiscussionSpeech speech, String generator, Double sentiment,
+			Double positiveSentiment, Double negativeSentiment) {
 		super();
+		this.speech = speech;
 		this.generator = generator;
 		this.sentiment = sentiment;
 		this.positiveSentiment = positiveSentiment;
@@ -37,6 +42,14 @@ public class DiscussionSpeechSentiment {
 
 	public void setId(Integer id) {
 		this.id = id;
+	}
+
+	public DiscussionSpeech getSpeech() {
+		return speech;
+	}
+
+	public void setSpeech(DiscussionSpeech speech) {
+		this.speech = speech;
 	}
 
 	public String getGenerator() {

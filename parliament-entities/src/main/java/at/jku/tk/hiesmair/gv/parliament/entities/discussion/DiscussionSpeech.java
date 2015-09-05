@@ -34,7 +34,7 @@ public class DiscussionSpeech {
 	@ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	private Politician politician;
 
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "speech", cascade = CascadeType.ALL)
 	private List<DiscussionSpeechSentiment> sentiments;
 
 	@Temporal(TemporalType.TIME)
