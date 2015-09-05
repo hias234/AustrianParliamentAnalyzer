@@ -1,4 +1,4 @@
-package at.jku.tk.hiesmair.gv.parliament.entities.discussion;
+package at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech;
 
 import java.util.Date;
 import java.util.List;
@@ -16,6 +16,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import at.jku.tk.hiesmair.gv.parliament.entities.discussion.Discussion;
+import at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.sentiment.DiscussionSpeechSentiment;
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 
 @Entity

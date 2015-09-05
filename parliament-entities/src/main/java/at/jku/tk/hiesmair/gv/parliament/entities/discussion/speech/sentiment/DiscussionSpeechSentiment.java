@@ -1,10 +1,13 @@
-package at.jku.tk.hiesmair.gv.parliament.entities.discussion;
+package at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.sentiment;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+
+import at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.DiscussionSpeech;
 
 @Entity
 public class DiscussionSpeechSentiment {
@@ -16,24 +19,17 @@ public class DiscussionSpeechSentiment {
 	@ManyToOne(optional = false)
 	private DiscussionSpeech speech;
 
-	private String generator;
-
-	private Double sentiment;
-	private Double positiveSentiment;
-	private Double negativeSentiment;
+	@Embedded
+	private Sentiment sentiment = new Sentiment();
 
 	public DiscussionSpeechSentiment() {
 		super();
 	}
 
-	public DiscussionSpeechSentiment(DiscussionSpeech speech, String generator, Double sentiment,
-			Double positiveSentiment, Double negativeSentiment) {
+	public DiscussionSpeechSentiment(DiscussionSpeech speech, Sentiment sentiment) {
 		super();
 		this.speech = speech;
-		this.generator = generator;
 		this.sentiment = sentiment;
-		this.positiveSentiment = positiveSentiment;
-		this.negativeSentiment = negativeSentiment;
 	}
 
 	public Integer getId() {
@@ -52,36 +48,40 @@ public class DiscussionSpeechSentiment {
 		this.speech = speech;
 	}
 
-	public String getGenerator() {
-		return generator;
-	}
-
-	public void setGenerator(String generator) {
-		this.generator = generator;
-	}
-
-	public Double getSentiment() {
-		return sentiment;
-	}
-
-	public void setSentiment(Double sentiment) {
+	public void setSentiment(Sentiment sentiment) {
 		this.sentiment = sentiment;
 	}
 
+	public String getGenerator() {
+		return sentiment.getGenerator();
+	}
+
+	public void setGenerator(String generator) {
+		this.sentiment.setGenerator(generator);
+	}
+
+	public Double getSentiment() {
+		return sentiment.getSentiment();
+	}
+
+	public void setSentiment(Double sentiment) {
+		this.sentiment.setSentiment(sentiment);
+	}
+
 	public Double getPositiveSentiment() {
-		return positiveSentiment;
+		return sentiment.getPositiveSentiment();
 	}
 
 	public void setPositiveSentiment(Double positiveSentiment) {
-		this.positiveSentiment = positiveSentiment;
+		this.sentiment.setPositiveSentiment(positiveSentiment);
 	}
 
 	public Double getNegativeSentiment() {
-		return negativeSentiment;
+		return sentiment.getNegativeSentiment();
 	}
 
 	public void setNegativeSentiment(Double negativeSentiment) {
-		this.negativeSentiment = negativeSentiment;
+		this.sentiment.setNegativeSentiment(negativeSentiment);
 	}
 
 }

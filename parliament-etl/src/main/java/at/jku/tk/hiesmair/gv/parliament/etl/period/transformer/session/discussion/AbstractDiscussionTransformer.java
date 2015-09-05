@@ -19,8 +19,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.Discussion;
-import at.jku.tk.hiesmair.gv.parliament.entities.discussion.DiscussionSpeech;
-import at.jku.tk.hiesmair.gv.parliament.entities.discussion.SpeechType;
+import at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.DiscussionSpeech;
+import at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.SpeechType;
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 import at.jku.tk.hiesmair.gv.parliament.entities.session.Session;
 import at.jku.tk.hiesmair.gv.parliament.etl.AbstractTransformer;

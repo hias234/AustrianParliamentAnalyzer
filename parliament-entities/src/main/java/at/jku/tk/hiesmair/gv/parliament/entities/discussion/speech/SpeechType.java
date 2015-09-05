@@ -1,4 +1,4 @@
-package at.jku.tk.hiesmair.gv.parliament.entities.discussion;
+package at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech;
 
 public enum SpeechType {
 
