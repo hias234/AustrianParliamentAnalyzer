@@ -40,17 +40,18 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 	protected static final Pattern ABSENT_MEMBERS_NAME_PATTERN = Pattern
 			.compile("^((?:(?:[\\wäöüÄÖÜßáé]+\\.(?: |-))(?:\\(FH\\))?)*)\\s*([\\s\\wäöüÄÖÜßáé-]+)$");
 
-	protected static final List<String> MONTH_NAMES = Arrays.asList("Jänner", "Februar", "März", "April", "Mai", "Juni", "Juli", "August",
-			"September", "Oktober", "November", "Dezember");
-	
+	protected static final List<String> MONTH_NAMES = Arrays.asList("Jänner", "Februar", "März", "April", "Mai",
+			"Juni", "Juli", "August", "September", "Oktober", "November", "Dezember");
+
 	protected final PoliticianTransformer politicianTransformer;
 	protected final DiscussionTransformer discussionTransformer;
 
-	public AbstractSessionTransformer(PoliticianTransformer politicianTransformer, DiscussionTransformer discussionTransformer) {
+	public AbstractSessionTransformer(PoliticianTransformer politicianTransformer,
+			DiscussionTransformer discussionTransformer) {
 		this.discussionTransformer = discussionTransformer;
 		this.politicianTransformer = politicianTransformer;
 	}
-	
+
 	public Session getSession(LegislativePeriod period, Document index, Document protocol) throws Exception {
 		protocol = filterPageBreaks(period.getPeriod(), protocol);
 
@@ -89,15 +90,15 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 	}
 
 	protected Document filterPageBreaks(Integer period, Document protocol) {
-		if (period <= 22) {
-			protocol.select("hr + table:matches(^Nationalrat, )").remove();
-			protocol.select("hr").remove();
+		protocol.select("hr + table:matches(^Nationalrat,)").remove();
+		protocol.getElementsByTag("hr").remove();
+		protocol.select("span.threecol").remove();
+
+		if (!protocol.getElementsByTag("hr").isEmpty() || !protocol.select("hr + table").isEmpty()
+				|| !protocol.select("span.threecol").isEmpty()) {
+			logger.warn("not all page breaks have been removed");
 		}
-		else{
-			protocol.select("hr").remove();
-			protocol.select("span.threecol").remove();
-		}
-		
+
 		return protocol;
 	}
 
