@@ -1,6 +1,7 @@
 package at.jku.tk.hiesmair.gv.parlament.entities.discussion;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -11,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -31,6 +33,9 @@ public class DiscussionSpeech {
 
 	@ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	private Politician politician;
+
+	@OneToMany(cascade = CascadeType.ALL)
+	private List<DiscussionSpeechSentiment> sentiments;
 
 	@Temporal(TemporalType.TIME)
 	private Date startTime;
@@ -106,6 +111,14 @@ public class DiscussionSpeech {
 
 	public void setText(String text) {
 		this.text = text;
+	}
+
+	public List<DiscussionSpeechSentiment> getSentiments() {
+		return sentiments;
+	}
+
+	public void setSentiments(List<DiscussionSpeechSentiment> sentiments) {
+		this.sentiments = sentiments;
 	}
 
 	@Override
