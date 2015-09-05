@@ -54,7 +54,7 @@ public class StanbolSentimentAnalyzerTest {
 	public void testGetSentiment() throws Exception {
 		StanbolSentimentAnalyzer analyzer = new StanbolSentimentAnalyzer(STANBOL_ENDPOINT, STANBOL_CHAINNAME);
 
-		Sentiment sentiment = analyzer.getSentiment(TEXT1);
+		Sentiment sentiment = analyzer.getSentiments(TEXT1).get(0);
 		System.out.println("sentiment-text1: " + sentiment);
 		assertNotNull(sentiment.getGenerator());
 		assertFalse(sentiment.getGenerator().isEmpty());
@@ -62,7 +62,7 @@ public class StanbolSentimentAnalyzerTest {
 		assertNotNull(sentiment.getPositiveSentiment());
 		assertNotNull(sentiment.getNegativeSentiment());
 		
-		sentiment = analyzer.getSentiment(TEXT2);
+		sentiment = analyzer.getSentiments(TEXT2).get(0);
 		System.out.println("sentiment-text2: " + sentiment);
 		assertNotNull(sentiment.getGenerator());
 		assertFalse(sentiment.getGenerator().isEmpty());

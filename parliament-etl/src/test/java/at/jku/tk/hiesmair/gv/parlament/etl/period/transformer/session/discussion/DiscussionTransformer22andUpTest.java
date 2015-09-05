@@ -14,6 +14,7 @@ import at.jku.tk.hiesmair.gv.parliament.entities.discussion.Discussion;
 import at.jku.tk.hiesmair.gv.parliament.entities.session.Session;
 import at.jku.tk.hiesmair.gv.parliament.etl.period.transformer.session.discussion.DiscussionTransformer22andUp;
 import at.jku.tk.hiesmair.gv.parliament.etl.politician.transformer.PoliticianTransformer;
+import at.jku.tk.hiesmair.gv.parliament.sentiment.DummySentimentAnalyzer;
 
 public class DiscussionTransformer22andUpTest {
 
@@ -21,15 +22,16 @@ public class DiscussionTransformer22andUpTest {
 	public void testGetDiscussions() throws Exception {
 		DataCache cache = new InMemoryDataCache();
 		PoliticianTransformer politicianTransformer = new PoliticianTransformer(cache);
-		DiscussionTransformer22andUp discussionTransformer = new DiscussionTransformer22andUp(politicianTransformer);
-		
+		DiscussionTransformer22andUp discussionTransformer = new DiscussionTransformer22andUp(politicianTransformer,
+				new DummySentimentAnalyzer());
+
 		Document index = ParliamentTestUtil.getDocumentFromClasspath("period25\\index_25.html");
 		Document protocol = ParliamentTestUtil.getDocumentFromClasspath("period25\\Protocol_25.html");
-		
+
 		Session session = new Session();
-		
+
 		List<Discussion> discussions = discussionTransformer.getDiscussions(index, protocol, session);
 		assertEquals(15, discussions.size());
 	}
-	
+
 }

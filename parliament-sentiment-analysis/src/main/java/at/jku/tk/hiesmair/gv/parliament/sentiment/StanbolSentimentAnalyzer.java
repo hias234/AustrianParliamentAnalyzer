@@ -1,10 +1,11 @@
 package at.jku.tk.hiesmair.gv.parliament.sentiment;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.apache.log4j.Logger;
 import org.apache.stanbol.client.Enhancer;
 import org.apache.stanbol.client.StanbolClientFactory;
 import org.apache.stanbol.client.enhancer.impl.EnhancerParameters;
@@ -23,10 +24,13 @@ import at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.sentiment.Sen
 @Component
 public class StanbolSentimentAnalyzer implements SentimentAnalyzer {
 
+	private static final Logger logger = Logger.getLogger(StanbolSentimentAnalyzer.class.getSimpleName());
+
 	public static final String STANBOL_GENERATOR = "STANBOL";
 
 	protected final Enhancer enhancer;
 	protected final EnhancerParametersBuilder parameterBuilder;
+	protected final Integer retryCycles = 5;
 
 	@Inject
 	public StanbolSentimentAnalyzer(@Value("stanbol.endpointurl") String endpointUrl,
@@ -37,10 +41,20 @@ public class StanbolSentimentAnalyzer implements SentimentAnalyzer {
 	}
 
 	@Override
-	public Sentiment getSentiment(String text) {
-		EnhancementStructure result = enhance(text);
-		TextAnnotation documentSentimentAnnotation = getDocumentSentimentTextAnnotation(text, result);
-		return getSentiment(documentSentimentAnnotation);
+	public List<Sentiment> getSentiments(String text) {
+		TextAnnotation documentSentimentAnnotation = null;
+
+		for (int i = 0; i < retryCycles && documentSentimentAnnotation == null; i++) {
+			EnhancementStructure result = enhance(text);
+			documentSentimentAnnotation = getDocumentSentimentTextAnnotation(text, result);
+		}
+
+		if (documentSentimentAnnotation == null) {
+			throw new SentimentAnalyzerException(STANBOL_GENERATOR, text, new RuntimeException(
+					"Could not find Document Sentiment"));
+		}
+
+		return Arrays.asList(getSentiment(documentSentimentAnnotation));
 	}
 
 	protected Sentiment getSentiment(TextAnnotation documentSentimentAnnotation) {
@@ -52,17 +66,13 @@ public class StanbolSentimentAnalyzer implements SentimentAnalyzer {
 	}
 
 	protected TextAnnotation getDocumentSentimentTextAnnotation(String text, EnhancementStructure result) {
-		List<TextAnnotation> documentSentimentAnnotations = result.getTextAnnotations().stream()
-				.filter(ta -> ta.getType().equals(EnhancementStructureOntology.DOCUMENT_SENTIMENT))
-				.collect(Collectors.toList());
-
-		if (documentSentimentAnnotations.size() != 1) {
-			throw new SentimentAnalyzerException(STANBOL_GENERATOR, text, new RuntimeException(
-					"Could not find Document Sentiment"));
+		for (TextAnnotation ta : result.getTextAnnotations()) {
+			if (ta.getType().equals(EnhancementStructureOntology.DOCUMENT_SENTIMENT.toString())) {
+				return ta;
+			}
 		}
-		
-		TextAnnotation documentSentimentAnnotation = documentSentimentAnnotations.get(0);
-		return documentSentimentAnnotation;
+
+		return null;
 	}
 
 	protected EnhancementStructure enhance(String text) {

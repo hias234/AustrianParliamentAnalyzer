@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 import at.jku.tk.hiesmair.gv.parliament.etl.politician.transformer.PoliticianTransformer;
+import at.jku.tk.hiesmair.gv.parliament.sentiment.SentimentAnalyzer;
 
 @Component
 public class DiscussionTransformer22andUp extends AbstractDiscussionTransformer {
@@ -19,8 +20,8 @@ public class DiscussionTransformer22andUp extends AbstractDiscussionTransformer 
 	protected static final String SPEECH_END_CLASSNAME = "RE";
 	
 	@Inject
-	public DiscussionTransformer22andUp(PoliticianTransformer politicianTransformer) {
-		super(politicianTransformer);
+	public DiscussionTransformer22andUp(PoliticianTransformer politicianTransformer, SentimentAnalyzer sentimentAnalyzer) {
+		super(politicianTransformer, sentimentAnalyzer);
 	}
 
 	@Override

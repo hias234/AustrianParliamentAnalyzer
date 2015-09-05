@@ -20,6 +20,7 @@ import at.jku.tk.hiesmair.gv.parliament.etl.politician.extractor.PoliticiansExtr
 import at.jku.tk.hiesmair.gv.parliament.etl.politician.loader.PoliticiansLoader;
 import at.jku.tk.hiesmair.gv.parliament.etl.politician.transformer.PoliticianTransformer;
 import at.jku.tk.hiesmair.gv.parliament.etl.politician.transformer.PoliticiansTransformer;
+import at.jku.tk.hiesmair.gv.parliament.sentiment.DummySentimentAnalyzer;
 
 public class SessionTransformer22andUpTest {
 
@@ -40,7 +41,8 @@ public class SessionTransformer22andUpTest {
 		});
 		politicianJob.start();
 
-		SessionTransformer22andUp extractor = new SessionTransformer22andUp(politicianTransformer, new DiscussionTransformer22andUp(politicianTransformer));
+		SessionTransformer22andUp extractor = new SessionTransformer22andUp(politicianTransformer,
+				new DiscussionTransformer22andUp(politicianTransformer, new DummySentimentAnalyzer()));
 		Session session = extractor.getSession(cache.getLegislativePeriod(25),
 				ParliamentTestUtil.getDocumentFromClasspath("period25/index_25.html"),
 				ParliamentTestUtil.getDocumentFromClasspath("period25/protocol_25.html"));

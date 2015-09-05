@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.inject.Inject;
-
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -25,6 +23,7 @@ import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 import at.jku.tk.hiesmair.gv.parliament.entities.session.Session;
 import at.jku.tk.hiesmair.gv.parliament.etl.AbstractTransformer;
 import at.jku.tk.hiesmair.gv.parliament.etl.politician.transformer.PoliticianTransformer;
+import at.jku.tk.hiesmair.gv.parliament.sentiment.SentimentAnalyzer;
 
 public abstract class AbstractDiscussionTransformer extends AbstractTransformer implements DiscussionTransformer {
 
@@ -42,16 +41,28 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 			"Blockredezeit der Sitzung");
 
 	protected final PoliticianTransformer politicianTransformer;
+	protected final SentimentAnalyzer sentimentAnalyzer;
 
-	@Inject
-	public AbstractDiscussionTransformer(PoliticianTransformer politicianTransformer) {
+	public AbstractDiscussionTransformer(PoliticianTransformer politicianTransformer, SentimentAnalyzer sentimentAnalyzer) {
 		this.politicianTransformer = politicianTransformer;
+		this.sentimentAnalyzer = sentimentAnalyzer;
 	}
 
 	@Override
 	public List<Discussion> getDiscussions(Document index, Document protocol, Session session) throws Exception {
-		List<Discussion> discussions = new ArrayList<Discussion>();
+		List<Discussion> discussions = getDiscussions(index, session);
 
+		if (discussions.size() > 0) {
+			discussions = setSpeechTexts(protocol, discussions);
+			checkIfAllSpeechTextsWereFound(discussions);
+		}
+
+		return discussions;
+	}
+
+	protected List<Discussion> getDiscussions(Document index, Session session) throws Exception {
+		List<Discussion> discussions = new ArrayList<Discussion>();
+		
 		Elements headers = index.select("h3");
 		int order = 1;
 		for (Element header : headers) {
@@ -63,12 +74,7 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 				order++;
 			}
 		}
-
-		if (discussions.size() > 0) {
-			discussions = setSpeechTexts(protocol, discussions);
-			checkIfAllSpeechTextsWereFound(discussions);
-		}
-
+		
 		return discussions;
 	}
 
@@ -144,6 +150,7 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 				if (speech.getPolitician().equals(politician) && isTimeForSpeechCorrect(time, speech)
 						&& speech.getText() == null) {
 					speech.setText(speechText);
+					
 					return;
 				}
 			}
