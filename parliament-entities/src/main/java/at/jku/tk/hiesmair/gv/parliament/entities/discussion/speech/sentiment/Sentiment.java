@@ -54,4 +54,10 @@ public class Sentiment {
 		this.negativeSentiment = negativeSentiment;
 	}
 
+	@Override
+	public String toString() {
+		return "Sentiment [generator=" + generator + ", sentiment=" + sentiment + ", positiveSentiment="
+				+ positiveSentiment + ", negativeSentiment=" + negativeSentiment + "]";
+	}
+
 }
