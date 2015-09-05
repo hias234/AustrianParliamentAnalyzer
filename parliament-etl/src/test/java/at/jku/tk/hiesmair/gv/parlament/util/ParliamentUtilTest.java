@@ -6,6 +6,8 @@ import java.io.File;
 
 import org.junit.Test;
 
+import at.jku.tk.hiesmair.gv.parliament.util.ParliamentUtil;
+
 public class ParliamentUtilTest {
 
 	@Test

@@ -7,9 +7,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-import at.jku.tk.hiesmair.gv.parlament.etl.politician.extractor.PoliticiansExtractor;
-import at.jku.tk.hiesmair.gv.parlament.etl.politician.extractor.feed.PoliticianFeedItem;
-import at.jku.tk.hiesmair.gv.parlament.etl.politician.extractor.feed.parser.PoliticianTitleParser;
+import at.jku.tk.hiesmair.gv.parliament.etl.politician.extractor.PoliticiansExtractor;
+import at.jku.tk.hiesmair.gv.parliament.etl.politician.extractor.feed.PoliticianFeedItem;
+import at.jku.tk.hiesmair.gv.parliament.etl.politician.extractor.feed.parser.PoliticianTitleParser;
 
 public class PoliticianExtractorTest {
 

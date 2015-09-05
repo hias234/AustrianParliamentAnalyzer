@@ -8,11 +8,12 @@ import org.jsoup.nodes.Document;
 import org.junit.Test;
 
 import at.jku.tk.hiesmair.gv.parlament.ParliamentTestUtil;
-import at.jku.tk.hiesmair.gv.parlament.cache.DataCache;
-import at.jku.tk.hiesmair.gv.parlament.cache.InMemoryDataCache;
-import at.jku.tk.hiesmair.gv.parlament.entities.discussion.Discussion;
-import at.jku.tk.hiesmair.gv.parlament.entities.session.Session;
-import at.jku.tk.hiesmair.gv.parlament.etl.politician.transformer.PoliticianTransformer;
+import at.jku.tk.hiesmair.gv.parliament.cache.DataCache;
+import at.jku.tk.hiesmair.gv.parliament.cache.InMemoryDataCache;
+import at.jku.tk.hiesmair.gv.parliament.entities.discussion.Discussion;
+import at.jku.tk.hiesmair.gv.parliament.entities.session.Session;
+import at.jku.tk.hiesmair.gv.parliament.etl.period.transformer.session.discussion.DiscussionTransformer22andUp;
+import at.jku.tk.hiesmair.gv.parliament.etl.politician.transformer.PoliticianTransformer;
 
 public class DiscussionTransformer22andUpTest {
 

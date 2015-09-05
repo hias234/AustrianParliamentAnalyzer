@@ -8,17 +8,18 @@ import java.util.List;
 import org.junit.Test;
 
 import at.jku.tk.hiesmair.gv.parlament.ParliamentTestUtil;
-import at.jku.tk.hiesmair.gv.parlament.cache.DataCache;
-import at.jku.tk.hiesmair.gv.parlament.cache.InMemoryDataCache;
-import at.jku.tk.hiesmair.gv.parlament.entities.politician.Politician;
-import at.jku.tk.hiesmair.gv.parlament.entities.session.Session;
-import at.jku.tk.hiesmair.gv.parlament.entities.session.SessionChairMan;
-import at.jku.tk.hiesmair.gv.parlament.etl.period.transformer.session.discussion.DiscussionTransformer22andUp;
-import at.jku.tk.hiesmair.gv.parlament.etl.politician.PoliticiansEtlJob;
-import at.jku.tk.hiesmair.gv.parlament.etl.politician.extractor.PoliticiansExtractor;
-import at.jku.tk.hiesmair.gv.parlament.etl.politician.loader.PoliticiansLoader;
-import at.jku.tk.hiesmair.gv.parlament.etl.politician.transformer.PoliticianTransformer;
-import at.jku.tk.hiesmair.gv.parlament.etl.politician.transformer.PoliticiansTransformer;
+import at.jku.tk.hiesmair.gv.parliament.cache.DataCache;
+import at.jku.tk.hiesmair.gv.parliament.cache.InMemoryDataCache;
+import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
+import at.jku.tk.hiesmair.gv.parliament.entities.session.Session;
+import at.jku.tk.hiesmair.gv.parliament.entities.session.SessionChairMan;
+import at.jku.tk.hiesmair.gv.parliament.etl.period.transformer.session.SessionTransformer22andUp;
+import at.jku.tk.hiesmair.gv.parliament.etl.period.transformer.session.discussion.DiscussionTransformer22andUp;
+import at.jku.tk.hiesmair.gv.parliament.etl.politician.PoliticiansEtlJob;
+import at.jku.tk.hiesmair.gv.parliament.etl.politician.extractor.PoliticiansExtractor;
+import at.jku.tk.hiesmair.gv.parliament.etl.politician.loader.PoliticiansLoader;
+import at.jku.tk.hiesmair.gv.parliament.etl.politician.transformer.PoliticianTransformer;
+import at.jku.tk.hiesmair.gv.parliament.etl.politician.transformer.PoliticiansTransformer;
 
 public class SessionTransformer22andUpTest {
 

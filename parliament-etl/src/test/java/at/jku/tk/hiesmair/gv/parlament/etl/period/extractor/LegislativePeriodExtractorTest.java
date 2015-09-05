@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import at.jku.tk.hiesmair.gv.parlament.etl.period.extractor.LegislativePeriodExtractor;
-import at.jku.tk.hiesmair.gv.parlament.etl.period.extractor.feed.ProtocolFeedItem;
+import at.jku.tk.hiesmair.gv.parliament.etl.period.extractor.LegislativePeriodExtractor;
+import at.jku.tk.hiesmair.gv.parliament.etl.period.extractor.feed.ProtocolFeedItem;
 
 public class LegislativePeriodExtractorTest {
 

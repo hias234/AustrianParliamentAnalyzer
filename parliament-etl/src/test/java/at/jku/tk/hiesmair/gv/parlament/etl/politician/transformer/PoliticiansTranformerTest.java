@@ -10,12 +10,12 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
-import at.jku.tk.hiesmair.gv.parlament.cache.InMemoryDataCache;
-import at.jku.tk.hiesmair.gv.parlament.entities.politician.Politician;
-import at.jku.tk.hiesmair.gv.parlament.etl.politician.extractor.PoliticiansExtractor;
-import at.jku.tk.hiesmair.gv.parlament.etl.politician.extractor.feed.PoliticianFeedItem;
-import at.jku.tk.hiesmair.gv.parlament.etl.politician.transformer.PoliticianTransformer;
-import at.jku.tk.hiesmair.gv.parlament.etl.politician.transformer.PoliticiansTransformer;
+import at.jku.tk.hiesmair.gv.parliament.cache.InMemoryDataCache;
+import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
+import at.jku.tk.hiesmair.gv.parliament.etl.politician.extractor.PoliticiansExtractor;
+import at.jku.tk.hiesmair.gv.parliament.etl.politician.extractor.feed.PoliticianFeedItem;
+import at.jku.tk.hiesmair.gv.parliament.etl.politician.transformer.PoliticianTransformer;
+import at.jku.tk.hiesmair.gv.parliament.etl.politician.transformer.PoliticiansTransformer;
 
 public class PoliticiansTranformerTest {
 
