@@ -13,11 +13,18 @@ import org.springframework.stereotype.Component;
 
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.sentiment.Sentiment;
 
+/**
+ * Analyzes the sentiment of a text based on a dictionary of words weighted on
+ * their sentiment. The dictionary comes from SentiWS
+ * 
+ * @author Markus
+ *
+ */
 @Component
 public class SentiWsSentimentAnalyzer implements SentimentAnalyzer {
 
 	public static final String SENTIWS_GENERATOR = "SENTIWS";
-	
+
 	private Map<String, Double> dict = new HashMap<String, Double>();
 
 	public SentiWsSentimentAnalyzer() throws IOException {
@@ -63,17 +70,17 @@ public class SentiWsSentimentAnalyzer implements SentimentAnalyzer {
 	@Override
 	public List<Sentiment> getSentiments(String text) {
 		String[] tokens = text.split("[\\s,.();-?!%$€+#:<>|=\\\\]");
-		
+
 		Integer nrOfPositiveTokens = 0;
 		Integer nrOfNegativeTokens = 0;
-		
+
 		Double positiveSentiment = 0.0;
 		Double negativeSentiment = 0.0;
 		Double sentiment = 0.0;
-		for (String token : tokens){
+		for (String token : tokens) {
 			Double tokentSentiment = classifyWord(token);
 			sentiment += tokentSentiment;
-			if (tokentSentiment > 0.0){
+			if (tokentSentiment > 0.0) {
 				positiveSentiment += tokentSentiment;
 				nrOfPositiveTokens++;
 			}
@@ -82,14 +89,14 @@ public class SentiWsSentimentAnalyzer implements SentimentAnalyzer {
 				nrOfNegativeTokens++;
 			}
 		}
-		
+
 		Double absoluteSentiment = positiveSentiment - negativeSentiment;
-		if (absoluteSentiment != 0){
+		if (absoluteSentiment != 0) {
 			sentiment /= absoluteSentiment;
 			positiveSentiment /= absoluteSentiment;
 			negativeSentiment /= absoluteSentiment;
 		}
-		
+
 		return Arrays.asList(new Sentiment(SENTIWS_GENERATOR, sentiment, positiveSentiment, negativeSentiment));
 	}
 

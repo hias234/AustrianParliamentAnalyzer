@@ -21,6 +21,12 @@ import org.springframework.stereotype.Component;
 
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.sentiment.Sentiment;
 
+/**
+ * Analyzes the sentiment of a text using the apache stanbol api.
+ * 
+ * @author Markus
+ *
+ */
 @Component
 public class StanbolSentimentAnalyzer implements SentimentAnalyzer {
 
@@ -36,7 +42,7 @@ public class StanbolSentimentAnalyzer implements SentimentAnalyzer {
 	public StanbolSentimentAnalyzer(@Value("${stanbol.endpointurl}") String endpointUrl,
 			@Value("${stanbol.chainname}") String chainName, @Value("${stanbol.retryCycles}") Integer retryCycles) {
 		this.retryCycles = retryCycles;
-		
+
 		StanbolClientFactory factory = new StanbolClientFactory(endpointUrl);
 		enhancer = factory.createEnhancerClient();
 		parameterBuilder = EnhancerParameters.builder().setChain(chainName).setOutputFormat(OutputFormat.RDFXML);
@@ -47,9 +53,9 @@ public class StanbolSentimentAnalyzer implements SentimentAnalyzer {
 		TextAnnotation documentSentimentAnnotation = null;
 
 		int waitAfterUnsuccessfulTry = 25;
-		
+
 		for (int i = 0; i < retryCycles && documentSentimentAnnotation == null; i++) {
-			if (i > 0){
+			if (i > 0) {
 				try {
 					Thread.sleep(waitAfterUnsuccessfulTry);
 				} catch (InterruptedException e) {
@@ -57,7 +63,7 @@ public class StanbolSentimentAnalyzer implements SentimentAnalyzer {
 			}
 			EnhancementStructure result = enhance(text);
 			documentSentimentAnnotation = getDocumentSentimentTextAnnotation(text, result);
-			
+
 			waitAfterUnsuccessfulTry = Math.min(waitAfterUnsuccessfulTry += 25, 1000);
 		}
 
