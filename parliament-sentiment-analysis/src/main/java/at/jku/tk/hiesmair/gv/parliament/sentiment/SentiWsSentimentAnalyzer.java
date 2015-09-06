@@ -82,6 +82,12 @@ public class SentiWsSentimentAnalyzer implements SentimentAnalyzer {
 				nrOfNegativeTokens++;
 			}
 		}
+		Double absoluteSentiment = positiveSentiment - negativeSentiment;
+		if (absoluteSentiment != 0){
+			sentiment /= absoluteSentiment;
+			positiveSentiment /= absoluteSentiment;
+			negativeSentiment /= absoluteSentiment;
+		}
 		
 		return Arrays.asList(new Sentiment(SENTIWS_GENERATOR, sentiment, positiveSentiment, negativeSentiment));
 	}
