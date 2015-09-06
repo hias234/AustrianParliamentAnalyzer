@@ -17,11 +17,9 @@ import org.apache.stanbol.client.enhancer.model.TextAnnotation;
 import org.apache.stanbol.client.exception.StanbolClientException;
 import org.apache.stanbol.client.services.exception.StanbolServiceException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.sentiment.Sentiment;
 
-@Component
 public class StanbolSentimentAnalyzer implements SentimentAnalyzer {
 
 	private static final Logger logger = Logger.getLogger(StanbolSentimentAnalyzer.class.getSimpleName());
@@ -46,9 +44,19 @@ public class StanbolSentimentAnalyzer implements SentimentAnalyzer {
 	public List<Sentiment> getSentiments(String text) {
 		TextAnnotation documentSentimentAnnotation = null;
 
+		int waitAfterUnsuccessfulTry = 25;
+		
 		for (int i = 0; i < retryCycles && documentSentimentAnnotation == null; i++) {
+			if (i > 0){
+				try {
+					Thread.sleep(waitAfterUnsuccessfulTry);
+				} catch (InterruptedException e) {
+				}
+			}
 			EnhancementStructure result = enhance(text);
 			documentSentimentAnnotation = getDocumentSentimentTextAnnotation(text, result);
+			
+			waitAfterUnsuccessfulTry = Math.max(waitAfterUnsuccessfulTry += 25, 1000);
 		}
 
 		if (documentSentimentAnnotation == null) {
