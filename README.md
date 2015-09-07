@@ -17,7 +17,7 @@ This data is available in form of RSS feeds which provide lists of HTML files co
 The result of the extraction will be exported in a database using JPA (I use postgres).
 
 ### Analysis on the Data
-With the now available data there should be lots of possibilities for analysis: Here are only a few ideas what can be analyzed:
+With the then available data there will be lots of possibilities for analysis: Here are only a few ideas what can be analyzed:
 * Find the politician, who is serving longest in the national council
 * Find the most active politicians (take part in the most discussions and sessions)
 * Find groups of politicians, which discuss similar topics
