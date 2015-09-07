@@ -21,7 +21,7 @@ public class DiscussionTransformer22andUpTest {
 	@Test
 	public void testGetDiscussions() throws Exception {
 		DataCache cache = new InMemoryDataCache();
-		PoliticianTransformer politicianTransformer = new PoliticianTransformer(cache);
+		PoliticianTransformer politicianTransformer = new PoliticianTransformer(cache, "http://www.parlament.gv.at");
 		DiscussionTransformer22andUp discussionTransformer = new DiscussionTransformer22andUp(politicianTransformer,
 				new DummySentimentAnalyzer());
 

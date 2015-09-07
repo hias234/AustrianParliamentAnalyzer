@@ -29,10 +29,10 @@ public class SessionTransformer22andUpTest {
 	@Test
 	public void testGetSession() throws Exception {
 		DataCache cache = new InMemoryDataCache();
-		PoliticianTransformer politicianTransformer = new PoliticianTransformer(cache);
+		PoliticianTransformer politicianTransformer = new PoliticianTransformer(cache, "http://www.parlament.gv.at");
 
 		PoliticiansEtlJob politicianJob = new PoliticiansEtlJob(new PoliticiansExtractor(), new PoliticiansTransformer(
-				new PoliticianTransformer(cache)), new PoliticiansLoader() {
+				new PoliticianTransformer(cache, "http://www.parlament.gv.at")), new PoliticiansLoader() {
 
 			@Override
 			public void loadPoliticians(List<Politician> politicians) {

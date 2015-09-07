@@ -25,7 +25,7 @@ public class PoliticiansTranformerTest {
 				.getPoliticianFeedItems();
 
 		List<Politician> politicians = new PoliticiansTransformer(
-				new PoliticianTransformer(new InMemoryDataCache()))
+				new PoliticianTransformer(new InMemoryDataCache(), "http://www.parlament.gv.at"))
 				.getPoliticians(items);
 		assertTrue(politicians.size() > 0);
 
