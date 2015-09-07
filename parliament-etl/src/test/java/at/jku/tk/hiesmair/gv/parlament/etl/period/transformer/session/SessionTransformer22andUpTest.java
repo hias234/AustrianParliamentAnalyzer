@@ -17,6 +17,7 @@ import at.jku.tk.hiesmair.gv.parliament.etl.period.transformer.session.SessionTr
 import at.jku.tk.hiesmair.gv.parliament.etl.period.transformer.session.discussion.DiscussionTransformer22andUp;
 import at.jku.tk.hiesmair.gv.parliament.etl.politician.PoliticiansEtlJob;
 import at.jku.tk.hiesmair.gv.parliament.etl.politician.extractor.PoliticiansExtractor;
+import at.jku.tk.hiesmair.gv.parliament.etl.politician.loader.DummyPoliticiansLoader;
 import at.jku.tk.hiesmair.gv.parliament.etl.politician.loader.PoliticiansLoader;
 import at.jku.tk.hiesmair.gv.parliament.etl.politician.transformer.PoliticianTransformer;
 import at.jku.tk.hiesmair.gv.parliament.etl.politician.transformer.PoliticiansTransformer;
@@ -32,13 +33,7 @@ public class SessionTransformer22andUpTest {
 		PoliticianTransformer politicianTransformer = new PoliticianTransformer(cache, "http://www.parlament.gv.at");
 
 		PoliticiansEtlJob politicianJob = new PoliticiansEtlJob(new PoliticiansExtractor(), new PoliticiansTransformer(
-				new PoliticianTransformer(cache, "http://www.parlament.gv.at")), new PoliticiansLoader() {
-
-			@Override
-			public void loadPoliticians(List<Politician> politicians) {
-
-			}
-		});
+				new PoliticianTransformer(cache, "http://www.parlament.gv.at")), new DummyPoliticiansLoader());
 		politicianJob.start();
 
 		SessionTransformer22andUp extractor = new SessionTransformer22andUp(politicianTransformer,
