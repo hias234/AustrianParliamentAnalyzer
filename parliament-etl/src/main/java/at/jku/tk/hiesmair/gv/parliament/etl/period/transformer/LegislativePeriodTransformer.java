@@ -90,7 +90,7 @@ public class LegislativePeriodTransformer {
 		}
 
 		AbstractSessionTransformer transformer = getSessionTransformer(period);
-		return transformer.getSession(period, indexDoc, protocolDoc);
+		return transformer.getSession(period, sessionProtocol.getTitle(), indexDoc, protocolDoc);
 	}
 
 }

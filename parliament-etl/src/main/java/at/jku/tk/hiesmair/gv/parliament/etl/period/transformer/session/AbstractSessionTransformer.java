@@ -52,13 +52,14 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 		this.politicianTransformer = politicianTransformer;
 	}
 
-	public Session getSession(LegislativePeriod period, Document index, Document protocol) throws Exception {
+	public Session getSession(LegislativePeriod period, String sessionTitle, Document index, Document protocol) throws Exception {
 		protocol = filterPageBreaks(period.getPeriod(), protocol);
 
 		String protocolText = protocol.text().replaceAll(NBSP_STRING, " ");
 
 		Session session = new Session();
 		session.setPeriod(period);
+		session.setSessionTitle(sessionTitle);
 		session.setSessionNr(getSessionNr(protocolText));
 		session.setStartDate(getStartDate(protocolText));
 
@@ -287,6 +288,7 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 		}
 
 		logger.info("session number not found");
+		
 		return null;
 	}
 

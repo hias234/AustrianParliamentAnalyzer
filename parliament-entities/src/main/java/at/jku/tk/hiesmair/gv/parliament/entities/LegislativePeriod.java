@@ -26,7 +26,7 @@ public class LegislativePeriod {
 	@Id
 	private Integer period;
 
-	@OneToMany(mappedBy = "period", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+	@OneToMany(mappedBy = "id.period", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
 	private List<Session> sessions;
 
 	@ManyToMany(mappedBy = "periods", fetch = FetchType.EAGER)
@@ -75,6 +75,32 @@ public class LegislativePeriod {
 	@Override
 	public String toString() {
 		return "LegislativePeriod [period=" + period + ", sessions=" + sessions + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((period == null) ? 0 : period.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		LegislativePeriod other = (LegislativePeriod) obj;
+		if (period == null) {
+			if (other.period != null)
+				return false;
+		}
+		else if (!period.equals(other.period))
+			return false;
+		return true;
 	}
 
 }

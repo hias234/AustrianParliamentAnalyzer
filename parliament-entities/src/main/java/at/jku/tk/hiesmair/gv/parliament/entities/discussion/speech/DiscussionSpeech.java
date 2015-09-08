@@ -30,10 +30,10 @@ public class DiscussionSpeech {
 	@Column(name = "speech_order")
 	private Integer order;
 
-	@ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToOne(optional = false, cascade = { CascadeType.ALL })
 	private Discussion discussion;
 
-	@ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToOne(optional = false, cascade = { CascadeType.ALL })
 	private Politician politician;
 
 	@OneToMany(mappedBy = "speech", cascade = CascadeType.ALL)

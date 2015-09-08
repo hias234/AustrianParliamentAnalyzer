@@ -1,15 +1,15 @@
 package at.jku.tk.hiesmair.gv.parliament.entities.session;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Embeddable;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
@@ -23,12 +23,80 @@ import at.jku.tk.hiesmair.gv.parliament.entities.mandate.NationalCouncilMember;
 @Entity
 public class Session {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer id;
+	@Embeddable
+	public static class SessionId implements Serializable {
 
-	@ManyToOne(optional = false)
-	private LegislativePeriod period;
+		private static final long serialVersionUID = -6013583214876970566L;
+
+		@ManyToOne(optional = false)
+		private LegislativePeriod period;
+
+		/** e.g. 72. Sitzung */
+		private String sessionTitle;
+
+		public SessionId() {
+			super();
+		}
+
+		public SessionId(LegislativePeriod period, String sessionTitle) {
+			super();
+			this.period = period;
+			this.sessionTitle = sessionTitle;
+		}
+
+		public LegislativePeriod getPeriod() {
+			return period;
+		}
+
+		public void setPeriod(LegislativePeriod period) {
+			this.period = period;
+		}
+
+		public String getSessionTitle() {
+			return sessionTitle;
+		}
+
+		public void setSessionTitle(String sessionTitle) {
+			this.sessionTitle = sessionTitle;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((period == null) ? 0 : period.hashCode());
+			result = prime * result + ((sessionTitle == null) ? 0 : sessionTitle.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			SessionId other = (SessionId) obj;
+			if (period == null) {
+				if (other.period != null)
+					return false;
+			}
+			else if (!period.equals(other.period))
+				return false;
+			if (sessionTitle == null) {
+				if (other.sessionTitle != null)
+					return false;
+			}
+			else if (!sessionTitle.equals(other.sessionTitle))
+				return false;
+			return true;
+		}
+
+	}
+
+	@EmbeddedId
+	private SessionId id;
 
 	private Integer sessionNr;
 
@@ -54,29 +122,23 @@ public class Session {
 
 	public Session() {
 		super();
+		id = new SessionId();
 	}
 
-	public Session(Integer sessionNr, Date startDate, Date endDate) {
-		super();
-		this.sessionNr = sessionNr;
-		this.startDate = startDate;
-		this.endDate = endDate;
-	}
-
-	public Integer getId() {
+	public SessionId getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(SessionId id) {
 		this.id = id;
 	}
 
 	public LegislativePeriod getPeriod() {
-		return period;
+		return id.getPeriod();
 	}
 
 	public void setPeriod(LegislativePeriod period) {
-		this.period = period;
+		this.id.setPeriod(period);
 	}
 
 	public Integer getSessionNr() {
@@ -85,6 +147,14 @@ public class Session {
 
 	public void setSessionNr(Integer sessionNr) {
 		this.sessionNr = sessionNr;
+	}
+	
+	public String getSessionTitle(){
+		return id.getSessionTitle();
+	}
+	
+	public void setSessionTitle(String sessionTitle){
+		id.setSessionTitle(sessionTitle);
 	}
 
 	public Date getStartDate() {
@@ -137,9 +207,35 @@ public class Session {
 
 	@Override
 	public String toString() {
-		return "Session [period=" + period.getPeriod() + ", sessionNr=" + sessionNr + ", startDate=" + startDate
-				+ ", endDate=" + endDate + ", absentPoliticians=" + absentNationalCouncilMembers + ", discussions="
-				+ discussions + "]";
+		return "Session [period=" + getPeriod().getPeriod() + ", sessionNr=" + getSessionNr() + ", startDate="
+				+ startDate + ", endDate=" + endDate + ", absentPoliticians=" + absentNationalCouncilMembers
+				+ ", discussions=" + discussions + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Session other = (Session) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		}
+		else if (!id.equals(other.id))
+			return false;
+		return true;
 	}
 
 }

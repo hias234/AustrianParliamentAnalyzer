@@ -10,7 +10,6 @@ import org.junit.Test;
 import at.jku.tk.hiesmair.gv.parlament.ParliamentTestUtil;
 import at.jku.tk.hiesmair.gv.parliament.cache.DataCache;
 import at.jku.tk.hiesmair.gv.parliament.cache.InMemoryDataCache;
-import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 import at.jku.tk.hiesmair.gv.parliament.entities.session.Session;
 import at.jku.tk.hiesmair.gv.parliament.entities.session.SessionChairMan;
 import at.jku.tk.hiesmair.gv.parliament.etl.period.transformer.session.SessionTransformer22andUp;
@@ -18,7 +17,6 @@ import at.jku.tk.hiesmair.gv.parliament.etl.period.transformer.session.discussio
 import at.jku.tk.hiesmair.gv.parliament.etl.politician.PoliticiansEtlJob;
 import at.jku.tk.hiesmair.gv.parliament.etl.politician.extractor.PoliticiansExtractor;
 import at.jku.tk.hiesmair.gv.parliament.etl.politician.loader.DummyPoliticiansLoader;
-import at.jku.tk.hiesmair.gv.parliament.etl.politician.loader.PoliticiansLoader;
 import at.jku.tk.hiesmair.gv.parliament.etl.politician.transformer.PoliticianTransformer;
 import at.jku.tk.hiesmair.gv.parliament.etl.politician.transformer.PoliticiansTransformer;
 import at.jku.tk.hiesmair.gv.parliament.sentiment.DummySentimentAnalyzer;
@@ -38,7 +36,7 @@ public class SessionTransformer22andUpTest {
 
 		SessionTransformer22andUp extractor = new SessionTransformer22andUp(politicianTransformer,
 				new DiscussionTransformer22andUp(politicianTransformer, new DummySentimentAnalyzer()));
-		Session session = extractor.getSession(cache.getLegislativePeriod(25),
+		Session session = extractor.getSession(cache.getLegislativePeriod(25), "25",
 				ParliamentTestUtil.getDocumentFromClasspath("period25/index_25.html"),
 				ParliamentTestUtil.getDocumentFromClasspath("period25/protocol_25.html"));
 
