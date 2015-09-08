@@ -117,7 +117,7 @@ public class Session {
 	@OneToMany(mappedBy = "session", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
 	private List<Discussion> discussions;
 
-	@OneToMany(mappedBy = "session", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "id.session", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private List<SessionChairMan> chairMen;
 
 	public Session() {
