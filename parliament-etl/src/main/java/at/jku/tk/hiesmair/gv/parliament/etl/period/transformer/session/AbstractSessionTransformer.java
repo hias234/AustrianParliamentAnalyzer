@@ -94,11 +94,6 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 		protocol.getElementsByTag("hr").remove();
 		protocol.select("span.threecol").remove();
 
-		if (!protocol.getElementsByTag("hr").isEmpty() || !protocol.select("hr + table").isEmpty()
-				|| !protocol.select("span.threecol").isEmpty()) {
-			logger.warn("not all page breaks have been removed");
-		}
-
 		return protocol;
 	}
 

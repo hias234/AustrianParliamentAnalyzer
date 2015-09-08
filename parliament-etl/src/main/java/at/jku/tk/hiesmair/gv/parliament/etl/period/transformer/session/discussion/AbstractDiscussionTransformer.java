@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -47,7 +49,8 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 	protected final PoliticianTransformer politicianTransformer;
 	protected final SentimentAnalyzer sentimentAnalyzer;
 
-	public AbstractDiscussionTransformer(PoliticianTransformer politicianTransformer, SentimentAnalyzer sentimentAnalyzer) {
+	public AbstractDiscussionTransformer(PoliticianTransformer politicianTransformer,
+			SentimentAnalyzer sentimentAnalyzer) {
 		this.politicianTransformer = politicianTransformer;
 		this.sentimentAnalyzer = sentimentAnalyzer;
 	}
@@ -65,8 +68,8 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 	}
 
 	protected List<Discussion> getDiscussions(Document index, Session session) throws Exception {
-		List<Discussion> discussions = new ArrayList<Discussion>();
-		
+		Map<String, Discussion> discussions = new HashMap<String, Discussion>();
+
 		Elements headers = index.select("h3");
 		int order = 1;
 		for (Element header : headers) {
@@ -74,12 +77,14 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 
 			if (isTopicRelevant(text)) {
 				Discussion discussion = getDiscussion(header, text, session, order);
-				discussions.add(discussion);
+				if (discussions.get(discussion.getTopic()) == null){
+					discussions.put(discussion.getTopic(), discussion);
+				}
 				order++;
 			}
 		}
-		
-		return discussions;
+
+		return new ArrayList<Discussion>(discussions.values());
 	}
 
 	protected List<Discussion> setSpeechTexts(Document protocol, List<Discussion> discussions) throws Exception {
@@ -98,15 +103,15 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 							setSpeechText(discussions, time, politician, speechText);
 						}
 						else {
-							logger.debug("no colon " + speechPartElement);
+							logger.info("no colon " + speechPartElement);
 						}
 					}
 					else {
-						logger.debug("did not find politician: " + speechPartElement);
+						logger.info("did not find politician: " + speechPartElement);
 					}
 				}
 				else {
-					logger.debug("speechPart-Tag is null");
+					logger.info("speechPart-Tag is null");
 				}
 			}
 			else {
@@ -119,14 +124,13 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 
 	protected void checkIfAllSpeechTextsWereFound(List<Discussion> discussions) {
 		int speechCnt = discussions.stream().mapToInt(d -> d.getSpeeches().size()).sum();
-		int speechesWithTexts = Long
-				.valueOf(
-						discussions
-								.stream()
-								.mapToLong(
-										d -> d.getSpeeches().stream()
-												.filter(sp -> sp.getText() != null || sp.getStartTime() == null)
-												.count()).sum()).intValue();
+		int speechesWithTexts = discussions
+				.stream()
+				.mapToInt(
+						d -> Long.valueOf(
+								d.getSpeeches().stream()
+										.filter(sp -> sp.getText() != null || sp.getStartTime() == null).count())
+								.intValue()).sum();
 
 		if (speechCnt != speechesWithTexts) {
 			logger.warn("not all speechtexts found in protocol: found " + speechesWithTexts + " of " + speechCnt);
@@ -166,11 +170,11 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 		try {
 			List<Sentiment> sentiments = sentimentAnalyzer.getSentiments(speechText);
 			return sentiments.stream().map(s -> new DiscussionSpeechSentiment(speech, s)).collect(Collectors.toList());
+		} catch (SentimentAnalyzerException se) {
+			logger.info("unsuccessful sentiment analysis for speech: " + speech.getPolitician().getSurName() + " - "
+					+ speech.getStartTime());
 		}
-		catch (SentimentAnalyzerException se){
-			logger.info("unsuccessful sentiment analysis for speech: " + speech.getPolitician().getSurName() + " - " + speech.getStartTime());
-		}
-		
+
 		return new ArrayList<DiscussionSpeechSentiment>();
 	}
 

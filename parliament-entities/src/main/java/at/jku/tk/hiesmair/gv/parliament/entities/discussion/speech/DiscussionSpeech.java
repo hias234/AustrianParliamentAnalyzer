@@ -48,7 +48,7 @@ public class DiscussionSpeech {
 	@Enumerated(EnumType.STRING)
 	private SpeechType type;
 
-	@Column(length = 100000)
+	@Column(length = 1000000)
 	private String text;
 
 	public Integer getId() {
@@ -125,9 +125,9 @@ public class DiscussionSpeech {
 
 	@Override
 	public String toString() {
-		return "DiscussionSpeech [discussion=" + (discussion == null ? "null" : discussion.getTopic())
+		return "DiscussionSpeech " + (text == null) + " [discussion=" + (discussion == null ? "null" : discussion.getTopic())
 				+ ", politician=" + (politician == null ? "null" : politician.getSurName()) + ", startTime="
-				+ startTime + ", endTime=" + endTime + ", type=" + type + "]";
+				+ startTime + ", endTime=" + endTime + ", type=" + type + ", text=" + text + "]";
 	}
 
 }
