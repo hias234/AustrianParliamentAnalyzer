@@ -1,5 +1,6 @@
 package at.jku.tk.hiesmair.gv.parliament.entities;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -13,6 +14,7 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.time.DateUtils;
 
@@ -21,15 +23,18 @@ import at.jku.tk.hiesmair.gv.parliament.entities.session.Session;
 import at.jku.tk.hiesmair.gv.parliament.util.ParliamentDateUtils;
 
 @Entity
-public class LegislativePeriod {
+public class LegislativePeriod implements Serializable {
+
+	private static final long serialVersionUID = -1229415676697571846L;
 
 	@Id
 	private Integer period;
 
-	@OneToMany(mappedBy = "id.period", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+	@OneToMany(mappedBy = "id.period", cascade = { CascadeType.ALL })
 	private List<Session> sessions;
 
-	@ManyToMany(mappedBy = "periods", fetch = FetchType.EAGER)
+//	@ManyToMany(mappedBy = "periods")
+	@Transient
 	private Set<NationalCouncilMember> nationalCouncilMembers = new HashSet<NationalCouncilMember>();
 
 	public LegislativePeriod() {

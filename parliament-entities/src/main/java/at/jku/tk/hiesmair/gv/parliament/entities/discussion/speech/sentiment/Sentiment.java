@@ -1,10 +1,14 @@
 package at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.sentiment;
 
+import java.io.Serializable;
+
 import javax.persistence.Embeddable;
 
 @Embeddable
-public class Sentiment {
+public class Sentiment implements Serializable {
 
+	private static final long serialVersionUID = -199364335355230757L;
+	
 	private String generator;
 	private Double sentiment;
 	private Double positiveSentiment;

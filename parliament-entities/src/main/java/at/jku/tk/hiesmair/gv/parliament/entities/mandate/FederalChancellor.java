@@ -11,6 +11,8 @@ import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 @DiscriminatorValue("FederalChancellor")
 public class FederalChancellor extends Mandate {
 
+	private static final long serialVersionUID = -4451036452058488232L;
+
 	public FederalChancellor() {
 	}
 	
@@ -20,7 +22,7 @@ public class FederalChancellor extends Mandate {
 	
 	@Override
 	public String toString() {
-		return "FederalChancellor [politician=" + politician.getSurName() + ", validFrom=" + validFrom
+		return "FederalChancellor [politician=" + getPolitician().getSurName() + ", validFrom=" + getValidFrom()
 				+ ", validUntil=" + validUntil + "]";
 	}
 

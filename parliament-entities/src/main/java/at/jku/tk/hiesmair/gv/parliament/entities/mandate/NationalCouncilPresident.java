@@ -11,6 +11,8 @@ import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 @DiscriminatorValue("NationalCouncilPresident")
 public class NationalCouncilPresident extends Mandate {
 
+	private static final long serialVersionUID = -2867183974599105084L;
+	
 	/** first, second or third president */
 	private Integer position;
 
@@ -34,8 +36,8 @@ public class NationalCouncilPresident extends Mandate {
 
 	@Override
 	public String toString() {
-		return "NationalCouncilPresident [position=" + position + ", politician=" + politician.getSurName()
-				+ ", validFrom=" + validFrom + ", validUntil=" + validUntil + "]";
+		return "NationalCouncilPresident [position=" + position + ", politician=" + getPolitician().getSurName()
+				+ ", validFrom=" + getValidFrom() + ", validUntil=" + validUntil + "]";
 	}
 
 }

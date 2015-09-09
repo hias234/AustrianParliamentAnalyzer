@@ -13,7 +13,9 @@ import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 @Entity
 public abstract class CouncilMember extends Mandate {
 
-	@ManyToOne(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+	private static final long serialVersionUID = 1216373484049667243L;
+	
+	@ManyToOne(cascade = { CascadeType.ALL })
 	protected ParliamentClub club;
 
 	public CouncilMember() {

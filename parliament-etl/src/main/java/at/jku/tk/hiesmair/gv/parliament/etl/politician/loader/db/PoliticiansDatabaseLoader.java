@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.springframework.stereotype.Component;
+
 import at.jku.tk.hiesmair.gv.parliament.db.MandateRepository;
 import at.jku.tk.hiesmair.gv.parliament.db.ParliamentClubRepository;
 import at.jku.tk.hiesmair.gv.parliament.db.PoliticianRepository;

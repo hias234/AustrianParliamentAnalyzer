@@ -1,10 +1,14 @@
 package at.jku.tk.hiesmair.gv.parliament.entities.politician;
 
+import java.io.Serializable;
+
 import javax.persistence.Embeddable;
 
 @Embeddable
-public class Name {
+public class Name implements Serializable {
 
+	private static final long serialVersionUID = 2743489126226310612L;
+	
 	private String title = "";
 	private String titleAfter = "";
 	private String firstName = "";

@@ -10,6 +10,7 @@ import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 
 /**
  * Bundesrat Member
+ * 
  * @author Markus
  *
  */
@@ -17,17 +18,19 @@ import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 @DiscriminatorValue("FederalCouncilMember")
 public class FederalCouncilMember extends CouncilMember {
 
+	private static final long serialVersionUID = -582313064328362792L;
+
 	public FederalCouncilMember() {
 	}
-	
+
 	public FederalCouncilMember(ParliamentClub club, String description, Politician politician, Date validFrom, Date validTo) {
 		super(description, politician, validFrom, validTo, club);
 	}
-	
+
 	@Override
 	public String toString() {
-		return "FederalCouncilMember [club=" + club + ", politician=" + politician.getSurName() + ", validFrom="
-				+ validFrom + ", validUntil=" + validUntil + "]";
+		return "FederalCouncilMember [club=" + club + ", politician=" + getPolitician().getSurName() + ", validFrom=" + getValidFrom()
+				+ ", validUntil=" + validUntil + "]";
 	}
-	
+
 }

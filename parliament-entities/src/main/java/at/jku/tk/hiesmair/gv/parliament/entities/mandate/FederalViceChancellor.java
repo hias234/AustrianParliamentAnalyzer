@@ -11,17 +11,18 @@ import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 @DiscriminatorValue("FederalViceChancellor")
 public class FederalViceChancellor extends Mandate {
 
+	private static final long serialVersionUID = 2743913069633523964L;
+
 	public FederalViceChancellor() {
 	}
 
 	public FederalViceChancellor(String description, Politician politician, Date validFrom, Date validTo) {
 		super(description, politician, validFrom, validTo);
 	}
-	
-	
+
 	@Override
 	public String toString() {
-		return "VizeFederalChancellor [politician=" + politician.getSurName() + ", validFrom=" + validFrom
+		return "VizeFederalChancellor [politician=" + getPolitician().getSurName() + ", validFrom=" + getValidFrom()
 				+ ", validUntil=" + validUntil + "]";
 	}
 

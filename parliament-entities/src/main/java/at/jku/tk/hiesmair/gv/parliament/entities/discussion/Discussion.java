@@ -1,10 +1,12 @@
 package at.jku.tk.hiesmair.gv.parliament.entities.discussion;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -17,46 +19,125 @@ import at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.DiscussionSpe
 import at.jku.tk.hiesmair.gv.parliament.entities.session.Session;
 
 @Entity
-public class Discussion {
+public class Discussion implements Serializable {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer id;
+	private static final long serialVersionUID = -2386763775742073194L;
 
-	@ManyToOne(optional = false)
-	private Session session;
+	public static class DiscussionId implements Serializable {
 
-	@Column(name = "discussion_order")
-	private Integer order;
+		private static final long serialVersionUID = 1778296173315289747L;
+
+		@ManyToOne(optional = false)
+		private Session session;
+
+		@Column(name = "discussion_order")
+		private Integer order;
+
+		public DiscussionId() {
+			super();
+		}
+
+		public DiscussionId(Session session, Integer order) {
+			super();
+			this.session = session;
+			this.order = order;
+		}
+
+		public Integer getOrder() {
+			return order;
+		}
+
+		public void setOrder(Integer order) {
+			this.order = order;
+		}
+
+		public Session getSession() {
+			return session;
+		}
+
+		public void setSession(Session session) {
+			this.session = session;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((order == null) ? 0 : order.hashCode());
+			result = prime * result + ((session == null) ? 0 : session.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			DiscussionId other = (DiscussionId) obj;
+			if (order == null) {
+				if (other.order != null)
+					return false;
+			}
+			else
+				if (!order.equals(other.order))
+					return false;
+			if (session == null) {
+				if (other.session != null)
+					return false;
+			}
+			else
+				if (!session.equals(other.session))
+					return false;
+			return true;
+		}
+
+	}
+
+	@EmbeddedId
+	private DiscussionId id;
 
 	private String topic;
 	private String type;
 
-	@OneToMany(mappedBy = "discussion", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+	@OneToMany(mappedBy = "id.discussion", cascade = { CascadeType.ALL })
 	private List<DiscussionSpeech> speeches = new ArrayList<DiscussionSpeech>();
 
-	public Integer getId() {
+	public Discussion() {
+		id = new DiscussionId();
+	}
+
+	public Discussion(Session session, Integer order, String topic, String type, List<DiscussionSpeech> speeches) {
+		this.id = new DiscussionId(session, order);
+		this.topic = topic;
+		this.type = type;
+		this.speeches = speeches;
+	}
+
+	public DiscussionId getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(DiscussionId id) {
 		this.id = id;
 	}
 
 	public Integer getOrder() {
-		return order;
+		return id.getOrder();
 	}
 
 	public void setOrder(Integer order) {
-		this.order = order;
+		this.id.setOrder(order);
 	}
 
 	public Session getSession() {
-		return session;
+		return id.getSession();
 	}
 
 	public void setSession(Session session) {
-		this.session = session;
+		this.id.setSession(session);
 	}
 
 	public String getTopic() {
@@ -86,6 +167,33 @@ public class Discussion {
 	@Override
 	public String toString() {
 		return "Discussion [topic=" + topic + ", type=" + type + ", " + speeches.size() + " Speeches=" + speeches + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Discussion other = (Discussion) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		}
+		else
+			if (!id.equals(other.id))
+				return false;
+		return true;
 	}
 
 }

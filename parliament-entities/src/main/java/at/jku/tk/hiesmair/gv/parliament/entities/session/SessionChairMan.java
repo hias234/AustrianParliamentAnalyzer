@@ -12,14 +12,16 @@ import javax.persistence.ManyToOne;
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 
 @Entity
-public class SessionChairMan {
+public class SessionChairMan implements Serializable {
+
+	private static final long serialVersionUID = -2773729654909781365L;
 
 	@Embeddable
 	public static class SessionChairManId implements Serializable {
 
 		private static final long serialVersionUID = -1644746776601455788L;
 
-		@ManyToOne(optional = false, fetch = FetchType.EAGER)
+		@ManyToOne(optional = false)
 		private Session session;
 
 		private Integer position;
@@ -87,7 +89,7 @@ public class SessionChairMan {
 	@EmbeddedId
 	private SessionChairManId id;
 
-	@ManyToOne(optional = false, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToOne(optional = false, cascade = CascadeType.ALL)
 	private Politician politician;
 
 	public SessionChairMan() {

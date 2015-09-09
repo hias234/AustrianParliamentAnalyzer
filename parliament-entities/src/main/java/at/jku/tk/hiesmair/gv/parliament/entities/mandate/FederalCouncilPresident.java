@@ -11,6 +11,8 @@ import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 @DiscriminatorValue("FederalCouncilPresident")
 public class FederalCouncilPresident extends Mandate {
 
+	private static final long serialVersionUID = -3898433872481956252L;
+
 	public FederalCouncilPresident() {
 	}
 	
@@ -20,8 +22,8 @@ public class FederalCouncilPresident extends Mandate {
 	
 	@Override
 	public String toString() {
-		return "FederalCouncilPresident [politician=" + politician.getSurName()
-				+ ", validFrom=" + validFrom + ", validUntil=" + validUntil + "]";
+		return "FederalCouncilPresident [politician=" + getPolitician().getSurName()
+				+ ", validFrom=" + getValidFrom() + ", validUntil=" + validUntil + "]";
 	}
 
 	

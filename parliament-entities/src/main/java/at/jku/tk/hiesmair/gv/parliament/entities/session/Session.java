@@ -21,7 +21,9 @@ import at.jku.tk.hiesmair.gv.parliament.entities.discussion.Discussion;
 import at.jku.tk.hiesmair.gv.parliament.entities.mandate.NationalCouncilMember;
 
 @Entity
-public class Session {
+public class Session implements Serializable {
+
+	private static final long serialVersionUID = -4429469608872326606L;
 
 	@Embeddable
 	public static class SessionId implements Serializable {
@@ -114,10 +116,10 @@ public class Session {
 	@Transient
 	private Set<NationalCouncilMember> absentNationalCouncilMembers;
 
-	@OneToMany(mappedBy = "session", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+	@OneToMany(mappedBy = "id.session", cascade = { CascadeType.ALL })
 	private List<Discussion> discussions;
 
-	@OneToMany(mappedBy = "id.session", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "id.session", cascade = CascadeType.ALL)
 	private List<SessionChairMan> chairMen;
 
 	public Session() {

@@ -8,6 +8,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
+import javax.persistence.Transient;
 
 import at.jku.tk.hiesmair.gv.parliament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parliament.entities.club.ParliamentClub;
@@ -17,7 +18,10 @@ import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 @DiscriminatorValue("NationalCouncilMember")
 public class NationalCouncilMember extends CouncilMember {
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	private static final long serialVersionUID = -7309695226285808929L;
+	
+//	@ManyToMany(cascade = CascadeType.ALL)
+	@Transient
 	protected Set<LegislativePeriod> periods;
 
 	public NationalCouncilMember() {
@@ -41,7 +45,7 @@ public class NationalCouncilMember extends CouncilMember {
 	@Override
 	public String toString() {
 		return "NationalCouncilMember [periods=" + periods + ", club=" + club + ", politician="
-				+ politician.getSurName() + ", validFrom=" + validFrom + ", validUntil=" + validUntil + "]";
+				+ getPolitician().getSurName() + ", validFrom=" + getValidFrom() + ", validUntil=" + validUntil + "]";
 	}
 
 }

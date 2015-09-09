@@ -1,5 +1,6 @@
 package at.jku.tk.hiesmair.gv.parliament.entities.politician;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -16,6 +17,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.time.DateUtils;
 
@@ -25,7 +27,9 @@ import at.jku.tk.hiesmair.gv.parliament.entities.mandate.NationalCouncilMember;
 import at.jku.tk.hiesmair.gv.parliament.util.ParliamentDateUtils;
 
 @Entity
-public class Politician {
+public class Politician implements Serializable {
+
+	private static final long serialVersionUID = -384408204868853820L;
 
 	@Id
 	private String id;
@@ -36,7 +40,8 @@ public class Politician {
 	@Temporal(TemporalType.DATE)
 	private Date birthDate;
 
-	@OneToMany(mappedBy = "politician", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+	//@OneToMany(mappedBy = "id.politician", cascade = { CascadeType.ALL })
+	@Transient
 	private Set<Mandate> mandates = new HashSet<Mandate>();
 
 	@OneToMany(mappedBy = "id.politician", cascade = CascadeType.ALL)

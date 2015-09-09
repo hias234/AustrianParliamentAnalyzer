@@ -1,16 +1,15 @@
 package at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
@@ -21,17 +20,85 @@ import at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.sentiment.Dis
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 
 @Entity
-public class DiscussionSpeech {
+public class DiscussionSpeech implements Serializable {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer id;
+	private static final long serialVersionUID = -3611117803439285095L;
 
-	@Column(name = "speech_order")
-	private Integer order;
+	public static class DiscussionSpeechId implements Serializable {
 
-	@ManyToOne(optional = false, cascade = { CascadeType.ALL })
-	private Discussion discussion;
+		private static final long serialVersionUID = -3881934045732709180L;
+
+		@Column(name = "speech_order")
+		private Integer order;
+
+		@ManyToOne(optional = false)
+		private Discussion discussion;
+
+		public DiscussionSpeechId() {
+			super();
+		}
+
+		public DiscussionSpeechId(Integer order, Discussion discussion) {
+			super();
+			this.order = order;
+			this.discussion = discussion;
+		}
+
+		public Integer getOrder() {
+			return order;
+		}
+
+		public void setOrder(Integer order) {
+			this.order = order;
+		}
+
+		public Discussion getDiscussion() {
+			return discussion;
+		}
+
+		public void setDiscussion(Discussion discussion) {
+			this.discussion = discussion;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((discussion == null) ? 0 : discussion.hashCode());
+			result = prime * result + ((order == null) ? 0 : order.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			DiscussionSpeechId other = (DiscussionSpeechId) obj;
+			if (discussion == null) {
+				if (other.discussion != null)
+					return false;
+			}
+			else
+				if (!discussion.equals(other.discussion))
+					return false;
+			if (order == null) {
+				if (other.order != null)
+					return false;
+			}
+			else
+				if (!order.equals(other.order))
+					return false;
+			return true;
+		}
+
+	}
+
+	@EmbeddedId
+	private DiscussionSpeechId id;
 
 	@ManyToOne(optional = false, cascade = { CascadeType.ALL })
 	private Politician politician;
@@ -51,28 +118,43 @@ public class DiscussionSpeech {
 	@Column(length = 1000000)
 	private String text;
 
-	public Integer getId() {
+	public DiscussionSpeech() {
+		id = new DiscussionSpeechId();
+	}
+
+	public DiscussionSpeech(Discussion discussion, Integer order, Politician politician,
+			List<DiscussionSpeechSentiment> sentiments, Date startTime, Date endTime, SpeechType type, String text) {
+		this.id = new DiscussionSpeechId(order, discussion);
+		this.politician = politician;
+		this.sentiments = sentiments;
+		this.startTime = startTime;
+		this.endTime = endTime;
+		this.type = type;
+		this.text = text;
+	}
+
+	public DiscussionSpeechId getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(DiscussionSpeechId id) {
 		this.id = id;
 	}
 
 	public Integer getOrder() {
-		return order;
+		return id.getOrder();
 	}
 
 	public void setOrder(Integer order) {
-		this.order = order;
+		this.id.setOrder(order);
 	}
 
 	public Discussion getDiscussion() {
-		return discussion;
+		return id.getDiscussion();
 	}
 
 	public void setDiscussion(Discussion discussion) {
-		this.discussion = discussion;
+		this.id.setDiscussion(discussion);
 	}
 
 	public Politician getPolitician() {
@@ -125,9 +207,37 @@ public class DiscussionSpeech {
 
 	@Override
 	public String toString() {
-		return "DiscussionSpeech " + (text == null) + " [discussion=" + (discussion == null ? "null" : discussion.getTopic())
-				+ ", politician=" + (politician == null ? "null" : politician.getSurName()) + ", startTime="
-				+ startTime + ", endTime=" + endTime + ", type=" + type + ", text=" + text + "]";
+		return "DiscussionSpeech " + (text == null) + " [discussion="
+				+ (getDiscussion() == null ? "null" : getDiscussion().getTopic()) + ", politician="
+				+ (politician == null ? "null" : politician.getSurName()) + ", startTime=" + startTime + ", endTime="
+				+ endTime + ", type=" + type + ", text=" + text + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		DiscussionSpeech other = (DiscussionSpeech) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		}
+		else
+			if (!id.equals(other.id))
+				return false;
+		return true;
 	}
 
 }

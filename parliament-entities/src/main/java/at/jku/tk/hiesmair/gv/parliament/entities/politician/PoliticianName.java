@@ -3,6 +3,7 @@ package at.jku.tk.hiesmair.gv.parliament.entities.politician;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
@@ -15,14 +16,16 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-public class PoliticianName {
+public class PoliticianName implements Serializable {
+
+	private static final long serialVersionUID = -6403166498610007401L;
 
 	@Embeddable
 	public static class PoliticianNameId implements Serializable {
 
 		private static final long serialVersionUID = -975500665494352271L;
 
-		@ManyToOne(optional = false)
+		@ManyToOne(optional = false, cascade = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
 		private Politician politician;
 
 		@Temporal(TemporalType.DATE)
@@ -58,10 +61,8 @@ public class PoliticianName {
 		public int hashCode() {
 			final int prime = 31;
 			int result = 1;
-			result = prime * result
-					+ ((politician == null) ? 0 : politician.hashCode());
-			result = prime * result
-					+ ((validUntil == null) ? 0 : validUntil.hashCode());
+			result = prime * result + ((politician == null) ? 0 : politician.hashCode());
+			result = prime * result + ((validUntil == null) ? 0 : validUntil.hashCode());
 			return result;
 		}
 
@@ -77,13 +78,17 @@ public class PoliticianName {
 			if (politician == null) {
 				if (other.politician != null)
 					return false;
-			} else if (!politician.equals(other.politician))
-				return false;
+			}
+			else
+				if (!politician.equals(other.politician))
+					return false;
 			if (validUntil == null) {
 				if (other.validUntil != null)
 					return false;
-			} else if (!validUntil.equals(other.validUntil))
-				return false;
+			}
+			else
+				if (!validUntil.equals(other.validUntil))
+					return false;
 			return true;
 		}
 
@@ -104,6 +109,14 @@ public class PoliticianName {
 		super();
 		this.id = new PoliticianNameId(politician, validUntil);
 		this.name = name;
+	}
+
+	public PoliticianNameId getId() {
+		return id;
+	}
+
+	public void setId(PoliticianNameId id) {
+		this.id = id;
 	}
 
 	public Politician getPolitician() {
@@ -186,8 +199,10 @@ public class PoliticianName {
 		if (id == null) {
 			if (other.id != null)
 				return false;
-		} else if (!id.equals(other.id))
-			return false;
+		}
+		else
+			if (!id.equals(other.id))
+				return false;
 		return true;
 	}
 

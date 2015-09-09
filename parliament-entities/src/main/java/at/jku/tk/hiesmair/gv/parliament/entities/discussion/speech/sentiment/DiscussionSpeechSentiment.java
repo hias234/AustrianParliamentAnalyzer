@@ -1,5 +1,7 @@
 package at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.sentiment;
 
+import java.io.Serializable;
+
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,7 +12,9 @@ import javax.persistence.ManyToOne;
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.DiscussionSpeech;
 
 @Entity
-public class DiscussionSpeechSentiment {
+public class DiscussionSpeechSentiment implements Serializable {
+
+	private static final long serialVersionUID = 6011897124215436250L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
