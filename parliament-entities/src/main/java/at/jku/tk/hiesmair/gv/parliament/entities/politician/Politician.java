@@ -39,7 +39,7 @@ public class Politician {
 	@OneToMany(mappedBy = "politician", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
 	private Set<Mandate> mandates = new HashSet<Mandate>();
 
-	@OneToMany(mappedBy = "politician", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "id.politician", cascade = CascadeType.ALL)
 	private List<PoliticianName> previousNames = new ArrayList<PoliticianName>();
 
 	public String getId() {

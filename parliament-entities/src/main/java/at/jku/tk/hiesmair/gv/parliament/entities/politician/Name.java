@@ -48,8 +48,53 @@ public class Name {
 
 	@Override
 	public String toString() {
-		return "Name [title=" + title + ", titleAfter=" + titleAfter + ", firstName=" + firstName + ", surName="
-				+ surName + "]";
+		return "Name [title=" + title + ", titleAfter=" + titleAfter
+				+ ", firstName=" + firstName + ", surName=" + surName + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((firstName == null) ? 0 : firstName.hashCode());
+		result = prime * result + ((surName == null) ? 0 : surName.hashCode());
+		result = prime * result + ((title == null) ? 0 : title.hashCode());
+		result = prime * result
+				+ ((titleAfter == null) ? 0 : titleAfter.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Name other = (Name) obj;
+		if (firstName == null) {
+			if (other.firstName != null)
+				return false;
+		} else if (!firstName.equals(other.firstName))
+			return false;
+		if (surName == null) {
+			if (other.surName != null)
+				return false;
+		} else if (!surName.equals(other.surName))
+			return false;
+		if (title == null) {
+			if (other.title != null)
+				return false;
+		} else if (!title.equals(other.title))
+			return false;
+		if (titleAfter == null) {
+			if (other.titleAfter != null)
+				return false;
+		} else if (!titleAfter.equals(other.titleAfter))
+			return false;
+		return true;
 	}
 
 }
