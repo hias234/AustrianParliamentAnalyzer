@@ -70,25 +70,21 @@ public class ParliamentDatabaseLoader {
 	}
 
 	protected void loadMandate(Mandate mandate) {
-//		Mandate mandateInDb = mandateRepository.findOne(new MandateId(mandate.getPolitician(), mandate.getDescription(), mandate.getValidFrom()));
-//
-//		if (mandateInDb == null) {
-			loadPolitician(mandate.getPolitician());
+		loadPolitician(mandate.getPolitician());
 
-			if (mandate instanceof CouncilMember) {
-				clubRepository.save(((CouncilMember) mandate).getClub());
-			}
+		if (mandate instanceof CouncilMember) {
+			clubRepository.save(((CouncilMember) mandate).getClub());
+		}
 
-			if (mandate instanceof NationalCouncilMember) {
-				Set<LegislativePeriod> periods = ((NationalCouncilMember) mandate).getPeriods();
+		if (mandate instanceof NationalCouncilMember) {
+			Set<LegislativePeriod> periods = ((NationalCouncilMember) mandate).getPeriods();
 
-				periods.forEach(p -> loadPeriod(p));
-				mandateRepository.save(mandate);
-			}
-			else {
-				mandateRepository.save(mandate);
-			}
-//		}
+			periods.forEach(p -> loadPeriod(p));
+			mandateRepository.save(mandate);
+		}
+		else {
+			mandateRepository.save(mandate);
+		}
 	}
 
 	public void loadPeriod(LegislativePeriod period) {
