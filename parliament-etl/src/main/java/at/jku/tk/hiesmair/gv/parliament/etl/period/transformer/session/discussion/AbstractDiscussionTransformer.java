@@ -59,7 +59,7 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 	public List<Discussion> getDiscussions(Document index, Document protocol, Session session) throws Exception {
 		List<Discussion> discussions = getDiscussions(index, session);
 
-		if (discussions.size() > 0) {
+		if (!discussions.isEmpty()) {
 			discussions = setSpeechTexts(protocol, discussions);
 			checkIfAllSpeechTextsWereFound(discussions);
 		}
@@ -103,19 +103,19 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 							setSpeechText(discussions, time, politician, speechText);
 						}
 						else {
-							logger.info("no colon " + speechPartElement);
+							logger.debug("no colon " + speechPartElement);
 						}
 					}
 					else {
-						logger.info("did not find politician: " + speechPartElement);
+						logger.debug("did not find politician: " + speechPartElement);
 					}
 				}
 				else {
-					logger.info("speechPart-Tag is null");
+					logger.debug("speechPart-Tag is null");
 				}
 			}
 			else {
-				logger.info("unable to parse start time");
+				logger.debug("unable to parse start time");
 			}
 		}
 
