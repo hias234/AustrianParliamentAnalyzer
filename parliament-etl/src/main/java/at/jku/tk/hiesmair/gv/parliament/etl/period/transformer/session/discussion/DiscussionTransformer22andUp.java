@@ -1,5 +1,7 @@
 package at.jku.tk.hiesmair.gv.parliament.etl.period.transformer.session.discussion;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
@@ -8,7 +10,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
-import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 import at.jku.tk.hiesmair.gv.parliament.etl.politician.transformer.PoliticianTransformer;
 import at.jku.tk.hiesmair.gv.parliament.sentiment.SentimentAnalyzer;
 
@@ -43,10 +44,10 @@ public class DiscussionTransformer22andUp extends AbstractDiscussionTransformer 
 	}
 
 	@Override
-	protected Element getFirstSpeechTextElement(Element speechBegin) {
+	protected Element getFirstSpeechTextElement(Element speechBegin) throws IOException {
 		Element speechPart = getNextPossibleStartTextElement(speechBegin);
 		while (speechPart != null && !speechPart.className().equals(SPEECH_END_CLASSNAME)) {
-			if (!politicianTransformer.getPoliticianLinks(speechPart).isEmpty()) {
+			if (getPoliticianOfSpeech(speechPart) != null) {
 				return speechPart;
 			}
 
@@ -80,15 +81,6 @@ public class DiscussionTransformer22andUp extends AbstractDiscussionTransformer 
 	@Override
 	protected Elements getSpeechBeginElements(Document protocol) {
 		return protocol.select("p:matches(^\\s*\\d{1,2}\\.\\d{2})");
-	}
-
-	@Override
-	protected Politician getPoliticianOfSpeech(Element firstSpeechTextElement) throws Exception {
-		Elements politicianLinks = politicianTransformer.getPoliticianLinks(firstSpeechTextElement);
-		if (!politicianLinks.isEmpty()) {
-			return politicianTransformer.getPolitician(politicianLinks.get(0).attr("href"));
-		}
-		return null;
 	}
 
 }

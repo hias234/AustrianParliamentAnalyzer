@@ -72,7 +72,7 @@ public class PoliticianTransformer extends AbstractTransformer {
 		this.romanNrConverter = new Converter();
 	}
 
-	public Politician getPolitician(String url) throws Exception {
+	public Politician getPolitician(String url) throws IOException {
 		PoliticianFeedItem item = new PoliticianFeedItem();
 
 		if (!url.startsWith(parliamentWebsiteUrl)) {

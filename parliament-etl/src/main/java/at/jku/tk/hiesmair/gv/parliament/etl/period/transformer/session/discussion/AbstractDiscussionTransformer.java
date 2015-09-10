@@ -1,5 +1,6 @@
 package at.jku.tk.hiesmair.gv.parliament.etl.period.transformer.session.discussion;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -37,6 +38,9 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 
 	protected static final int SPEECH_TIME_TOLERANCE_IN_MS = 60000 * 10; // 10
 																			// min
+
+	private static final Pattern POLITICIAN_NAME_PATTERN = Pattern
+			.compile("^((?:Abgeordneter?|Staatssekretär(?:in)?|(?:Bundesminister(?:in)?)) )((?:[\\wöäüÖÄÜß]+\\..?(?:\\(FH\\))?)*\\s)?((?:[\\wöäüÖÄÜß,-\\.]+(?:\\s.\\.)?\\s?)+)\\s([^\\s,(\\.:]+)");
 
 	protected static final Pattern SPEECH_BEGIN_PATTERN = Pattern.compile("(\\d{1,2})\\.\\d{1,2}");
 	protected static final Pattern DISCUSSION_TYPE_PATTERN = Pattern
@@ -77,7 +81,7 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 
 			if (isTopicRelevant(text)) {
 				Discussion discussion = getDiscussion(header, text, session, order);
-				if (discussions.get(discussion.getTopic()) == null){
+				if (discussions.get(discussion.getTopic()) == null) {
 					discussions.put(discussion.getTopic(), discussion);
 				}
 				order++;
@@ -178,7 +182,31 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 		return new ArrayList<DiscussionSpeechSentiment>();
 	}
 
-	protected abstract Politician getPoliticianOfSpeech(Element firstSpeechTextElement) throws Exception;
+	protected Politician getPoliticianOfSpeech(Element element) throws IOException {
+		Elements politicianLinks = politicianTransformer.getPoliticianLinks(element);
+		if (!politicianLinks.isEmpty()) {
+			return politicianTransformer.getPolitician(politicianLinks.get(0).attr("href"));
+		}
+		return getPoliticianOfSpeechByElementText(element);
+
+	}
+
+	protected Politician getPoliticianOfSpeechByElementText(Element element) {
+		String text = element.text().replaceAll(NBSP_STRING, " ").replaceAll(EN_DASH_STRING, "-");
+		String[] parts = text.split(":");
+		if (parts.length > 1) {
+			String namePart = parts[0];
+			Matcher m = POLITICIAN_NAME_PATTERN.matcher(namePart);
+			if (m.find()) {
+				String title = m.group(2);
+				String firstName = m.group(3);
+				String surName = m.group(4);
+
+				return politicianTransformer.getPoliticianByName(title, firstName, surName);
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * returns the speech text
@@ -195,7 +223,7 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 	 * @param speechBeginElement
 	 * @return
 	 */
-	protected abstract Element getFirstSpeechTextElement(Element speechBegin);
+	protected abstract Element getFirstSpeechTextElement(Element speechBegin) throws IOException;
 
 	/**
 	 * Get speech begin-elements that contain the time aka. 12.08
