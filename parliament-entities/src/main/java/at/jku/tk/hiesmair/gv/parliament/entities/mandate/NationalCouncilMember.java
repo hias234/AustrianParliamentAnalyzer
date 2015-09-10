@@ -20,8 +20,7 @@ public class NationalCouncilMember extends CouncilMember {
 
 	private static final long serialVersionUID = -7309695226285808929L;
 	
-//	@ManyToMany(cascade = CascadeType.ALL)
-	@Transient
+	@ManyToMany
 	protected Set<LegislativePeriod> periods;
 
 	public NationalCouncilMember() {

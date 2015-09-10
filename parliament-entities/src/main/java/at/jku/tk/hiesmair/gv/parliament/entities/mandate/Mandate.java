@@ -33,7 +33,7 @@ public class Mandate implements Serializable {
 
 		private static final long serialVersionUID = -5347053715424840563L;
 
-		@ManyToOne(optional = false, cascade = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
+		@ManyToOne(optional = false)
 		protected Politician politician;
 
 		protected String description;

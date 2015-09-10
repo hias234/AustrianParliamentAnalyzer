@@ -1,6 +1,7 @@
 package at.jku.tk.hiesmair.gv.parliament.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -30,11 +31,10 @@ public class LegislativePeriod implements Serializable {
 	@Id
 	private Integer period;
 
-	@OneToMany(mappedBy = "id.period", cascade = { CascadeType.ALL })
-	private List<Session> sessions;
+	@OneToMany(mappedBy = "id.period")
+	private List<Session> sessions = new ArrayList<Session>();
 
-//	@ManyToMany(mappedBy = "periods")
-	@Transient
+	@ManyToMany(mappedBy = "periods")
 	private Set<NationalCouncilMember> nationalCouncilMembers = new HashSet<NationalCouncilMember>();
 
 	public LegislativePeriod() {

@@ -89,7 +89,7 @@ public class SessionChairMan implements Serializable {
 	@EmbeddedId
 	private SessionChairManId id;
 
-	@ManyToOne(optional = false, cascade = CascadeType.ALL)
+	@ManyToOne(optional = false)
 	private Politician politician;
 
 	public SessionChairMan() {

@@ -12,6 +12,7 @@ public class ParliamentClub implements Serializable {
 
 	@Id
 	private String shortName;
+	
 	private String longName;
 
 	public ParliamentClub() {

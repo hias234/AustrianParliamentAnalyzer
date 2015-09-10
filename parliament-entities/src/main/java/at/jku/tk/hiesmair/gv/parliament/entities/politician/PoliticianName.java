@@ -25,7 +25,7 @@ public class PoliticianName implements Serializable {
 
 		private static final long serialVersionUID = -975500665494352271L;
 
-		@ManyToOne(optional = false, cascade = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
+		@ManyToOne(optional = false)
 		private Politician politician;
 
 		@Temporal(TemporalType.DATE)

@@ -18,7 +18,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import at.jku.tk.hiesmair.gv.parlament.db.DummyDbApp;
 import at.jku.tk.hiesmair.gv.parlament.entities.DummyEntitiesApp;
-import at.jku.tk.hiesmair.gv.parlament.etl.politician.DummyPoliticianEtlApp;
+import at.jku.tk.hiesmair.gv.parlament.etl.period.DummyPeriodEtlApp;
 import at.jku.tk.hiesmair.gv.parliament.db.PoliticianRepository;
 import at.jku.tk.hiesmair.gv.parliament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parliament.entities.club.ParliamentClub;
@@ -28,7 +28,7 @@ import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 import at.jku.tk.hiesmair.gv.parliament.etl.politician.loader.db.PoliticiansDatabaseLoader;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = { DummyDbApp.class, DummyEntitiesApp.class, DummyPoliticianEtlApp.class })
+@SpringApplicationConfiguration(classes = { DummyDbApp.class, DummyEntitiesApp.class, DummyPeriodEtlApp.class })
 @TestPropertySource(locations = "classpath:application-test.properties")
 public class PoliticiansDatabaseLoaderTest {
 

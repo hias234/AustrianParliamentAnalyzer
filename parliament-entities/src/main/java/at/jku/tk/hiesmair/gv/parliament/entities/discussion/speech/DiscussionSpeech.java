@@ -100,7 +100,7 @@ public class DiscussionSpeech implements Serializable {
 	@EmbeddedId
 	private DiscussionSpeechId id;
 
-	@ManyToOne(optional = false, cascade = { CascadeType.ALL })
+	@ManyToOne(optional = false)
 	private Politician politician;
 
 	@OneToMany(mappedBy = "speech", cascade = CascadeType.ALL)

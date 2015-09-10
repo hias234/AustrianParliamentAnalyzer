@@ -2,6 +2,7 @@ package at.jku.tk.hiesmair.gv.parliament.entities.session;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -10,6 +11,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
@@ -84,14 +86,16 @@ public class Session implements Serializable {
 				if (other.period != null)
 					return false;
 			}
-			else if (!period.equals(other.period))
-				return false;
+			else
+				if (!period.equals(other.period))
+					return false;
 			if (sessionTitle == null) {
 				if (other.sessionTitle != null)
 					return false;
 			}
-			else if (!sessionTitle.equals(other.sessionTitle))
-				return false;
+			else
+				if (!sessionTitle.equals(other.sessionTitle))
+					return false;
 			return true;
 		}
 
@@ -108,18 +112,16 @@ public class Session implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date endDate;
 
-	// @ManyToMany(fetch = FetchType.EAGER)
-	@Transient
-	private Set<NationalCouncilMember> presentNationalCouncilMembers;
+	@ManyToMany
+	private Set<NationalCouncilMember> presentNationalCouncilMembers = new HashSet<NationalCouncilMember>();
 
-	// @ManyToMany(fetch = FetchType.EAGER)
-	@Transient
-	private Set<NationalCouncilMember> absentNationalCouncilMembers;
+	@ManyToMany
+	private Set<NationalCouncilMember> absentNationalCouncilMembers = new HashSet<NationalCouncilMember>();
 
-	@OneToMany(mappedBy = "id.session", cascade = { CascadeType.ALL })
+	@OneToMany(mappedBy = "id.session")
 	private List<Discussion> discussions;
 
-	@OneToMany(mappedBy = "id.session", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "id.session")
 	private List<SessionChairMan> chairMen;
 
 	public Session() {
@@ -150,12 +152,12 @@ public class Session implements Serializable {
 	public void setSessionNr(Integer sessionNr) {
 		this.sessionNr = sessionNr;
 	}
-	
-	public String getSessionTitle(){
+
+	public String getSessionTitle() {
 		return id.getSessionTitle();
 	}
-	
-	public void setSessionTitle(String sessionTitle){
+
+	public void setSessionTitle(String sessionTitle) {
 		id.setSessionTitle(sessionTitle);
 	}
 
@@ -235,8 +237,9 @@ public class Session implements Serializable {
 			if (other.id != null)
 				return false;
 		}
-		else if (!id.equals(other.id))
-			return false;
+		else
+			if (!id.equals(other.id))
+				return false;
 		return true;
 	}
 

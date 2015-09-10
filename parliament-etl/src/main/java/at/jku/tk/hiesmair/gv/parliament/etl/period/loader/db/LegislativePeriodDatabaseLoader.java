@@ -6,7 +6,7 @@ import javax.inject.Inject;
 
 import org.springframework.stereotype.Component;
 
-import at.jku.tk.hiesmair.gv.parliament.db.LegislativePeriodRepository;
+import at.jku.tk.hiesmair.gv.parliament.db.loader.ParliamentDatabaseLoader;
 import at.jku.tk.hiesmair.gv.parliament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parliament.etl.period.loader.LegislativePeriodLoader;
 
@@ -14,16 +14,11 @@ import at.jku.tk.hiesmair.gv.parliament.etl.period.loader.LegislativePeriodLoade
 public class LegislativePeriodDatabaseLoader implements LegislativePeriodLoader {
 
 	@Inject
-	private LegislativePeriodRepository periodRepository;
-	
+	private ParliamentDatabaseLoader databaseLoader;
+
 	@Override
 	public void loadLegislativePeriods(List<LegislativePeriod> periods) {
-		periodRepository.delete(periodRepository.findAll());
-		for (LegislativePeriod period : periods){
-			// TODO
-//			period.setSessions(new ArrayList<Session>());
-			periodRepository.save(period);
-		}
+		periods.forEach(p -> databaseLoader.loadPeriod(p));
 	}
 
 }
