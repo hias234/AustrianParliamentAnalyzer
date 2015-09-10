@@ -33,7 +33,7 @@ public interface DataCache {
 	public abstract Politician getPolitician(String id);
 
 	public abstract void putPolitician(Politician politician);
-
+	
 	public abstract LegislativePeriod getLegislativePeriod(Integer period);
 
 	public abstract void putLegislativePeriod(LegislativePeriod period);

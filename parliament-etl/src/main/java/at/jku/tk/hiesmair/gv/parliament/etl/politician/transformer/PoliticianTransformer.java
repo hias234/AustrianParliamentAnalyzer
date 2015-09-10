@@ -7,9 +7,11 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -47,15 +49,13 @@ public class PoliticianTransformer extends AbstractTransformer {
 
 	private static final String DATE_PATTERN = "dd.MM.yyyy";
 
-	private static final Logger logger = Logger
-			.getLogger(PoliticianTransformer.class.getSimpleName());
+	private static final Logger logger = Logger.getLogger(PoliticianTransformer.class.getSimpleName());
 
 	protected static final Pattern NAME_PATTERN = Pattern
 			.compile("^((?:[\\wöäüÖÄÜß]+\\..?(?:\\(FH\\))?)*\\s)?((?:[\\wöäüÖÄÜß,-\\.]+(?:\\s.\\.)?\\s?)+)\\s([^\\s,(\\.:]+)$");;
 	protected static final Pattern MAIDEN_NAME_PATTERN = Pattern
 			.compile("^bis (\\d+\\.\\d+\\.\\d{4}): ((?:[\\wöäüÖÄÜß]+\\..?(?:\\(FH\\))?)*\\s)?((?:[\\wöäüÖÄÜß,-\\.]+(?:\\s.\\.)?\\s?)+)\\s([^\\s,()\\.:]+)$");
-	protected static final Pattern BIRTHDATE_PATTERN = Pattern
-			.compile("Geb.:\\s(\\d+\\.\\d+\\.\\d{4})");
+	protected static final Pattern BIRTHDATE_PATTERN = Pattern.compile("Geb.:\\s(\\d+\\.\\d+\\.\\d{4})");
 	protected static final Pattern MANDATE_PATTERN = Pattern
 			.compile("([^(,]*)(?:\\(([^\\.]+)\\.(?:.([^\\.]+)\\.)?\\sGP\\))?,? ?([^\\d]+)?\\s(\\d+\\.\\d+\\.\\d{4})( .)?\\s?(?:(\\d+\\.\\d+\\.\\d{4}))?");
 
@@ -92,8 +92,28 @@ public class PoliticianTransformer extends AbstractTransformer {
 		return getPolitician(item);
 	}
 
-	public Politician getPolitician(PoliticianFeedItem feedItem)
-			throws IOException {
+	public Politician getPoliticianByName(String title, String firstName, String surName) {
+		List<Politician> matchingPoliticians = cache.getPoliticians().values().stream()
+				.filter(p -> p.getSurName().equals(surName)).collect(Collectors.toList());
+		
+		if (matchingPoliticians.size() > 1) {
+			matchingPoliticians = matchingPoliticians.stream().filter(p -> p.getFirstName().equals(firstName))
+					.collect(Collectors.toList());
+
+			if (matchingPoliticians.size() > 1) {
+				matchingPoliticians = matchingPoliticians.stream().filter(p -> p.getTitle().equals(title))
+						.collect(Collectors.toList());
+			}
+		}
+
+		if (matchingPoliticians.size() == 1) {
+			return matchingPoliticians.get(0);
+		}
+
+		return null;
+	}
+
+	public Politician getPolitician(PoliticianFeedItem feedItem) throws IOException {
 		Document document = feedItem.getIndexDocument();
 		return getPolitician(feedItem.getUrl().toString(), document);
 	}
@@ -123,8 +143,7 @@ public class PoliticianTransformer extends AbstractTransformer {
 		return politician;
 	}
 
-	private PoliticianName getPreviousName(Politician politician,
-			Document document) {
+	private PoliticianName getPreviousName(Politician politician, Document document) {
 		Elements headers = document.getElementsByTag("h1");
 		if (!headers.isEmpty()) {
 			Element header = headers.stream().findFirst().get();
@@ -133,19 +152,16 @@ public class PoliticianTransformer extends AbstractTransformer {
 				maidenNameElement = maidenNameElement.nextElementSibling();
 				if (!maidenNameElement.children().isEmpty()) {
 					maidenNameElement = maidenNameElement.child(0);
-					String maidenFullName = maidenNameElement.text()
-							.replaceAll(NBSP_STRING, " ");
+					String maidenFullName = maidenNameElement.text().replaceAll(NBSP_STRING, " ");
 
 					if (maidenFullName.length() > 2) {
-						maidenFullName = maidenFullName.substring(1,
-								maidenFullName.length() - 1);
+						maidenFullName = maidenFullName.substring(1, maidenFullName.length() - 1);
 						String[] parts = maidenFullName.split(",");
 						maidenFullName = parts[0];
 
 						Matcher m = MAIDEN_NAME_PATTERN.matcher(maidenFullName);
 						if (m.find()) {
-							SimpleDateFormat sdf = new SimpleDateFormat(
-									"dd.MM.yyyy");
+							SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
 
 							PoliticianName name = new PoliticianName();
 							name.setPolitician(politician);
@@ -182,7 +198,8 @@ public class PoliticianTransformer extends AbstractTransformer {
 
 		if (name != null) {
 			return name;
-		} else {
+		}
+		else {
 			logger.info("politician-name not found");
 		}
 		return new Name();
@@ -244,8 +261,7 @@ public class PoliticianTransformer extends AbstractTransformer {
 		Set<Mandate> mandates = new HashSet<Mandate>();
 
 		Elements headers = document.getElementsByTag("h4");
-		Element polMandateHeader = headers.stream()
-				.filter(h -> h.text().contains("Mandate")).findFirst().get();
+		Element polMandateHeader = headers.stream().filter(h -> h.text().contains("Mandate")).findFirst().get();
 
 		Elements polMandate = polMandateHeader.nextElementSibling().children();
 		for (Element polMandat : polMandate) {
@@ -260,12 +276,12 @@ public class PoliticianTransformer extends AbstractTransformer {
 				Boolean dateRange = m.group(6) != null;
 				String to = m.group(7);
 
-				Mandate mandate = getMandate(politician, description,
-						periodFrom, periodTo, clubShortName, from, to,
+				Mandate mandate = getMandate(politician, description, periodFrom, periodTo, clubShortName, from, to,
 						dateRange);
 
 				mandates.add(mandate);
-			} else {
+			}
+			else {
 				logger.info("mandate item not recognized: " + text);
 			}
 		}
@@ -273,68 +289,75 @@ public class PoliticianTransformer extends AbstractTransformer {
 		return mandates;
 	}
 
-	private Mandate getMandate(Politician politician, String description,
-			String periodFrom, String periodTo, String clubShortName,
-			String from, String to, Boolean isDateRange) {
+	private Mandate getMandate(Politician politician, String description, String periodFrom, String periodTo,
+			String clubShortName, String from, String to, Boolean isDateRange) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
 
 		Mandate mandate = null;
 		if (description.contains("Abgeordnete")) {
 			if (description.contains(" zum Nationalrat")) {
 				mandate = new NationalCouncilMember();
-				((NationalCouncilMember) mandate).setClub(getClub(clubShortName
-						.trim()));
-				((NationalCouncilMember) mandate)
-						.setPeriods(getPeriods(
-								((NationalCouncilMember) mandate), periodFrom,
-								periodTo));
+				((NationalCouncilMember) mandate).setClub(getClub(clubShortName.trim()));
+				((NationalCouncilMember) mandate).setPeriods(getPeriods(((NationalCouncilMember) mandate), periodFrom,
+						periodTo));
 			}
-		} else if (description.contains("Mitglied des Bundesrates")) {
+		}
+		else if (description.contains("Mitglied des Bundesrates")) {
 			mandate = new FederalCouncilMember();
-			((FederalCouncilMember) mandate).setClub(getClub(clubShortName
-					.trim()));
-		} else if (description.contains("Vizepräsident des Bundesrates")
+			((FederalCouncilMember) mandate).setClub(getClub(clubShortName.trim()));
+		}
+		else if (description.contains("Vizepräsident des Bundesrates")
 				|| description.contains("Vizepräsidentin des Bundesrates")) {
 			mandate = new FederalCouncilVicePresident();
-		} else if (description.contains("Präsident des Bundesrates")
+		}
+		else if (description.contains("Präsident des Bundesrates")
 				|| description.contains("Präsidentin des Bundesrates")) {
 			mandate = new FederalCouncilPresident();
-		} else if (description.contains("Bundesminister")) {
+		}
+		else if (description.contains("Bundesminister")) {
 			mandate = new FederalMinister();
 
 			String department;
 			int indexOfFor = description.indexOf("für");
 			if (indexOfFor != -1) {
 				department = description.substring(indexOfFor + 4);
-			} else if (description.contains("Bundesministerin")) {
+			}
+			else if (description.contains("Bundesministerin")) {
 				department = description.substring(16).trim();
-			} else {
+			}
+			else {
 				department = description.substring(14).trim();
 			}
 			((FederalMinister) mandate).setDepartment(department);
-		} else if (description.contains("Bundespräsident")) {
+		}
+		else if (description.contains("Bundespräsident")) {
 			mandate = new FederalPresident();
-		} else if (description.contains("Vizekanzler")) {
+		}
+		else if (description.contains("Vizekanzler")) {
 			mandate = new FederalViceChancellor();
-		} else if (description.contains("Bundeskanzler")) {
+		}
+		else if (description.contains("Bundeskanzler")) {
 			mandate = new FederalChancellor();
-		} else if (description.contains("Europäisches Parlament")) {
+		}
+		else if (description.contains("Europäisches Parlament")) {
 			mandate = new EuropeanParliamentMember();
-			((EuropeanParliamentMember) mandate).setClub(getClub(clubShortName
-					.trim()));
-		} else if (description.contains("Präsident des Nationalrates")
+			((EuropeanParliamentMember) mandate).setClub(getClub(clubShortName.trim()));
+		}
+		else if (description.contains("Präsident des Nationalrates")
 				|| description.contains("Präsidentin des Nationalrates")) {
 			mandate = new NationalCouncilPresident();
 
 			Integer position = 1;
 			if (description.contains("Zweite")) {
 				position = 2;
-			} else if (description.contains("Dritte")) {
+			}
+			else if (description.contains("Dritte")) {
 				position = 3;
 			}
 
 			((NationalCouncilPresident) mandate).setPosition(position);
-		} else {
+		}
+		else {
 			mandate = new Mandate();
 		}
 
@@ -347,7 +370,8 @@ public class PoliticianTransformer extends AbstractTransformer {
 				if (to != null) {
 					mandate.setValidUntil(dateFormat.parse(to));
 				}
-			} else {
+			}
+			else {
 				mandate.setValidUntil(dateFrom);
 			}
 		} catch (ParseException ex) {
@@ -357,8 +381,7 @@ public class PoliticianTransformer extends AbstractTransformer {
 		return mandate;
 	}
 
-	private Set<LegislativePeriod> getPeriods(NationalCouncilMember member,
-			String periodFromStr, String periodToStr) {
+	private Set<LegislativePeriod> getPeriods(NationalCouncilMember member, String periodFromStr, String periodToStr) {
 		Set<LegislativePeriod> periods = new HashSet<LegislativePeriod>();
 
 		try {
