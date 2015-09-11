@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -96,18 +97,40 @@ public class PoliticianTransformer extends AbstractTransformer {
 		List<Politician> matchingPoliticians = cache.getPoliticians().values().stream()
 				.filter(p -> p.getSurName().equals(surName)).collect(Collectors.toList());
 		
-		if (matchingPoliticians.size() > 1) {
-			matchingPoliticians = matchingPoliticians.stream().filter(p -> p.getFirstName().equals(firstName))
-					.collect(Collectors.toList());
-
-			if (matchingPoliticians.size() > 1) {
-				matchingPoliticians = matchingPoliticians.stream().filter(p -> p.getTitle().equals(title))
-						.collect(Collectors.toList());
-			}
+		if (matchingPoliticians.size() == 0){
+			String surNameWithoutSpecialChars = StringUtils.stripAccents(surName);
+			matchingPoliticians = cache.getPoliticians().values().stream()
+					.filter(p -> p.getSurName().equals(surNameWithoutSpecialChars)).collect(Collectors.toList());
 		}
-
+		
 		if (matchingPoliticians.size() == 1) {
 			return matchingPoliticians.get(0);
+		}
+		
+		if (matchingPoliticians.size() > 1) {
+			List<Politician> matchingPoliticiansWithFirstName = matchingPoliticians.stream().filter(p -> p.getFirstName().equals(firstName))
+					.collect(Collectors.toList());
+
+			if (matchingPoliticiansWithFirstName.size() == 0){
+				String[] firstNames = firstName.split(" ");
+				if (firstNames.length > 1){
+					for (String firstNamePart : firstNames){
+						List<Politician> matchingPoliticiansWithFirstNamePart = matchingPoliticians.stream().filter(p -> 
+								p.getFirstName().contains(firstNamePart)).collect(Collectors.toList());
+						
+						if (matchingPoliticiansWithFirstNamePart.size() == 1) {
+							return matchingPoliticiansWithFirstNamePart.get(0);
+						}
+					}
+				}
+			}
+			if (matchingPoliticiansWithFirstName.size() > 1) {
+				matchingPoliticiansWithFirstName = matchingPoliticiansWithFirstName.stream().filter(p -> p.getTitle().equals(title))
+						.collect(Collectors.toList());
+			}
+			if (matchingPoliticiansWithFirstName.size() == 1) {
+				return matchingPoliticiansWithFirstName.get(0);
+			}
 		}
 
 		return null;

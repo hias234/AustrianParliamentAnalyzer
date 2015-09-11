@@ -40,7 +40,7 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 																			// min
 
 	private static final Pattern POLITICIAN_NAME_PATTERN = Pattern
-			.compile("^((?:Abgeordneter?|Staatssekretär(?:in)?|(?:Bundesminister(?:in)?)) )((?:[\\wöäüÖÄÜß]+\\..?(?:\\(FH\\))?)*\\s)?((?:[\\wöäüÖÄÜß,-\\.]+(?:\\s.\\.)?\\s?)+)\\s([^\\s,(\\.:]+)");
+			.compile("^((?:Abgeordneter?|Staatssekretär(?:in)?|(?:Bundesminister(?:in)?(:? für)?)) )((?:[\\wöäüÖÄÜß]+\\..?(?:\\(FH\\))?)*\\s)?((?:[\\wöäüÖÄÜß,-\\.]+(?:\\s.\\.)?\\s?)+)\\s([^\\s,(\\.:]+)");
 
 	protected static final Pattern SPEECH_BEGIN_PATTERN = Pattern.compile("(\\d{1,2})\\.\\d{1,2}");
 	protected static final Pattern DISCUSSION_TYPE_PATTERN = Pattern
@@ -52,6 +52,8 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 
 	protected final PoliticianTransformer politicianTransformer;
 	protected final SentimentAnalyzer sentimentAnalyzer;
+
+	private List<String> possibleTitles = Arrays.asList("Dr", "Mag", "Ing", "(FH)", "Dkfm", "DiplIng", "Dkfr");
 
 	public AbstractDiscussionTransformer(PoliticianTransformer politicianTransformer,
 			SentimentAnalyzer sentimentAnalyzer) {
@@ -188,7 +190,6 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 			return politicianTransformer.getPolitician(politicianLinks.get(0).attr("href"));
 		}
 		return getPoliticianOfSpeechByElementText(element);
-
 	}
 
 	protected Politician getPoliticianOfSpeechByElementText(Element element) {
@@ -196,16 +197,59 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 		String[] parts = text.split(":");
 		if (parts.length > 1) {
 			String namePart = parts[0];
+			
+			// replace party
+			namePart = namePart.replaceAll("\\s\\(.{3,}\\)", "");
+			
 			Matcher m = POLITICIAN_NAME_PATTERN.matcher(namePart);
 			if (m.find()) {
-				String title = m.group(2);
-				String firstName = m.group(3);
-				String surName = m.group(4);
-
-				return politicianTransformer.getPoliticianByName(title, firstName, surName);
+				List<String> tokens = Arrays.asList(namePart.split("\\s"));
+				if (tokens.size() >= 2){
+					String surName = tokens.get(tokens.size() - 1);
+					String firstName = tokens.get(tokens.size() - 2);
+					String title = "";
+					
+					String secondFirstNames = "";
+					boolean previousWasTitle = false;
+					
+					for (int i = tokens.size() - 3; i >= 0; i--){
+						String token = tokens.get(i);
+						if (isTitle(token)){
+							if (title.isEmpty()){
+								title = token.replaceAll(",", "");
+							}
+							else{
+								title = token.replaceAll(",",  "") + " " + title;
+							}
+							if (!previousWasTitle && !secondFirstNames.isEmpty()){
+								firstName = secondFirstNames + " " + firstName;
+							}
+							previousWasTitle = true;
+						}
+						else{
+							if (previousWasTitle){
+								break;
+							}
+							if (!token.contains("MBA") && !token.contains("MA")){
+								if (secondFirstNames.isEmpty()){
+									secondFirstNames = token;
+								}
+								else{
+									secondFirstNames = token + " " + secondFirstNames;
+								}
+							}
+						}
+					}
+					
+					return politicianTransformer.getPoliticianByName(title, firstName, surName);
+				}
 			}
 		}
 		return null;
+	}
+
+	private boolean isTitle(String token) {
+		return possibleTitles.contains(token.replaceAll("[^\\wöäüÖÄÜß]", ""));
 	}
 
 	/**
