@@ -40,7 +40,7 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 																			// min
 
 	private static final Pattern POLITICIAN_NAME_PATTERN = Pattern
-			.compile("^((?:Abgeordneter?|Staatssekretär(?:in)?|(?:Bundesminister(?:in)?(:? für)?)) )((?:[\\wöäüÖÄÜß]+\\..?(?:\\(FH\\))?)*\\s)?((?:[\\wöäüÖÄÜß,-\\.]+(?:\\s.\\.)?\\s?)+)\\s([^\\s,(\\.:]+)");
+			.compile("^(?:.{0,10})((?:Abgeordneter?|Staatssekretär(?:in)?|(?:Bundesminister(?:in)?(:? für)?)) )((?:[\\wöäüÖÄÜß]+\\..?(?:\\(FH\\))?)*\\s)?((?:[\\wöäüÖÄÜß,-\\.]+(?:\\s.\\.)?\\s?)+)\\s([^\\s,(\\.:]+)");
 
 	protected static final Pattern SPEECH_BEGIN_PATTERN = Pattern.compile("^(\\d{1,2})\\.\\d{1,2}");
 	protected static final Pattern DISCUSSION_TYPE_PATTERN = Pattern
@@ -258,7 +258,7 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 	 * @param speechPartElement
 	 * @return
 	 */
-	protected abstract String getSpeechText(Element speechPartElement);
+	protected abstract String getSpeechText(Element speechPartElement) throws IOException;
 
 	/**
 	 * Gets element that contains the first part of the actual text of the

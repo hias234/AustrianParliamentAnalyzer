@@ -1,5 +1,7 @@
 package at.jku.tk.hiesmair.gv.parliament.etl.period.transformer.session.discussion;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
@@ -23,19 +25,27 @@ public class DiscussionTransformer21 extends AbstractDiscussionTransformer {
 
 	@Override
 	protected String getSpeechText(Element speechPartElement) {
-		return speechPartElement.parent().text();
+		String text = speechPartElement.parent().text().replaceAll(NBSP_STRING, " ");
+		int indexOfColon = text.indexOf(":");
+		if (indexOfColon == -1){
+			return text;
+		}
+		return text.substring(indexOfColon + 1).trim();
 	}
 
 	@Override
-	protected Element getFirstSpeechTextElement(Element speechBeginElement) {
+	protected Element getFirstSpeechTextElement(Element speechBeginElement) throws IOException {
 		Element speechTextElement = speechBeginElement.nextElementSibling();
-		if (speechTextElement != null) {
-			speechTextElement = speechTextElement.nextElementSibling();
-			if (speechTextElement != null) {
-				speechTextElement = speechTextElement.nextElementSibling();
-				if (speechTextElement != null && speechTextElement.children().size() > 0) {
-					return speechTextElement.child(0);
+		for (;speechTextElement != null; speechTextElement = speechTextElement.nextElementSibling()){
+			if (!speechTextElement.children().isEmpty()){
+				Element childElement = speechTextElement.child(0);
+				
+				if (getPoliticianOfSpeech(childElement) != null){
+					return childElement;
 				}
+			}
+			if (SPEECH_BEGIN_PATTERN.matcher(speechTextElement.text().replaceAll(NBSP_STRING, " ").trim()).find()){
+				break;
 			}
 		}
 

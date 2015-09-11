@@ -25,27 +25,71 @@ public class DiscussionTransformer20 extends AbstractDiscussionTransformer {
 
 	@Override
 	protected String getSpeechText(Element speechPartElement) {
-		return speechPartElement.parent().text();
+		if (speechPartElement.parent().tagName().equals("body")) {
+			// handle 116
+
+			String speechText = null;
+			String firstText = speechPartElement.text();
+			int indexOfColon = firstText.indexOf(":");
+			if (indexOfColon != -1) {
+
+				speechText = firstText.substring(indexOfColon + 1).trim();
+
+				speechPartElement = speechPartElement.nextElementSibling();
+				for (; speechPartElement != null && !matchesSpeechBeginPattern(speechPartElement); speechPartElement = speechPartElement
+						.nextElementSibling()) {
+					speechText += "\n\n" + speechPartElement.text();
+				}
+			}
+			return speechText;
+		}
+
+		String text = speechPartElement.parent().text().replaceAll(NBSP_STRING, " ");
+		int indexOfColon = text.indexOf(":");
+		if (indexOfColon == -1) {
+			return text;
+		}
+		return text.substring(indexOfColon + 1).trim();
 	}
 
 	@Override
 	protected Element getFirstSpeechTextElement(Element speechBeginElement) throws IOException {
+		if (speechBeginElement.parent().tagName().equals("p")) {
+			// for e.g. protocol 116
+
+			Element speechTextElement = speechBeginElement.parent();
+			for (int i = 0; speechTextElement != null; i++, speechTextElement = speechTextElement.nextElementSibling()) {
+				if (getPoliticianOfSpeech(speechTextElement) != null) {
+					return speechTextElement;
+				}
+				if (i > 0 && matchesSpeechBeginPattern(speechTextElement)) {
+					break;
+				}
+			}
+
+			return null;
+		}
+
 		Element speechTextElement = speechBeginElement.nextElementSibling();
-		for (;speechTextElement != null; speechTextElement = speechTextElement.nextElementSibling()){
-			if (!speechTextElement.children().isEmpty()){
+		for (; speechTextElement != null; speechTextElement = speechTextElement.nextElementSibling()) {
+			if (!speechTextElement.children().isEmpty()) {
 				Element childElement = speechTextElement.child(0);
-				
-				if (getPoliticianOfSpeech(childElement) != null){
+
+				if (getPoliticianOfSpeech(childElement) != null) {
 					return childElement;
 				}
 			}
-			if (SPEECH_BEGIN_PATTERN.matcher(speechTextElement.text().replaceAll(NBSP_STRING, " ").trim()).find()){
+			if (matchesSpeechBeginPattern(speechTextElement)) {
 				break;
 			}
 		}
 
 		logger.debug("no firstspeechTextElement found");
 		return null;
+	}
+
+	protected boolean matchesSpeechBeginPattern(Element speechTextElement) {
+		return SPEECH_BEGIN_PATTERN.matcher(speechTextElement.text().replaceAll(NBSP_STRING, " ").trim()).find();
 	}
 
 	@Override
