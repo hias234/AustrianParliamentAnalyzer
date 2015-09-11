@@ -1,7 +1,9 @@
 package at.jku.tk.hiesmair.gv.parliament.etl.period.transformer;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -13,9 +15,7 @@ import at.jku.tk.hiesmair.gv.parliament.cache.DataCache;
 import at.jku.tk.hiesmair.gv.parliament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parliament.entities.session.Session;
 import at.jku.tk.hiesmair.gv.parliament.etl.period.extractor.feed.ProtocolFeedItem;
-import at.jku.tk.hiesmair.gv.parliament.etl.period.transformer.session.AbstractSessionTransformer;
-import at.jku.tk.hiesmair.gv.parliament.etl.period.transformer.session.SessionTransformer21;
-import at.jku.tk.hiesmair.gv.parliament.etl.period.transformer.session.SessionTransformer22andUp;
+import at.jku.tk.hiesmair.gv.parliament.etl.period.transformer.session.SessionTransformer;
 
 /**
  * Transforms the protocols of a period into a period object.
@@ -28,17 +28,14 @@ public class LegislativePeriodTransformer {
 
 	protected static final Logger logger = Logger.getLogger(LegislativePeriodTransformer.class.getSimpleName());
 
-	protected final SessionTransformer22andUp sessionTransformer22andUp;
-	protected final SessionTransformer21 sessionTransformer21;
+	protected final Collection<SessionTransformer> sessionTransformers;
 
 	protected final DataCache cache;
 
 	@Inject
-	public LegislativePeriodTransformer(DataCache cache, SessionTransformer21 sessionTransformer21,
-			SessionTransformer22andUp sessionTransformer22andUp) {
+	public LegislativePeriodTransformer(DataCache cache, Collection<SessionTransformer> sessionTransformers) {
 		this.cache = cache;
-		this.sessionTransformer21 = sessionTransformer21;
-		this.sessionTransformer22andUp = sessionTransformer22andUp;
+		this.sessionTransformers = sessionTransformers;
 	}
 
 	public LegislativePeriod getLegislativePeriod(int period, List<ProtocolFeedItem> sessionProtocols) throws Exception {
@@ -54,12 +51,12 @@ public class LegislativePeriodTransformer {
 		return legislativePeriod;
 	}
 
-	protected AbstractSessionTransformer getSessionTransformer(LegislativePeriod period) {
-		if (period.getPeriod() <= 21) {
-			return sessionTransformer21;
-		}
-
-		return sessionTransformer22andUp;
+	protected SessionTransformer getSessionTransformer(LegislativePeriod period) {
+		Optional<SessionTransformer> sessionTransformer = sessionTransformers.stream().filter(
+				st -> st.getSessionTranformerFromPeriod() <= period.getPeriod()
+						&& st.getSessionTranformerToPeriod() >= period.getPeriod()).findFirst();
+		
+		return sessionTransformer.get();
 	}
 
 	protected List<Session> getSessions(LegislativePeriod period, List<ProtocolFeedItem> sessionProtocols)
@@ -89,7 +86,7 @@ public class LegislativePeriodTransformer {
 			return null;
 		}
 
-		AbstractSessionTransformer transformer = getSessionTransformer(period);
+		SessionTransformer transformer = getSessionTransformer(period);
 		return transformer.getSession(period, sessionProtocol.getTitle(), indexDoc, protocolDoc);
 	}
 

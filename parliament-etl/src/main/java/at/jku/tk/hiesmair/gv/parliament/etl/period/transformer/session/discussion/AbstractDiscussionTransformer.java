@@ -42,7 +42,7 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 	private static final Pattern POLITICIAN_NAME_PATTERN = Pattern
 			.compile("^((?:Abgeordneter?|Staatssekretär(?:in)?|(?:Bundesminister(?:in)?(:? für)?)) )((?:[\\wöäüÖÄÜß]+\\..?(?:\\(FH\\))?)*\\s)?((?:[\\wöäüÖÄÜß,-\\.]+(?:\\s.\\.)?\\s?)+)\\s([^\\s,(\\.:]+)");
 
-	protected static final Pattern SPEECH_BEGIN_PATTERN = Pattern.compile("(\\d{1,2})\\.\\d{1,2}");
+	protected static final Pattern SPEECH_BEGIN_PATTERN = Pattern.compile("^(\\d{1,2})\\.\\d{1,2}");
 	protected static final Pattern DISCUSSION_TYPE_PATTERN = Pattern
 			.compile("Einzelredezeitbeschränkung:\\s+((?:\\d+)|.)\\s+min\\s+(.+)");
 

@@ -23,6 +23,14 @@ public class SessionTransformer22andUp extends AbstractSessionTransformer {
 	public SessionTransformer22andUp(PoliticianTransformer politicianTransformer, DiscussionTransformer22andUp discussionTransformer) {
 		super(politicianTransformer, discussionTransformer);
 	}
+	@Override
+	public Integer getSessionTranformerFromPeriod() {
+		return 22;
+	}
 
+	@Override
+	public Integer getSessionTranformerToPeriod() {
+		return Integer.MAX_VALUE;
+	}
 	
 }

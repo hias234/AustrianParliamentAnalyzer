@@ -18,4 +18,13 @@ public class SessionTransformer21 extends AbstractSessionTransformer {
 		super(politicianTransformer, discussionTransformer);
 	}
 
+	@Override
+	public Integer getSessionTranformerFromPeriod() {
+		return 21;
+	}
+
+	@Override
+	public Integer getSessionTranformerToPeriod() {
+		return 21;
+	}
 }

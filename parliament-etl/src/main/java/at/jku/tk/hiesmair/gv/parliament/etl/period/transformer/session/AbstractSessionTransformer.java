@@ -1,5 +1,6 @@
 package at.jku.tk.hiesmair.gv.parliament.etl.period.transformer.session;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ import at.jku.tk.hiesmair.gv.parliament.etl.AbstractTransformer;
 import at.jku.tk.hiesmair.gv.parliament.etl.period.transformer.session.discussion.DiscussionTransformer;
 import at.jku.tk.hiesmair.gv.parliament.etl.politician.transformer.PoliticianTransformer;
 
-public abstract class AbstractSessionTransformer extends AbstractTransformer {
+public abstract class AbstractSessionTransformer extends AbstractTransformer implements SessionTransformer {
 
 	private static final Logger logger = Logger.getLogger(AbstractSessionTransformer.class.getSimpleName());
 
@@ -52,7 +53,8 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 		this.politicianTransformer = politicianTransformer;
 	}
 
-	public Session getSession(LegislativePeriod period, String sessionTitle, Document index, Document protocol) throws Exception {
+	@Override
+	public Session getSession(LegislativePeriod period, String sessionTitle, Document index, Document protocol) throws Exception{
 		protocol = filterPageBreaks(period.getPeriod(), protocol);
 
 		String protocolText = protocol.text().replaceAll(NBSP_STRING, " ");
@@ -381,7 +383,7 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer {
 	// return politicians;
 	// }
 
-	protected List<SessionChairMan> getChairMen(Document protocol, Session session) throws Exception {
+	protected List<SessionChairMan> getChairMen(Document protocol, Session session) throws IOException {
 		List<SessionChairMan> chairMenList = new ArrayList<SessionChairMan>();
 
 		int position = 1;

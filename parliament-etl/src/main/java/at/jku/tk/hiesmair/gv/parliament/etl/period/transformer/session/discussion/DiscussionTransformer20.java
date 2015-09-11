@@ -31,10 +31,16 @@ public class DiscussionTransformer20 extends AbstractDiscussionTransformer {
 	@Override
 	protected Element getFirstSpeechTextElement(Element speechBeginElement) throws IOException {
 		Element speechTextElement = speechBeginElement.nextElementSibling();
-		if (speechTextElement != null) {
-			speechTextElement = speechTextElement.nextElementSibling();
-			if (speechTextElement != null && speechTextElement.children().size() > 0) {
-				return speechTextElement.child(0);
+		for (;speechTextElement != null; speechTextElement = speechTextElement.nextElementSibling()){
+			if (!speechTextElement.children().isEmpty()){
+				Element childElement = speechTextElement.child(0);
+				
+				if (getPoliticianOfSpeech(childElement) != null){
+					return childElement;
+				}
+			}
+			if (SPEECH_BEGIN_PATTERN.matcher(speechTextElement.text().replaceAll(NBSP_STRING, " ").trim()).find()){
+				break;
 			}
 		}
 
