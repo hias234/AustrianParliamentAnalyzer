@@ -40,7 +40,7 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 																			// min
 
 	private static final Pattern POLITICIAN_NAME_PATTERN = Pattern
-			.compile("^(?:.{0,10})((?:Abgeordneter?|Staatssekretär(?:in)?|(?:Bundesminister(?:in)?(:? für)?)) )((?:[\\wöäüÖÄÜß]+\\..?(?:\\(FH\\))?)*\\s)?((?:[\\wöäüÖÄÜß,-\\.]+(?:\\s.\\.)?\\s?)+)\\s([^\\s,(\\.:]+)");
+			.compile("^(?:.{0,10})((?:Abgeordneter?|Staatssekretär(?:in)?|(?:Bundesminister(?:in)?(:? für)?)|(Volksanw[äa]lt(in)? )) )((?:[\\wöäüÖÄÜß]+\\..?(?:\\(FH\\))?)*\\s)?((?:[\\wöäüÖÄÜß,-\\.]+(?:\\s.\\.)?\\s?)+)\\s([^\\s,(\\.:]+)");
 
 	protected static final Pattern SPEECH_BEGIN_PATTERN = Pattern.compile("^(\\d{1,2})\\.\\d{1,2}");
 	protected static final Pattern DISCUSSION_TYPE_PATTERN = Pattern
@@ -53,7 +53,7 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 	protected final PoliticianTransformer politicianTransformer;
 	protected final SentimentAnalyzer sentimentAnalyzer;
 
-	private List<String> possibleTitles = Arrays.asList("Dr", "Mag", "Ing", "(FH)", "Dkfm", "DiplIng", "Dkfr");
+	protected List<String> possibleTitles = Arrays.asList("Dr", "Mag", "Ing", "(FH)", "Dkfm", "DiplIng", "Dkfr");
 
 	public AbstractDiscussionTransformer(PoliticianTransformer politicianTransformer,
 			SentimentAnalyzer sentimentAnalyzer) {
