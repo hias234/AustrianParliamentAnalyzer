@@ -1,6 +1,7 @@
 package at.jku.tk.hiesmair.gv.parliament.etl.period.transformer.session.discussion;
 
 import java.io.IOException;
+import java.util.Date;
 
 import javax.inject.Inject;
 
@@ -34,13 +35,13 @@ public class DiscussionTransformer21 extends AbstractDiscussionTransformer {
 	}
 
 	@Override
-	protected Element getFirstSpeechTextElement(Element speechBeginElement) throws IOException {
+	protected Element getFirstSpeechTextElement(Element speechBeginElement, Date date) throws IOException {
 		Element speechTextElement = speechBeginElement.nextElementSibling();
 		for (;speechTextElement != null; speechTextElement = speechTextElement.nextElementSibling()){
 			if (!speechTextElement.children().isEmpty()){
 				Element childElement = speechTextElement.child(0);
 				
-				if (getPoliticianOfSpeech(childElement) != null){
+				if (getPoliticianOfSpeech(childElement, date) != null){
 					return childElement;
 				}
 			}

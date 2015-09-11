@@ -66,7 +66,8 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 		List<Discussion> discussions = getDiscussions(index, session);
 
 		if (!discussions.isEmpty()) {
-			discussions = setSpeechTexts(protocol, discussions);
+			discussions = setSpeechTexts(protocol, discussions,
+					session.getStartDate() == null ? new Date() : session.getStartDate());
 			checkIfAllSpeechTextsWereFound(discussions);
 		}
 
@@ -93,16 +94,17 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 		return new ArrayList<Discussion>(discussions.values());
 	}
 
-	protected List<Discussion> setSpeechTexts(Document protocol, List<Discussion> discussions) throws Exception {
+	protected List<Discussion> setSpeechTexts(Document protocol, List<Discussion> discussions, Date date)
+			throws Exception {
 		Elements speechBeginnings = getSpeechBeginElements(protocol);
 		for (Element speechBegin : speechBeginnings) {
 			Date time = getBeginTime(speechBegin);
 
 			if (time != null) {
-				Element speechPartElement = getFirstSpeechTextElement(speechBegin);
+				Element speechPartElement = getFirstSpeechTextElement(speechBegin, date);
 
 				if (speechPartElement != null) {
-					Politician politician = getPoliticianOfSpeech(speechPartElement);
+					Politician politician = getPoliticianOfSpeech(speechPartElement, date);
 					if (politician != null) {
 						String speechText = getSpeechText(speechPartElement);
 						if (speechText != null) {
@@ -184,65 +186,65 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 		return new ArrayList<DiscussionSpeechSentiment>();
 	}
 
-	protected Politician getPoliticianOfSpeech(Element element) throws IOException {
+	protected Politician getPoliticianOfSpeech(Element element, Date date) throws IOException {
 		Elements politicianLinks = politicianTransformer.getPoliticianLinks(element);
 		if (!politicianLinks.isEmpty()) {
 			return politicianTransformer.getPolitician(politicianLinks.get(0).attr("href"));
 		}
-		return getPoliticianOfSpeechByElementText(element);
+		return getPoliticianOfSpeechByElementText(element, date);
 	}
 
-	protected Politician getPoliticianOfSpeechByElementText(Element element) {
+	protected Politician getPoliticianOfSpeechByElementText(Element element, Date date) {
 		String text = element.text().replaceAll(NBSP_STRING, " ").replaceAll(EN_DASH_STRING, "-");
 		String[] parts = text.split(":");
 		if (parts.length > 1) {
 			String namePart = parts[0];
-			
+
 			// replace party
 			namePart = namePart.replaceAll("\\s\\(.{3,}\\)", "");
 			namePart = namePart.replaceAll("¦", "");
-			
+
 			Matcher m = POLITICIAN_NAME_PATTERN.matcher(namePart);
 			if (m.find()) {
 				List<String> tokens = Arrays.asList(namePart.split("\\s"));
-				if (tokens.size() >= 2){
+				if (tokens.size() >= 2) {
 					String surName = tokens.get(tokens.size() - 1);
 					String firstName = tokens.get(tokens.size() - 2);
 					String title = "";
-					
+
 					String secondFirstNames = "";
 					boolean previousWasTitle = false;
-					
-					for (int i = tokens.size() - 3; i >= 0; i--){
+
+					for (int i = tokens.size() - 3; i >= 0; i--) {
 						String token = tokens.get(i);
-						if (isTitle(token)){
-							if (title.isEmpty()){
+						if (isTitle(token)) {
+							if (title.isEmpty()) {
 								title = token.replaceAll(",", "");
 							}
-							else{
-								title = token.replaceAll(",",  "") + " " + title;
+							else {
+								title = token.replaceAll(",", "") + " " + title;
 							}
-							if (!previousWasTitle && !secondFirstNames.isEmpty()){
+							if (!previousWasTitle && !secondFirstNames.isEmpty()) {
 								firstName = secondFirstNames + " " + firstName;
 							}
 							previousWasTitle = true;
 						}
-						else{
-							if (previousWasTitle){
+						else {
+							if (previousWasTitle) {
 								break;
 							}
-							if (!token.contains("MBA") && !token.contains("MA")){
-								if (secondFirstNames.isEmpty()){
+							if (!token.contains("MBA") && !token.contains("MA")) {
+								if (secondFirstNames.isEmpty()) {
 									secondFirstNames = token;
 								}
-								else{
+								else {
 									secondFirstNames = token + " " + secondFirstNames;
 								}
 							}
 						}
 					}
-					
-					return politicianTransformer.getPoliticianByName(title, firstName, surName);
+
+					return politicianTransformer.getPoliticianByName(title, firstName, surName, date);
 				}
 			}
 		}
@@ -268,7 +270,7 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 	 * @param speechBeginElement
 	 * @return
 	 */
-	protected abstract Element getFirstSpeechTextElement(Element speechBegin) throws IOException;
+	protected abstract Element getFirstSpeechTextElement(Element speechBegin, Date date) throws IOException;
 
 	/**
 	 * Get speech begin-elements that contain the time aka. 12.08

@@ -1,6 +1,7 @@
 package at.jku.tk.hiesmair.gv.parliament.etl.period.transformer.session.discussion;
 
 import java.io.IOException;
+import java.util.Date;
 
 import javax.inject.Inject;
 
@@ -44,10 +45,10 @@ public class DiscussionTransformer22andUp extends AbstractDiscussionTransformer 
 	}
 
 	@Override
-	protected Element getFirstSpeechTextElement(Element speechBegin) throws IOException {
+	protected Element getFirstSpeechTextElement(Element speechBegin, Date date) throws IOException {
 		Element speechPart = getNextPossibleStartTextElement(speechBegin);
 		while (speechPart != null && !speechPart.className().equals(SPEECH_END_CLASSNAME)) {
-			if (getPoliticianOfSpeech(speechPart) != null) {
+			if (getPoliticianOfSpeech(speechPart, date) != null) {
 				return speechPart;
 			}
 

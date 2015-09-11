@@ -1,6 +1,7 @@
 package at.jku.tk.hiesmair.gv.parliament.etl.period.transformer.session.discussion;
 
 import java.io.IOException;
+import java.util.Date;
 
 import javax.inject.Inject;
 
@@ -53,13 +54,13 @@ public class DiscussionTransformer20 extends AbstractDiscussionTransformer {
 	}
 
 	@Override
-	protected Element getFirstSpeechTextElement(Element speechBeginElement) throws IOException {
+	protected Element getFirstSpeechTextElement(Element speechBeginElement, Date date) throws IOException {
 		if (speechBeginElement.parent().tagName().equals("p")) {
 			// for e.g. protocol 116
 
 			Element speechTextElement = speechBeginElement.parent();
 			for (int i = 0; speechTextElement != null; i++, speechTextElement = speechTextElement.nextElementSibling()) {
-				if (getPoliticianOfSpeech(speechTextElement) != null) {
+				if (getPoliticianOfSpeech(speechTextElement, date) != null) {
 					return speechTextElement;
 				}
 				if (i > 0 && matchesSpeechBeginPattern(speechTextElement)) {
@@ -75,7 +76,7 @@ public class DiscussionTransformer20 extends AbstractDiscussionTransformer {
 			if (!speechTextElement.children().isEmpty()) {
 				Element childElement = speechTextElement.child(0);
 
-				if (getPoliticianOfSpeech(childElement) != null) {
+				if (getPoliticianOfSpeech(childElement, date) != null) {
 					return childElement;
 				}
 			}
