@@ -216,11 +216,6 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 				List<String> tokens = Arrays.asList(namePart.split("\\s"));
 				if (tokens.size() >= 2) {
 					String surName = tokens.get(tokens.size() - 1);
-
-					if (surName.equals("Moser")) {
-						int i = 0;
-					}
-
 					String firstName = tokens.get(tokens.size() - 2);
 					String title = "";
 

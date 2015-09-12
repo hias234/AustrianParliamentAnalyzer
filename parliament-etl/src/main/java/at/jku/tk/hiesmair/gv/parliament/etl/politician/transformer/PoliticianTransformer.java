@@ -96,32 +96,46 @@ public class PoliticianTransformer extends AbstractTransformer {
 	public Politician getPoliticianByName(String title, String firstName, String surName, Date date) {
 		List<Politician> matchingPoliticians = cache.getPoliticians().values().stream()
 				.filter(p -> p.getNameAt(date).getSurName().equals(surName)).collect(Collectors.toList());
-		
-		if (surName.equals("Moser")){
+
+		if (surName.equals("Moser")) {
 			int i = 0;
 		}
-		
-		if (matchingPoliticians.size() == 0){
+
+		if (matchingPoliticians.size() == 0) {
 			String surNameWithoutSpecialChars = StringUtils.stripAccents(surName);
 			matchingPoliticians = cache.getPoliticians().values().stream()
-					.filter(p -> p.getNameAt(date).getSurName().equals(surNameWithoutSpecialChars)).collect(Collectors.toList());
+					.filter(p -> p.getNameAt(date).getSurName().equals(surNameWithoutSpecialChars))
+					.collect(Collectors.toList());
 		}
-		
+
+		if (matchingPoliticians.size() == 0) {
+			String[] surNames = surName.split("[^\\wöäüÖÄÜß]");
+			for (String surNamePart : surNames) {
+				matchingPoliticians = cache.getPoliticians().values().stream()
+						.filter(p -> p.getNameAt(date).getSurName().equals(surNamePart)).collect(Collectors.toList());
+
+				if (!matchingPoliticians.isEmpty()) {
+					break;
+				}
+			}
+		}
+
 		if (matchingPoliticians.size() == 1) {
 			return matchingPoliticians.get(0);
 		}
-		
-		if (matchingPoliticians.size() > 1) {
-			List<Politician> matchingPoliticiansWithFirstName = matchingPoliticians.stream().filter(p -> p.getNameAt(date).getFirstName().equals(firstName))
-					.collect(Collectors.toList());
 
-			if (matchingPoliticiansWithFirstName.size() == 0){
+		if (matchingPoliticians.size() > 1) {
+			List<Politician> matchingPoliticiansWithFirstName = matchingPoliticians.stream()
+					.filter(p -> p.getNameAt(date).getFirstName().equals(firstName)).collect(Collectors.toList());
+
+			if (matchingPoliticiansWithFirstName.size() == 0) {
 				String[] firstNames = firstName.split(" ");
-				if (firstNames.length > 1){
-					for (String firstNamePart : firstNames){
-						List<Politician> matchingPoliticiansWithFirstNamePart = matchingPoliticians.stream().filter(p -> 
-								p.getNameAt(date).getFirstName().contains(firstNamePart)).collect(Collectors.toList());
-						
+				if (firstNames.length > 1) {
+					for (String firstNamePart : firstNames) {
+						List<Politician> matchingPoliticiansWithFirstNamePart = matchingPoliticians.stream()
+								.filter(p -> p.getNameAt(date).getFirstName().contains(firstNamePart))
+								.collect(Collectors.toList());
+
 						if (matchingPoliticiansWithFirstNamePart.size() == 1) {
 							return matchingPoliticiansWithFirstNamePart.get(0);
 						}
@@ -129,8 +143,8 @@ public class PoliticianTransformer extends AbstractTransformer {
 				}
 			}
 			if (matchingPoliticiansWithFirstName.size() > 1) {
-				matchingPoliticiansWithFirstName = matchingPoliticiansWithFirstName.stream().filter(p -> p.getNameAt(date).getTitle().equals(title))
-						.collect(Collectors.toList());
+				matchingPoliticiansWithFirstName = matchingPoliticiansWithFirstName.stream()
+						.filter(p -> p.getNameAt(date).getTitle().equals(title)).collect(Collectors.toList());
 			}
 			if (matchingPoliticiansWithFirstName.size() == 1) {
 				return matchingPoliticiansWithFirstName.get(0);
