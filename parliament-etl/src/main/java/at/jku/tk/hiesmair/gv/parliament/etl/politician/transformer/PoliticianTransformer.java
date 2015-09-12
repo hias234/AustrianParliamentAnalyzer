@@ -97,6 +97,10 @@ public class PoliticianTransformer extends AbstractTransformer {
 		List<Politician> matchingPoliticians = cache.getPoliticians().values().stream()
 				.filter(p -> p.getNameAt(date).getSurName().equals(surName)).collect(Collectors.toList());
 		
+		if (surName.equals("Moser")){
+			int i = 0;
+		}
+		
 		if (matchingPoliticians.size() == 0){
 			String surNameWithoutSpecialChars = StringUtils.stripAccents(surName);
 			matchingPoliticians = cache.getPoliticians().values().stream()

@@ -54,6 +54,8 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 	protected final SentimentAnalyzer sentimentAnalyzer;
 
 	protected List<String> possibleTitles = Arrays.asList("Dr", "Mag", "Ing", "Mag(FH)", "Dkfm", "DiplIng", "Dkfr");
+	protected List<String> possibleFunctions = Arrays.asList("Abgeordneter", "Abgeordnete", "Bundesminister",
+			"Bundesministerin", "Volksanwalt", "Volksanwältin", "Staatssekretär", "Staatssekretärin");
 
 	public AbstractDiscussionTransformer(PoliticianTransformer politicianTransformer,
 			SentimentAnalyzer sentimentAnalyzer) {
@@ -65,13 +67,12 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 	public List<Discussion> getDiscussions(Document index, Document protocol, Session session) throws Exception {
 		List<Discussion> discussions = getDiscussions(index, session);
 
-		
 		if (!discussions.isEmpty()) {
 
-			if (session.getSessionNr().equals(138)){
+			if (session.getSessionNr().equals(138)) {
 				int i = 0;
 			}
-			
+
 			discussions = setSpeechTexts(protocol, discussions,
 					session.getStartDate() == null ? new Date() : session.getStartDate());
 			checkIfAllSpeechTextsWereFound(discussions);
@@ -215,6 +216,11 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 				List<String> tokens = Arrays.asList(namePart.split("\\s"));
 				if (tokens.size() >= 2) {
 					String surName = tokens.get(tokens.size() - 1);
+
+					if (surName.equals("Moser")) {
+						int i = 0;
+					}
+
 					String firstName = tokens.get(tokens.size() - 2);
 					String title = "";
 
@@ -237,6 +243,9 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 						}
 						else {
 							if (previousWasTitle) {
+								if (possibleFunctions.contains(tokens.get(0)) && !secondFirstNames.isEmpty()) {
+									firstName = secondFirstNames + " " + firstName;
+								}
 								break;
 							}
 							if (!token.contains("MBA") && !token.contains("MA")) {
@@ -248,6 +257,10 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 								}
 							}
 						}
+					}
+					
+					if (!previousWasTitle && possibleFunctions.contains(tokens.get(0)) && !secondFirstNames.isEmpty()) {
+						firstName = secondFirstNames + " " + firstName;
 					}
 
 					return politicianTransformer.getPoliticianByName(title, firstName, surName, date);
