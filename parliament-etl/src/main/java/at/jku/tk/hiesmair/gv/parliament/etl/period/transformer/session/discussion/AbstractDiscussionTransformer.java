@@ -215,54 +215,58 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 			if (m.find()) {
 				List<String> tokens = Arrays.asList(namePart.split("\\s"));
 				if (tokens.size() >= 2) {
-					String surName = tokens.get(tokens.size() - 1);
-					String firstName = tokens.get(tokens.size() - 2);
-					String title = "";
-
-					String secondFirstNames = "";
-					boolean previousWasTitle = false;
-
-					for (int i = tokens.size() - 3; i >= 0; i--) {
-						String token = tokens.get(i);
-						if (isTitle(token)) {
-							if (title.isEmpty()) {
-								title = token.replaceAll(",", "");
-							}
-							else {
-								title = token.replaceAll(",", "") + " " + title;
-							}
-							if (!previousWasTitle && !secondFirstNames.isEmpty()) {
-								firstName = secondFirstNames + " " + firstName;
-							}
-							previousWasTitle = true;
-						}
-						else {
-							if (previousWasTitle) {
-								if (possibleFunctions.contains(tokens.get(0)) && !secondFirstNames.isEmpty()) {
-									firstName = secondFirstNames + " " + firstName;
-								}
-								break;
-							}
-							if (!token.contains("MBA") && !token.contains("MA")) {
-								if (secondFirstNames.isEmpty()) {
-									secondFirstNames = token;
-								}
-								else {
-									secondFirstNames = token + " " + secondFirstNames;
-								}
-							}
-						}
-					}
-					
-					if (!previousWasTitle && possibleFunctions.contains(tokens.get(0)) && !secondFirstNames.isEmpty()) {
-						firstName = secondFirstNames + " " + firstName;
-					}
-
-					return politicianTransformer.getPoliticianByName(title, firstName, surName, date);
+					return getPoliticianByNameFromTokens(date, tokens);
 				}
 			}
 		}
 		return null;
+	}
+
+	protected Politician getPoliticianByNameFromTokens(Date date, List<String> tokens) {
+		String surName = tokens.get(tokens.size() - 1);
+		String firstName = tokens.get(tokens.size() - 2);
+		String title = "";
+
+		String secondFirstNames = "";
+		boolean previousWasTitle = false;
+
+		for (int i = tokens.size() - 3; i >= 0; i--) {
+			String token = tokens.get(i);
+			if (isTitle(token)) {
+				if (title.isEmpty()) {
+					title = token.replaceAll(",", "");
+				}
+				else {
+					title = token.replaceAll(",", "") + " " + title;
+				}
+				if (!previousWasTitle && !secondFirstNames.isEmpty()) {
+					firstName = secondFirstNames + " " + firstName;
+				}
+				previousWasTitle = true;
+			}
+			else {
+				if (previousWasTitle) {
+					if (possibleFunctions.contains(tokens.get(0)) && !secondFirstNames.isEmpty()) {
+						firstName = secondFirstNames + " " + firstName;
+					}
+					break;
+				}
+				if (!token.contains("MBA") && !token.contains("MA")) {
+					if (secondFirstNames.isEmpty()) {
+						secondFirstNames = token;
+					}
+					else {
+						secondFirstNames = token + " " + secondFirstNames;
+					}
+				}
+			}
+		}
+		
+		if (!previousWasTitle && possibleFunctions.contains(tokens.get(0)) && !secondFirstNames.isEmpty()) {
+			firstName = secondFirstNames + " " + firstName;
+		}
+
+		return politicianTransformer.getPoliticianByName(title, firstName, surName, date);
 	}
 
 	private boolean isTitle(String token) {
