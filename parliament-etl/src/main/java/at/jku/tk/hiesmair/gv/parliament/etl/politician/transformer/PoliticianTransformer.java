@@ -139,8 +139,7 @@ public class PoliticianTransformer extends AbstractTransformer {
 				}
 			}
 			if (matchingPoliticiansWithFirstName.size() > 1) {
-				matchingPoliticiansWithFirstName = matchingPoliticiansWithFirstName.stream()
-						.filter(p -> p.getNameAt(date).getTitle().equals(title)).collect(Collectors.toList());
+				matchingPoliticiansWithFirstName = getPoliticiansWithTitle(title, date, matchingPoliticiansWithFirstName);
 			}
 			if (matchingPoliticiansWithFirstName.size() == 1) {
 				return matchingPoliticiansWithFirstName.get(0);
@@ -148,6 +147,12 @@ public class PoliticianTransformer extends AbstractTransformer {
 		}
 
 		return null;
+	}
+
+	protected List<Politician> getPoliticiansWithTitle(String title, Date date,
+			List<Politician> matchingPoliticiansWithFirstName) {
+		return matchingPoliticiansWithFirstName.stream()
+				.filter(p -> p.getNameAt(date).getTitle().equals(title)).collect(Collectors.toList());
 	}
 
 	protected List<Politician> getPoliticiansWithFirstNameContaining(Date date, List<Politician> matchingPoliticians,
