@@ -2,7 +2,6 @@ package at.jku.tk.hiesmair.gv.parliament.entities.politician;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -12,19 +11,14 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-
-import org.apache.commons.lang.time.DateUtils;
 
 import at.jku.tk.hiesmair.gv.parliament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parliament.entities.mandate.Mandate;
 import at.jku.tk.hiesmair.gv.parliament.entities.mandate.NationalCouncilMember;
-import at.jku.tk.hiesmair.gv.parliament.util.ParliamentDateUtils;
 
 @Entity
 public class Politician implements Serializable {
@@ -137,9 +131,11 @@ public class Politician implements Serializable {
 	}
 
 	public boolean isInNationalCouncilAt(Date date) {
-		return getNationalCouncilMemberships().stream().anyMatch(
-				ncm -> ParliamentDateUtils.isDateBetween(DateUtils.truncate(date, Calendar.DATE), ncm.getValidFrom(),
-						ncm.getValidUntil()));
+		return getNationalCouncilMemberships().stream().anyMatch(ncm -> ncm.isValidAt(date));
+	}
+	
+	public Set<Mandate> getMandatesAt(Date date){
+		return mandates.stream().filter(m -> m.isValidAt(date)).collect(Collectors.toSet());
 	}
 
 	/**

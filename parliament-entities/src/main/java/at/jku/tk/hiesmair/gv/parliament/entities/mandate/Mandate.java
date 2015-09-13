@@ -1,24 +1,23 @@
 package at.jku.tk.hiesmair.gv.parliament.entities.mandate;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Embeddable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.apache.commons.lang.time.DateUtils;
+
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
+import at.jku.tk.hiesmair.gv.parliament.util.ParliamentDateUtils;
 
 @Entity
 @Inheritance
@@ -180,6 +179,11 @@ public class Mandate implements Serializable {
 
 	public void setValidUntil(Date validUntil) {
 		this.validUntil = validUntil;
+	}
+	
+	public boolean isValidAt(Date date){
+		return ParliamentDateUtils.isDateBetween(DateUtils.truncate(date, Calendar.DATE), getValidFrom(),
+				getValidUntil());
 	}
 
 	@Override

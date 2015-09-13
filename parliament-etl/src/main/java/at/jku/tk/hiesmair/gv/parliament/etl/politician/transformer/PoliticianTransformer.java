@@ -94,7 +94,10 @@ public class PoliticianTransformer extends AbstractTransformer {
 	}
 
 	public Politician getPoliticianByName(String title, String firstName, String surName, Date date) {
-		List<Politician> matchingPoliticians = cache.getPoliticians().values().stream()
+		List<Politician> politiciansWithMandatesAtDate = cache.getPoliticians().values().stream()
+				.filter(p -> !p.getMandatesAt(date).isEmpty()).collect(Collectors.toList());
+
+		List<Politician> matchingPoliticians = politiciansWithMandatesAtDate.stream()
 				.filter(p -> p.getNameAt(date).getSurName().equals(surName)).collect(Collectors.toList());
 
 		if (surName.equals("Moser")) {
@@ -103,7 +106,7 @@ public class PoliticianTransformer extends AbstractTransformer {
 
 		if (matchingPoliticians.size() == 0) {
 			String surNameWithoutSpecialChars = StringUtils.stripAccents(surName);
-			matchingPoliticians = cache.getPoliticians().values().stream()
+			matchingPoliticians = politiciansWithMandatesAtDate.stream()
 					.filter(p -> p.getNameAt(date).getSurName().equals(surNameWithoutSpecialChars))
 					.collect(Collectors.toList());
 		}
@@ -111,7 +114,7 @@ public class PoliticianTransformer extends AbstractTransformer {
 		if (matchingPoliticians.size() == 0) {
 			String[] surNames = surName.split("[^\\wöäüÖÄÜß]");
 			for (String surNamePart : surNames) {
-				matchingPoliticians = cache.getPoliticians().values().stream()
+				matchingPoliticians = politiciansWithMandatesAtDate.stream()
 						.filter(p -> p.getNameAt(date).getSurName().equals(surNamePart)).collect(Collectors.toList());
 
 				if (!matchingPoliticians.isEmpty()) {
