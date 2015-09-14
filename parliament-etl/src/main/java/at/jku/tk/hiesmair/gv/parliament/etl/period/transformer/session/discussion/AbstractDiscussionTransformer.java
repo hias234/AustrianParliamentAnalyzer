@@ -55,8 +55,8 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 
 	protected List<String> possibleTitles = Arrays.asList("Dr", "Mag", "Ing", "Mag(FH)", "Dkfm", "DiplIng", "Dkfr");
 	protected List<String> possibleFunctions = Arrays.asList("Abgeordneter", "Abgeordnete", "Bundesminister",
-			"Bundesministerin", "Volksanwalt", "Volksanwältin", "Staatssekretär", "Staatssekretärin", "Bundeskanzler", "Bundeskanzlerin",
-			"Vizekanzler", "Vizekanzlerin");
+			"Bundesministerin", "Volksanwalt", "Volksanwältin", "Staatssekretär", "Staatssekretärin", "Bundeskanzler",
+			"Bundeskanzlerin", "Vizekanzler", "Vizekanzlerin");
 
 	public AbstractDiscussionTransformer(PoliticianTransformer politicianTransformer,
 			SentimentAnalyzer sentimentAnalyzer) {
@@ -99,7 +99,8 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 			}
 		}
 
-		return new ArrayList<Discussion>(discussions.values());
+		return discussions.values().stream().sorted((d1, d2) -> d1.getOrder().compareTo(d2.getOrder()))
+				.collect(Collectors.toList());
 	}
 
 	protected List<Discussion> setSpeechTexts(Document protocol, List<Discussion> discussions, Date date)
@@ -262,7 +263,7 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 				}
 			}
 		}
-		
+
 		if (!previousWasTitle && possibleFunctions.contains(tokens.get(0)) && !secondFirstNames.isEmpty()) {
 			firstName = secondFirstNames + " " + firstName;
 		}
