@@ -36,11 +36,11 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 
 	private static final Logger logger = Logger.getLogger(AbstractDiscussionTransformer.class.getSimpleName());
 
-	protected static final int SPEECH_TIME_TOLERANCE_IN_MS = 60000 * 10; // 10
+	protected static final int SPEECH_TIME_TOLERANCE_IN_MS = 60000 * 25; // 25
 																			// min
 
 	private static final Pattern POLITICIAN_NAME_PATTERN = Pattern
-			.compile("^(?:.{0,10})((?:Bundeskanzler(in)?|Vizekanzler(in)?|Abgeordneter?|Staatssekretär(?:in)?|(?:Bundesminister(?:in)?(:? für)?)|(Volksanw[äa]lt(in)?)) )((?:[\\wöäüÖÄÜß]+\\..?(?:\\(FH\\))?)*\\s)?((?:[\\wöäüÖÄÜß,-\\.]+(?:\\s.\\.)?\\s?)+)\\s([^\\s,(\\.:]+)");
+			.compile("^(?:.{0,10})((?:Präsident(in)?|Bundeskanzler(in)?|Vizekanzler(in)?|Abgeordneter?|Staatssekretär(?:in)?|(?:Bundesminister(?:in)?(:? für)?)|(Volksanw[äa]lt(in)?)) )((?:[\\wöäüÖÄÜß]+\\..?(?:\\(FH\\))?)*\\s)?((?:[\\wöäüÖÄÜß,-\\.]+(?:\\s.\\.)?\\s?)+)\\s([^\\s,(\\.:]+)");
 
 	protected static final Pattern SPEECH_BEGIN_PATTERN = Pattern.compile("^(\\d{1,2})\\.\\d{1,2}");
 	protected static final Pattern DISCUSSION_TYPE_PATTERN = Pattern
@@ -56,7 +56,7 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 	protected List<String> possibleTitles = Arrays.asList("Dr", "Mag", "Ing", "Mag(FH)", "Dkfm", "DiplIng", "Dkfr");
 	protected List<String> possibleFunctions = Arrays.asList("Abgeordneter", "Abgeordnete", "Bundesminister",
 			"Bundesministerin", "Volksanwalt", "Volksanwältin", "Staatssekretär", "Staatssekretärin", "Bundeskanzler",
-			"Bundeskanzlerin", "Vizekanzler", "Vizekanzlerin");
+			"Bundeskanzlerin", "Vizekanzler", "Vizekanzlerin", "Präsident", "Präsidentin");
 
 	public AbstractDiscussionTransformer(PoliticianTransformer politicianTransformer,
 			SentimentAnalyzer sentimentAnalyzer) {
