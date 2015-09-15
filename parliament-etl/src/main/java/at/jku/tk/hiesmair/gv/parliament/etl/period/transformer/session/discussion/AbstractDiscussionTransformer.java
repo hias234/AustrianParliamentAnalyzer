@@ -68,12 +68,6 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 		List<Discussion> discussions = getDiscussions(index, session);
 
 		if (!discussions.isEmpty()) {
-
-			if (session.getSessionNr().equals(88)) {
-				int i = 0;
-				logger.info(protocol);
-			}
-
 			discussions = setSpeechTexts(protocol, discussions,
 					session.getStartDate() == null ? new Date() : session.getStartDate());
 			checkIfAllSpeechTextsWereFound(discussions);
@@ -270,7 +264,7 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 					}
 					break;
 				}
-				if (!token.contains("MBA") && !token.contains("MA")) {
+				if (!token.contains("MBA") && !token.contains("MA") && !possibleFunctions.contains(token)) {
 					if (secondFirstNames.isEmpty()) {
 						secondFirstNames = token;
 					}
@@ -281,7 +275,7 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 			}
 		}
 
-		if (!previousWasTitle && !possibleFunctions.contains(tokens.get(0)) && !secondFirstNames.isEmpty()) {
+		if (!previousWasTitle && possibleFunctions.contains(tokens.get(0)) && !secondFirstNames.isEmpty()) {
 			firstName = secondFirstNames + " " + firstName;
 		}
 

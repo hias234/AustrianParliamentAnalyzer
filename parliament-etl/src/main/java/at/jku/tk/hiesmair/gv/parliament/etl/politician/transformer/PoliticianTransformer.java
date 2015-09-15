@@ -96,7 +96,7 @@ public class PoliticianTransformer extends AbstractTransformer {
 	public Politician getPoliticianByName(String title, String firstName, String surName, Date date) {
 		Set<Politician> politiciansWithMandatesAtDate = cache.getPoliticians().values().stream()
 				.filter(p -> !p.getMandatesAt(date).isEmpty()).collect(Collectors.toSet());
-
+		
 		Set<Politician> matchingPoliticians = getPoliticiansWithSurName(surName, date, politiciansWithMandatesAtDate);
 
 		if (matchingPoliticians.isEmpty()) {
