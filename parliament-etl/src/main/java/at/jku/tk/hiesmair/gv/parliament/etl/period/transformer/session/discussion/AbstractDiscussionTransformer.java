@@ -69,8 +69,9 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 
 		if (!discussions.isEmpty()) {
 
-			if (session.getSessionNr().equals(138)) {
+			if (session.getSessionNr().equals(88)) {
 				int i = 0;
+				logger.info(protocol);
 			}
 
 			discussions = setSpeechTexts(protocol, discussions,
@@ -156,13 +157,14 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 	protected Date getBeginTime(Element speechBeginElement) {
 		SimpleDateFormat timeFormat = new SimpleDateFormat("HH.mm");
 
-		String timeStr = speechBeginElement.text().replace(NBSP_STRING, " ").trim();
+		String timeStr = speechBeginElement.text().replace(NBSP_STRING, "").replace(" ", "").trim();
 		Matcher m = SPEECH_BEGIN_PATTERN.matcher(timeStr);
 		Date time = null;
 		if (m.find()) {
 			try {
 				time = timeFormat.parse(m.group(0));
 			} catch (ParseException pe) {
+				logger.info("begin-time not parsable");
 			}
 		}
 		return time;

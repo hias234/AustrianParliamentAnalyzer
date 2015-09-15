@@ -35,9 +35,6 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer imp
 	protected static final String DATE_FORMAT_PATTERN = "dd.MM.yyyy";
 
 	protected static final Pattern SESSION_NR_PATTERN = Pattern.compile("(\\d+)\\.\\sSitzung\\sdes\\sNationalrates");
-//	protected static final Pattern START_END_DATE_PATTERN = Pattern
-//			.compile("[\\wäüöÄÜÖ]+[\\.,] (\\d+)\\.\\s([\\wäüöÄÜÖ]+) (\\d{4}):\\s+(\\d+)\\.(\\d+).+ (\\d+)\\.(\\d+).*Uhr");
-	
 	protected static final Pattern DATE_PATTERN = Pattern.compile("[\\wäüöÄÜÖ]+[\\.,] (\\d+)\\.\\s([\\wäüöÄÜÖ]+) (\\d{4})");
 	protected static final Pattern START_TIME_PATTERN = Pattern.compile("Beginn der Sitzung:? ?(\\d{1,2})(?:[\\.:](\\d+))?\\s");
 	protected static final Pattern END_TIME_PATTERN = Pattern.compile("(?:Schluß|Ende|Schluss) der Sitzung:? ?(\\d{1,2})(?:[\\.:](\\d+))?\\s");
@@ -102,6 +99,7 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer imp
 		protocol.select("hr + table:matches(^Nationalrat,)").remove();
 		protocol.getElementsByTag("hr").remove();
 		protocol.select("span.threecol").remove();
+		protocol.select("a[name*=Seite]").remove();
 
 		return protocol;
 	}
