@@ -31,11 +31,16 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer imp
 
 	private static final Logger logger = Logger.getLogger(AbstractSessionTransformer.class.getSimpleName());
 
-	protected static final String DATE_FORMAT_PATTERN = "dd.MM.yyyy HH:mm";
+	protected static final String DATE_TIME_FORMAT_PATTERN = "dd.MM.yyyy HH.mm";
+	protected static final String DATE_FORMAT_PATTERN = "dd.MM.yyyy";
 
 	protected static final Pattern SESSION_NR_PATTERN = Pattern.compile("(\\d+)\\.\\sSitzung\\sdes\\sNationalrates");
-	protected static final Pattern START_END_DATE_PATTERN = Pattern
-			.compile("[\\wäüöÄÜÖ]+[\\.,] (\\d+)\\.\\s([\\wäüöÄÜÖ]+) (\\d{4}):\\s+(\\d+)\\.(\\d+).+ (\\d+)\\.(\\d+).*Uhr");
+//	protected static final Pattern START_END_DATE_PATTERN = Pattern
+//			.compile("[\\wäüöÄÜÖ]+[\\.,] (\\d+)\\.\\s([\\wäüöÄÜÖ]+) (\\d{4}):\\s+(\\d+)\\.(\\d+).+ (\\d+)\\.(\\d+).*Uhr");
+	
+	protected static final Pattern DATE_PATTERN = Pattern.compile("[\\wäüöÄÜÖ]+[\\.,] (\\d+)\\.\\s([\\wäüöÄÜÖ]+) (\\d{4})");
+	protected static final Pattern START_TIME_PATTERN = Pattern.compile("Beginn der Sitzung:? ?(\\d{1,2})(?:[\\.:](\\d+))?\\s");
+	protected static final Pattern END_TIME_PATTERN = Pattern.compile("(?:Schluß|Ende|Schluss) der Sitzung:? ?(\\d{1,2})(?:[\\.:](\\d+))?\\s");
 	
 	protected static final Pattern ABSENT_MEMBERS_PATTERN = Pattern
 			.compile("(?:Abgeordneten?r? |: )((?:(?:\\s*[\\wäöüÄÖÜßáé]+\\.( |-)(\\(FH\\))?)*(?:\\s*[\\wäöüÄÖÜßáé-]+)(?:(?:,)|(?: und)|))+)(?:\\.| als verhindert gemeldet\\.)");
@@ -63,26 +68,26 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer imp
 		Session session = new Session();
 		session.setPeriod(period);
 		session.setSessionTitle(sessionTitle);
+		Date sessionDate = getDate(protocolText);
 		session.setSessionNr(getSessionNr(protocolText));
-		session.setStartDate(getStartDate(protocolText));
 
 		logger.info("transforming session " + session.getSessionNr() + " of period " + period.getPeriod() + " at "
-				+ session.getStartDate());
+				+ sessionDate);
 
-		session.setEndDate(getEndDate(protocolText));
+		session.setStartDate(getStartDate(sessionDate, protocolText));
+		session.setEndDate(getEndDate(sessionDate, protocolText));
 		session.setChairMen(getChairMen(protocol, session));
 		session.setDiscussions(discussionTransformer.getDiscussions(index, protocol, session));
 
-		if (session.getStartDate() != null) {
-			Set<NationalCouncilMember> membersWhoShouldBePresent = period.getNationalCouncilMembersAt(session
-					.getStartDate());
+		if (sessionDate != null) {
+			Set<NationalCouncilMember> membersWhoShouldBePresent = period.getNationalCouncilMembersAt(sessionDate);
 
 			if (membersWhoShouldBePresent.size() != 183) {
 				logger.info("members who sould be present: " + membersWhoShouldBePresent.size());
 			}
 
 			Set<NationalCouncilMember> absentMembers = getAbsentNationalCouncilMembers(protocol,
-					session.getStartDate(), membersWhoShouldBePresent);
+					sessionDate, membersWhoShouldBePresent);
 
 			membersWhoShouldBePresent.removeAll(absentMembers);
 
@@ -295,18 +300,48 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer imp
 		return null;
 	}
 
-	protected Date getStartDate(String protocolText) {
-		Matcher matcher = START_END_DATE_PATTERN.matcher(protocolText);
+	protected Date getDate(String protocolText){
+		Matcher matcher = DATE_PATTERN.matcher(protocolText);
 
 		if (matcher.find()) {
 			String day = matcher.group(1);
 			String month = matcher.group(2);
 			Integer monthIndex = getMonthIndex(month);
 			String year = matcher.group(3);
-			String hourStart = matcher.group(4);
-			String minuteStart = matcher.group(5);
 
-			return getDate(day, monthIndex, year, hourStart, minuteStart);
+			return getDate(day, monthIndex, year);
+		}
+		logger.info("date not found");
+
+		return null;
+	}
+	
+	protected Date getDate(String day, Integer monthIndex, String year) {
+		SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT_PATTERN);
+
+		try {
+			return format.parse(day + "." + monthIndex + "." + year);
+		} catch (ParseException pe) {
+			logger.info("invalid dateformat");
+		}
+
+		return null;
+	}
+	
+	protected Date getStartDate(Date date, String protocolText) {
+		Matcher matcher = START_TIME_PATTERN.matcher(protocolText);
+		SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_PATTERN);
+		SimpleDateFormat dateTimeFormat = new SimpleDateFormat(DATE_TIME_FORMAT_PATTERN);
+		
+		if (matcher.find()) {
+			String hours = matcher.group(1);
+			String mins = matcher.group(2);
+			String startTime = mins == null ? hours + ".00" : hours + "." + mins;
+
+			try {
+				return dateTimeFormat.parse(dateFormat.format(date) + " " + startTime);
+			}
+			catch (ParseException pe){}
 		}
 		logger.info("start date not found");
 
@@ -330,59 +365,25 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer imp
 		return monthIndex;
 	}
 
-	protected Date getEndDate(String protocolText) {
-		Matcher matcher = START_END_DATE_PATTERN.matcher(protocolText);
+	protected Date getEndDate(Date date, String protocolText) {
+		Matcher matcher = END_TIME_PATTERN.matcher(protocolText);
+		SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_PATTERN);
+		SimpleDateFormat dateTimeFormat = new SimpleDateFormat(DATE_TIME_FORMAT_PATTERN);
 
 		if (matcher.find()) {
-			String day = matcher.group(1);
-			String month = matcher.group(2);
-			Integer monthIndex = getMonthIndex(month);
-			String year = matcher.group(3);
-			String hourStart = matcher.group(6);
-			String minuteStart = matcher.group(7);
+			String hours = matcher.group(1);
+			String mins = matcher.group(2);
+			String endTime = mins == null ? hours + ".00" : hours + "." + mins;
 
-			return getDate(day, monthIndex, year, hourStart, minuteStart);
+			try {
+				return dateTimeFormat.parse(dateFormat.format(date) + " " + endTime);
+			}
+			catch (ParseException pe){}
 		}
 		logger.info("end date not found");
 
 		return null;
 	}
-
-	protected Date getDate(String day, Integer monthIndex, String year, String hourStart, String minuteStart) {
-		SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT_PATTERN);
-
-		try {
-			return format.parse(day + "." + monthIndex + "." + year + " " + hourStart + ":" + minuteStart);
-		} catch (ParseException pe) {
-			logger.info("invalid dateformat");
-		}
-
-		return null;
-	}
-
-	// protected List<Politician> getPoliticians(Document index, Document
-	// protocol) throws Exception {
-	// Set<Politician> politicians = new HashSet<Politician>();
-	// politicians.addAll(getPoliticians(index));
-	// politicians.addAll(getPoliticians(protocol));
-	//
-	// return new ArrayList<Politician>(politicians);
-	// }
-	//
-	// protected Set<Politician> getPoliticians(Document document) throws
-	// Exception {
-	// Set<Politician> politicians = new HashSet<Politician>();
-	//
-	// Elements links = getPoliticianLinks(document);
-	// for (Element link : links) {
-	// Politician politician = getPolitician(link.attr("href"));
-	// if (politician != null) {
-	// politicians.add(politician);
-	// }
-	// }
-	//
-	// return politicians;
-	// }
 
 	protected List<SessionChairMan> getChairMen(Document protocol, Session session) throws IOException {
 		List<SessionChairMan> chairMenList = new ArrayList<SessionChairMan>();
