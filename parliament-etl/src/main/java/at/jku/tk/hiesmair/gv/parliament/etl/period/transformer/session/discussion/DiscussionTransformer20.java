@@ -26,25 +26,18 @@ public class DiscussionTransformer20 extends AbstractDiscussionTransformer {
 
 	@Override
 	protected String getSpeechText(Element speechPartElement) {
-		if (speechPartElement.parent().tagName().equals("body")) {
-			// handle 116
-
-			String speechText = null;
-			String firstText = speechPartElement.text();
-			int indexOfColon = firstText.indexOf(":");
-			if (indexOfColon != -1) {
-
-				speechText = firstText.substring(indexOfColon + 1).trim();
-
-				speechPartElement = speechPartElement.nextElementSibling();
-				for (; speechPartElement != null && !matchesSpeechBeginPattern(speechPartElement); speechPartElement = speechPartElement
-						.nextElementSibling()) {
-					speechText += "\n\n" + speechPartElement.text();
-				}
-			}
-			return speechText;
+		if (isSpeechTextVersion2(speechPartElement)) {
+			return getSpeechTextVersion2(speechPartElement);
 		}
 
+		return getSpeechTextVersion1(speechPartElement);
+	}
+
+	protected boolean isSpeechTextVersion2(Element speechPartElement) {
+		return speechPartElement.parent().tagName().equals("body");
+	}
+
+	protected String getSpeechTextVersion1(Element speechPartElement) {
 		String text = speechPartElement.parent().text().replaceAll(NBSP_STRING, " ");
 		int indexOfColon = text.indexOf(":");
 		if (indexOfColon == -1) {
@@ -53,24 +46,33 @@ public class DiscussionTransformer20 extends AbstractDiscussionTransformer {
 		return text.substring(indexOfColon + 1).trim();
 	}
 
+	private String getSpeechTextVersion2(Element speechPartElement) {
+		String speechText = null;
+		String firstText = speechPartElement.text();
+		int indexOfColon = firstText.indexOf(":");
+		if (indexOfColon != -1) {
+
+			speechText = firstText.substring(indexOfColon + 1).trim();
+
+			speechPartElement = speechPartElement.nextElementSibling();
+			for (; speechPartElement != null && !matchesSpeechBeginPattern(speechPartElement); speechPartElement = speechPartElement
+					.nextElementSibling()) {
+				speechText += "\n\n" + speechPartElement.text();
+			}
+		}
+		return speechText;
+	}
+
 	@Override
 	protected Element getFirstSpeechTextElement(Element speechBeginElement, Date date) throws IOException {
-		if (speechBeginElement.parent().tagName().equals("p")) {
-			// for e.g. protocol 116
-
-			Element speechTextElement = speechBeginElement.parent();
-			for (int i = 0; speechTextElement != null; i++, speechTextElement = speechTextElement.nextElementSibling()) {
-				if (getPoliticianOfSpeech(speechTextElement, date) != null) {
-					return speechTextElement;
-				}
-				if (i > 0 && matchesSpeechBeginPattern(speechTextElement)) {
-					break;
-				}
-			}
-
-			return null;
+		if (isVersion2(speechBeginElement)) {
+			return getFirstSpeechTextElementVersion2(speechBeginElement, date);
 		}
 
+		return getFirstSpeechTextElementVersion1(speechBeginElement, date);
+	}
+
+	protected Element getFirstSpeechTextElementVersion1(Element speechBeginElement, Date date) throws IOException {
 		Element speechTextElement = speechBeginElement.nextElementSibling();
 		for (; speechTextElement != null; speechTextElement = speechTextElement.nextElementSibling()) {
 			if (!speechTextElement.children().isEmpty()) {
@@ -87,6 +89,24 @@ public class DiscussionTransformer20 extends AbstractDiscussionTransformer {
 
 		logger.debug("no firstspeechTextElement found");
 		return null;
+	}
+
+	protected Element getFirstSpeechTextElementVersion2(Element speechBeginElement, Date date) throws IOException {
+		Element speechTextElement = speechBeginElement.parent();
+		for (int i = 0; speechTextElement != null; i++, speechTextElement = speechTextElement.nextElementSibling()) {
+			if (getPoliticianOfSpeech(speechTextElement, date) != null) {
+				return speechTextElement;
+			}
+			if (i > 0 && matchesSpeechBeginPattern(speechTextElement)) {
+				break;
+			}
+		}
+
+		return null;
+	}
+
+	protected boolean isVersion2(Element speechBeginElement) {
+		return speechBeginElement.parent().tagName().equals("p");
 	}
 
 	protected boolean matchesSpeechBeginPattern(Element speechTextElement) {

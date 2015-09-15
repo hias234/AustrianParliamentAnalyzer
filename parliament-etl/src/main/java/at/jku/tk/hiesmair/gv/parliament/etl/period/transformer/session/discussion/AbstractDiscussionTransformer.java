@@ -5,7 +5,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -402,14 +401,10 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 
 			String duration = tds.get(5).text();
 			String[] parts = duration.split(":");
-			Integer minutes = Integer.parseInt(parts[0]);
-			Integer seconds = Integer.parseInt(parts[1]);
+			Integer minutes = Integer.parseInt(parts[0].trim());
+			Integer seconds = Integer.parseInt(parts[1].trim());
 
-			Calendar endDate = Calendar.getInstance();
-			endDate.setTime(startTime);
-			endDate.add(Calendar.MINUTE, minutes);
-			endDate.add(Calendar.SECOND, seconds);
-			speech.setEndTime(endDate.getTime());
+			speech.setEndTime(new Date(startTime.getTime() + minutes * 60 * 1000 + seconds * 1000));
 		} catch (ParseException | NumberFormatException e) {
 			logger.info("discussion date parse error: " + e.getMessage());
 		}

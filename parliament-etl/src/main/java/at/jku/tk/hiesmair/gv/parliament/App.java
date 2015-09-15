@@ -34,7 +34,7 @@ public class App implements CommandLineRunner {
 	
 	@Override
 	public void run(String... args) throws Exception {
-		periodJob.start(Arrays.asList(20,21,22,23,24,25));
+		periodJob.start(Arrays.asList(20));
 //		politiciansJob.start();
 	}
 }
