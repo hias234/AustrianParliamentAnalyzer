@@ -81,7 +81,7 @@ public class DiscussionTransformer22andUp extends AbstractDiscussionTransformer 
 
 	@Override
 	protected Elements getSpeechBeginElements(Document protocol) {
-		return protocol.select("p:matches(^[^\\d]{0,6}\\d{1,2}\\.\\d\\s{0,5}\\d)");
+		return protocol.select("p:matches(^[^\\d]{0,6}\\d{1,2}[^\\d]\\d\\s{0,5}\\d)");
 	}
 
 }

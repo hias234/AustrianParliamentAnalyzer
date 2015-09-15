@@ -35,7 +35,7 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 
 	private static final Logger logger = Logger.getLogger(AbstractDiscussionTransformer.class.getSimpleName());
 
-	protected static final int SPEECH_TIME_TOLERANCE_IN_MS = 60000 * 25; // 25
+	protected static final int SPEECH_TIME_TOLERANCE_IN_MS = 60000 * 60; // 60
 																			// min
 
 	private static final Pattern POLITICIAN_NAME_PATTERN = Pattern
@@ -157,7 +157,7 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 	protected Date getBeginTime(Element speechBeginElement) {
 		SimpleDateFormat timeFormat = new SimpleDateFormat("HH.mm");
 
-		String timeStr = speechBeginElement.text().replace(NBSP_STRING, "").replace(" ", "").trim();
+		String timeStr = getTimeString(speechBeginElement);
 		Matcher m = SPEECH_BEGIN_PATTERN.matcher(timeStr);
 		Date time = null;
 		if (m.find()) {
@@ -168,6 +168,22 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 			}
 		}
 		return time;
+	}
+
+	protected String getTimeString(Element speechBeginElement) {
+		String timeStr = speechBeginElement.text();
+		
+		if (timeStr.indexOf(".") == -1){
+			if (!Character.isDigit(timeStr.charAt(1))){
+				timeStr = timeStr.charAt(0) + "." + timeStr.substring(2);
+			}
+			else if (!Character.isDigit(timeStr.charAt(1))){
+				timeStr = timeStr.substring(0, 2) + "." + timeStr.substring(3);
+			}
+		}
+		
+		timeStr = timeStr.replace(NBSP_STRING, "").replace(" ", "").trim();
+		return timeStr;
 	}
 
 	protected void setSpeechText(List<Discussion> discussions, Date time, Politician politician, String speechText) {

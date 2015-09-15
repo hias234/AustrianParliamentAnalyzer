@@ -115,7 +115,7 @@ public class DiscussionTransformer20 extends AbstractDiscussionTransformer {
 
 	@Override
 	protected Elements getSpeechBeginElements(Document protocol) {
-		Elements speechBeginAndEndElements = protocol.select("i:matches(^[^\\d]{0,6}\\d{1,2}\\.\\d\\s{0,5}\\d)");
+		Elements speechBeginAndEndElements = protocol.select("i:matches(^[^\\d]{0,6}\\d{1,2}[^\\d]\\d\\s{0,5}\\d)");
 
 		return speechBeginAndEndElements;
 	}
