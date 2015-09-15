@@ -376,7 +376,7 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 		speech.setDiscussion(discussion);
 
 		Elements links = politicianTransformer.getPoliticianLinks(tds.get(2));
-		if (links != null && links.size() >= 1) {
+		if (!links.isEmpty()) {
 			String href = links.first().attr("href");
 			speech.setPolitician(politicianTransformer.getPolitician(href));
 		}
@@ -399,7 +399,7 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 			Date startTime = timeFormat.parse(start);
 			speech.setStartTime(startTime);
 
-			String duration = tds.get(5).text();
+			String duration = tds.get(6).text().trim();
 			String[] parts = duration.split(":");
 			Integer minutes = Integer.parseInt(parts[0].trim());
 			Integer seconds = Integer.parseInt(parts[1].trim());
