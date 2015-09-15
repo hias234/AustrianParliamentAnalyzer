@@ -35,7 +35,8 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer imp
 
 	protected static final Pattern SESSION_NR_PATTERN = Pattern.compile("(\\d+)\\.\\sSitzung\\sdes\\sNationalrates");
 	protected static final Pattern START_END_DATE_PATTERN = Pattern
-			.compile("[\\wäüöÄÜÖ]+, (\\d+)\\.\\s([\\wäüöÄÜÖ]+) (\\d{4}):\\s+(\\d+)\\.(\\d+).+ (\\d+)\\.(\\d+).*Uhr");
+			.compile("[\\wäüöÄÜÖ]+[\\.,] (\\d+)\\.\\s([\\wäüöÄÜÖ]+) (\\d{4}):\\s+(\\d+)\\.(\\d+).+ (\\d+)\\.(\\d+).*Uhr");
+	
 	protected static final Pattern ABSENT_MEMBERS_PATTERN = Pattern
 			.compile("(?:Abgeordneten?r? |: )((?:(?:\\s*[\\wäöüÄÖÜßáé]+\\.( |-)(\\(FH\\))?)*(?:\\s*[\\wäöüÄÖÜßáé-]+)(?:(?:,)|(?: und)|))+)(?:\\.| als verhindert gemeldet\\.)");
 	protected static final Pattern ABSENT_MEMBERS_NAME_PATTERN = Pattern
