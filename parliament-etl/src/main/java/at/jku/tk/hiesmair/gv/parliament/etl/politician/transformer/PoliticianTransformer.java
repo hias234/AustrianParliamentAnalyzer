@@ -99,10 +99,6 @@ public class PoliticianTransformer extends AbstractTransformer {
 
 		List<Politician> matchingPoliticians = getPoliticiansWithSurName(surName, date, politiciansWithMandatesAtDate);
 
-		if (surName.equals("Moser")) {
-			int i = 0;
-		}
-
 		if (matchingPoliticians.isEmpty()) {
 			String surNameWithoutSpecialChars = StringUtils.stripAccents(surName);
 			matchingPoliticians = getPoliticiansWithSurName(surNameWithoutSpecialChars, date, politiciansWithMandatesAtDate);

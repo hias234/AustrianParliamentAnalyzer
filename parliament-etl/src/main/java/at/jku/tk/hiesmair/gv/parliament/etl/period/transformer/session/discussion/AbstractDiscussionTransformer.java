@@ -212,6 +212,7 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 			// replace party
 			namePart = namePart.replaceAll("\\s\\(.{3,}\\)", "");
 			namePart = namePart.replaceAll("¦", "");
+			namePart = namePart.replaceAll(", diplômé", "");
 
 			Matcher m = POLITICIAN_NAME_PATTERN.matcher(namePart);
 			if (m.find()) {
