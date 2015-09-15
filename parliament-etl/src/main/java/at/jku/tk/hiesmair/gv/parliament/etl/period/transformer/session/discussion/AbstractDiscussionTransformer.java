@@ -406,6 +406,8 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 
 			speech.setEndTime(new Date(startTime.getTime() + minutes * 60 * 1000 + seconds * 1000));
 		} catch (ParseException | NumberFormatException e) {
+			speech.setEndTime(speech.getStartTime());
+			
 			logger.info("discussion date parse error: " + e.getMessage());
 		}
 		return speech;
