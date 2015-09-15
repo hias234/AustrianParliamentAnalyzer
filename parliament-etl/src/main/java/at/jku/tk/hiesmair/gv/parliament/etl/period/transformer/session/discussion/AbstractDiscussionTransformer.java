@@ -172,16 +172,16 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 
 	protected String getTimeString(Element speechBeginElement) {
 		String timeStr = speechBeginElement.text();
-		
-		if (timeStr.indexOf(".") == -1){
-			if (!Character.isDigit(timeStr.charAt(1))){
+
+		if (timeStr.indexOf(".") == -1) {
+			if (!Character.isDigit(timeStr.charAt(1))) {
 				timeStr = timeStr.charAt(0) + "." + timeStr.substring(2);
 			}
-			else if (!Character.isDigit(timeStr.charAt(1))){
+			else if (!Character.isDigit(timeStr.charAt(1))) {
 				timeStr = timeStr.substring(0, 2) + "." + timeStr.substring(3);
 			}
 		}
-		
+
 		timeStr = timeStr.replace(NBSP_STRING, "").replace(" ", "").trim();
 		return timeStr;
 	}
@@ -223,20 +223,19 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 	protected Politician getPoliticianOfSpeechByElementText(Element element, Date date) {
 		String text = element.text().replaceAll(NBSP_STRING, " ").replaceAll(EN_DASH_STRING, "-");
 		String[] parts = text.split(":");
-		if (parts.length > 1) {
-			String namePart = parts[0];
+		
+		String namePart = parts[0];
 
-			// replace party
-			namePart = namePart.replaceAll("\\s\\(.{3,}\\)", "");
-			namePart = namePart.replaceAll("¦", "");
-			namePart = namePart.replaceAll(", diplômé", "");
+		// replace party
+		namePart = namePart.replaceAll("\\s\\(.{3,}\\)", "");
+		namePart = namePart.replaceAll("¦", "");
+		namePart = namePart.replaceAll(", diplômé", "");
 
-			Matcher m = POLITICIAN_NAME_PATTERN.matcher(namePart);
-			if (m.find()) {
-				List<String> tokens = Arrays.asList(namePart.split("\\s"));
-				if (tokens.size() >= 2) {
-					return getPoliticianByNameFromTokens(date, tokens);
-				}
+		Matcher m = POLITICIAN_NAME_PATTERN.matcher(namePart);
+		if (m.find()) {
+			List<String> tokens = Arrays.asList(namePart.split("\\s"));
+			if (tokens.size() >= 2) {
+				return getPoliticianByNameFromTokens(date, tokens);
 			}
 		}
 		return null;
@@ -322,33 +321,32 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 		if (speech.getStartTime() == null) {
 			return false;
 		}
-		
+
 		if (time.getTime() >= speech.getStartTime().getTime() - SPEECH_TIME_TOLERANCE_IN_MS
-				&& time.getTime() <= speech.getStartTime().getTime() + SPEECH_TIME_TOLERANCE_IN_MS){
+				&& time.getTime() <= speech.getStartTime().getTime() + SPEECH_TIME_TOLERANCE_IN_MS) {
 			return true;
 		}
-		
+
 		SimpleDateFormat timeFormat = new SimpleDateFormat("HH.mm");
 		Date startOfDay = null;
 		Date endOfDay = null;
 		try {
 			startOfDay = timeFormat.parse("00.00");
 			endOfDay = timeFormat.parse("23.59");
+		} catch (ParseException e) {
 		}
-		catch (ParseException e) {
-		}
-		
+
 		// handle from 23.59 to 00.00
 		Long timeDiff = time.getTime() - startOfDay.getTime() + endOfDay.getTime() - speech.getStartTime().getTime();
-		if (timeDiff < SPEECH_TIME_TOLERANCE_IN_MS * 2){
+		if (timeDiff < SPEECH_TIME_TOLERANCE_IN_MS * 2) {
 			return true;
 		}
-		
+
 		timeDiff = speech.getStartTime().getTime() - startOfDay.getTime() + endOfDay.getTime() - time.getTime();
-		if (timeDiff < SPEECH_TIME_TOLERANCE_IN_MS * 2){
+		if (timeDiff < SPEECH_TIME_TOLERANCE_IN_MS * 2) {
 			return true;
 		}
-		
+
 		return false;
 	}
 
@@ -425,7 +423,7 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 			speech.setEndTime(new Date(startTime.getTime() + minutes * 60 * 1000 + seconds * 1000));
 		} catch (ParseException | NumberFormatException e) {
 			speech.setEndTime(speech.getStartTime());
-			
+
 			logger.info("discussion date parse error: " + e.getMessage());
 		}
 		return speech;
