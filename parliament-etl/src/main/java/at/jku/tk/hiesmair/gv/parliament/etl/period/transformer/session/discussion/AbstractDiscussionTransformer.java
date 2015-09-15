@@ -281,7 +281,7 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 			}
 		}
 
-		if (!previousWasTitle && possibleFunctions.contains(tokens.get(0)) && !secondFirstNames.isEmpty()) {
+		if (!previousWasTitle && !possibleFunctions.contains(tokens.get(0)) && !secondFirstNames.isEmpty()) {
 			firstName = secondFirstNames + " " + firstName;
 		}
 

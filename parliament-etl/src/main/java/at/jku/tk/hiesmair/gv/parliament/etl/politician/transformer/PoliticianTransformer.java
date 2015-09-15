@@ -7,7 +7,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -82,11 +81,12 @@ public class PoliticianTransformer extends AbstractTransformer {
 		if (!url.endsWith("index.shtml")) {
 			url += "index.shtml";
 		}
+		
 		Politician politician = cache.getPolitician(url);
 		if (politician != null) {
 			return politician;
 		}
-
+		
 		item.setUrl(new URL(url));
 		item.setTitle(url.replaceAll("[ \\/\\.\\(\\):]", ""));
 
@@ -94,10 +94,10 @@ public class PoliticianTransformer extends AbstractTransformer {
 	}
 
 	public Politician getPoliticianByName(String title, String firstName, String surName, Date date) {
-		List<Politician> politiciansWithMandatesAtDate = cache.getPoliticians().values().stream()
-				.filter(p -> !p.getMandatesAt(date).isEmpty()).collect(Collectors.toList());
+		Set<Politician> politiciansWithMandatesAtDate = cache.getPoliticians().values().stream()
+				.filter(p -> !p.getMandatesAt(date).isEmpty()).collect(Collectors.toSet());
 
-		List<Politician> matchingPoliticians = getPoliticiansWithSurName(surName, date, politiciansWithMandatesAtDate);
+		Set<Politician> matchingPoliticians = getPoliticiansWithSurName(surName, date, politiciansWithMandatesAtDate);
 
 		if (matchingPoliticians.isEmpty()) {
 			String surNameWithoutSpecialChars = StringUtils.stripAccents(surName);
@@ -116,20 +116,20 @@ public class PoliticianTransformer extends AbstractTransformer {
 		}
 
 		if (matchingPoliticians.size() == 1) {
-			return matchingPoliticians.get(0);
+			return matchingPoliticians.iterator().next();
 		}
 
 		if (matchingPoliticians.size() > 1) {
-			List<Politician> matchingPoliticiansWithFirstName = getPoliticiansWithFirstName(firstName, date, matchingPoliticians);
+			Set<Politician> matchingPoliticiansWithFirstName = getPoliticiansWithFirstName(firstName, date, matchingPoliticians);
 
 			if (matchingPoliticiansWithFirstName.size() == 0) {
 				String[] firstNames = firstName.split(" ");
 				if (firstNames.length > 1) {
 					for (String firstNamePart : firstNames) {
-						List<Politician> matchingPoliticiansWithFirstNamePart = getPoliticiansWithFirstNameContaining(date, matchingPoliticians, firstNamePart);
+						Set<Politician> matchingPoliticiansWithFirstNamePart = getPoliticiansWithFirstNameContaining(date, matchingPoliticians, firstNamePart);
 
 						if (matchingPoliticiansWithFirstNamePart.size() == 1) {
-							return matchingPoliticiansWithFirstNamePart.get(0);
+							return matchingPoliticiansWithFirstNamePart.iterator().next();
 						}
 					}
 				}
@@ -138,36 +138,36 @@ public class PoliticianTransformer extends AbstractTransformer {
 				matchingPoliticiansWithFirstName = getPoliticiansWithTitle(title, date, matchingPoliticiansWithFirstName);
 			}
 			if (matchingPoliticiansWithFirstName.size() == 1) {
-				return matchingPoliticiansWithFirstName.get(0);
+				return matchingPoliticiansWithFirstName.iterator().next();
 			}
 		}
 
 		return null;
 	}
 
-	protected List<Politician> getPoliticiansWithTitle(String title, Date date,
-			List<Politician> matchingPoliticiansWithFirstName) {
+	protected Set<Politician> getPoliticiansWithTitle(String title, Date date,
+			Set<Politician> matchingPoliticiansWithFirstName) {
 		return matchingPoliticiansWithFirstName.stream()
-				.filter(p -> p.getNameAt(date).getTitle().equals(title)).collect(Collectors.toList());
+				.filter(p -> p.getNameAt(date).getTitle().equals(title)).collect(Collectors.toSet());
 	}
 
-	protected List<Politician> getPoliticiansWithFirstNameContaining(Date date, List<Politician> matchingPoliticians,
+	protected Set<Politician> getPoliticiansWithFirstNameContaining(Date date, Set<Politician> matchingPoliticians,
 			String firstNamePart) {
 		return matchingPoliticians.stream()
 				.filter(p -> p.getNameAt(date).getFirstName().contains(firstNamePart))
-				.collect(Collectors.toList());
+				.collect(Collectors.toSet());
 	}
 
-	protected List<Politician> getPoliticiansWithFirstName(String firstName, Date date,
-			List<Politician> matchingPoliticians) {
+	protected Set<Politician> getPoliticiansWithFirstName(String firstName, Date date,
+			Set<Politician> matchingPoliticians) {
 		return matchingPoliticians.stream()
-				.filter(p -> p.getNameAt(date).getFirstName().equals(firstName)).collect(Collectors.toList());
+				.filter(p -> p.getNameAt(date).getFirstName().equals(firstName)).collect(Collectors.toSet());
 	}
 
-	protected List<Politician> getPoliticiansWithSurName(String surName, Date date,
-			List<Politician> politiciansWithMandatesAtDate) {
+	protected Set<Politician> getPoliticiansWithSurName(String surName, Date date,
+			Set<Politician> politiciansWithMandatesAtDate) {
 		return politiciansWithMandatesAtDate.stream()
-				.filter(p -> p.getNameAt(date).getSurName().equals(surName)).collect(Collectors.toList());
+				.filter(p -> p.getNameAt(date).getSurName().equals(surName)).collect(Collectors.toSet());
 	}
 
 	public Politician getPolitician(PoliticianFeedItem feedItem) throws IOException {
@@ -180,11 +180,16 @@ public class PoliticianTransformer extends AbstractTransformer {
 	}
 
 	protected Politician getPolitician(String url, Document document) {
+		Politician politician = cache.getPolitician(url);
+		if (politician != null) {
+			return politician;
+		}
+		
 		logger.debug("transforming politician " + url);
 
 		String fullText = document.text();
 
-		Politician politician = new Politician();
+		politician = new Politician();
 		politician.setId(url);
 		politician.setName(getName(document));
 		politician.setBirthDate(getBirthDate(fullText));

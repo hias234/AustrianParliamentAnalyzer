@@ -48,7 +48,7 @@ public class FeedItem {
 	public String getIndexCacheName() {
 		if (this.indexCacheName == null) {
 			this.indexCacheName = ParliamentUtil.getCachePath(
-					specificCacheDirectory, indexCachePrefix + this.title
+					specificCacheDirectory, indexCachePrefix + this.url.toString().replaceAll("[ \\/\\.\\(\\):]", "")
 							+ ".html");
 		}
 		return this.indexCacheName;
