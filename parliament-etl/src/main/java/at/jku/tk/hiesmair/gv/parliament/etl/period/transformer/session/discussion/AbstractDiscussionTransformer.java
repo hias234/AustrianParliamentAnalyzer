@@ -304,8 +304,34 @@ public abstract class AbstractDiscussionTransformer extends AbstractTransformer 
 		if (speech.getStartTime() == null) {
 			return false;
 		}
-		return time.getTime() >= speech.getStartTime().getTime() - SPEECH_TIME_TOLERANCE_IN_MS
-				&& time.getTime() <= speech.getStartTime().getTime() + SPEECH_TIME_TOLERANCE_IN_MS;
+		
+		if (time.getTime() >= speech.getStartTime().getTime() - SPEECH_TIME_TOLERANCE_IN_MS
+				&& time.getTime() <= speech.getStartTime().getTime() + SPEECH_TIME_TOLERANCE_IN_MS){
+			return true;
+		}
+		
+		SimpleDateFormat timeFormat = new SimpleDateFormat("HH.mm");
+		Date startOfDay = null;
+		Date endOfDay = null;
+		try {
+			startOfDay = timeFormat.parse("00.00");
+			endOfDay = timeFormat.parse("23.59");
+		}
+		catch (ParseException e) {
+		}
+		
+		// handle from 23.59 to 00.00
+		Long timeDiff = time.getTime() - startOfDay.getTime() + endOfDay.getTime() - speech.getStartTime().getTime();
+		if (timeDiff < SPEECH_TIME_TOLERANCE_IN_MS * 2){
+			return true;
+		}
+		
+		timeDiff = speech.getStartTime().getTime() - startOfDay.getTime() + endOfDay.getTime() - time.getTime();
+		if (timeDiff < SPEECH_TIME_TOLERANCE_IN_MS * 2){
+			return true;
+		}
+		
+		return false;
 	}
 
 	protected Discussion getDiscussion(Element header, String text, Session session, int order) throws Exception {
