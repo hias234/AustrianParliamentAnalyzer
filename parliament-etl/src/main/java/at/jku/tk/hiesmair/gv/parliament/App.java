@@ -40,5 +40,7 @@ public class App implements CommandLineRunner {
 		
 		System.out.println(politicianRep.countSessionPresences("http://www.parlament.gv.at/WWER/PAD_36450/index.shtml"));
 		System.out.println(politicianRep.countSessionAbsences("http://www.parlament.gv.at/WWER/PAD_36450/index.shtml"));
+		System.out.println(politicianRep.countSessionPresencesByPeriod("http://www.parlament.gv.at/WWER/PAD_36450/index.shtml", 25));
+		System.out.println(politicianRep.countSessionAbsencesByPeriod("http://www.parlament.gv.at/WWER/PAD_36450/index.shtml", 25));
 	}
 }
