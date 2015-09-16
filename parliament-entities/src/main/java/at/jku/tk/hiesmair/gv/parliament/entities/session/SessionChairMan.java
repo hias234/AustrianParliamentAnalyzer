@@ -2,11 +2,9 @@ package at.jku.tk.hiesmair.gv.parliament.entities.session;
 
 import java.io.Serializable;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
@@ -101,6 +99,14 @@ public class SessionChairMan implements Serializable {
 		this.politician = politician;
 	}
 
+	public SessionChairManId getId() {
+		return id;
+	}
+
+	public void setId(SessionChairManId id) {
+		this.id = id;
+	}
+
 	public Politician getPolitician() {
 		return politician;
 	}
@@ -124,7 +130,7 @@ public class SessionChairMan implements Serializable {
 	public void setPosition(Integer position) {
 		this.id.setPosition(position);
 	}
-	
+
 	@Override
 	public String toString() {
 		return "SessionChairMan [position=" + id.getPosition() + ", politician=" + politician + "]";

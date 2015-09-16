@@ -22,7 +22,6 @@ import at.jku.tk.hiesmair.gv.parliament.entities.discussion.Discussion;
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.DiscussionSpeech;
 import at.jku.tk.hiesmair.gv.parliament.entities.mandate.CouncilMember;
 import at.jku.tk.hiesmair.gv.parliament.entities.mandate.Mandate;
-import at.jku.tk.hiesmair.gv.parliament.entities.mandate.Mandate.MandateId;
 import at.jku.tk.hiesmair.gv.parliament.entities.mandate.NationalCouncilMember;
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 import at.jku.tk.hiesmair.gv.parliament.entities.session.Session;
@@ -108,47 +107,53 @@ public class ParliamentDatabaseLoader {
 	}
 
 	private void loadSession(Session session) {
-		List<SessionChairMan> chairMen = session.getChairMen();
-		List<Discussion> discussions = session.getDiscussions();
-		Set<NationalCouncilMember> presentNationalCouncilMembers = session.getPresentNationalCouncilMembers();
-		Set<NationalCouncilMember> absentNationalCouncilMembers = session.getAbsentNationalCouncilMembers();
+		if (sessionRepository.findOne(session.getId()) == null) {
+			List<SessionChairMan> chairMen = session.getChairMen();
+			List<Discussion> discussions = session.getDiscussions();
+			Set<NationalCouncilMember> presentNationalCouncilMembers = session.getPresentNationalCouncilMembers();
+			Set<NationalCouncilMember> absentNationalCouncilMembers = session.getAbsentNationalCouncilMembers();
 
-		session.setChairMen(new ArrayList<SessionChairMan>());
-		session.setDiscussions(new ArrayList<Discussion>());
-		session.setPresentNationalCouncilMembers(new HashSet<NationalCouncilMember>());
-		session.setAbsentNationalCouncilMembers(new HashSet<NationalCouncilMember>());
+			session.setChairMen(new ArrayList<SessionChairMan>());
+			session.setDiscussions(new ArrayList<Discussion>());
+			session.setPresentNationalCouncilMembers(new HashSet<NationalCouncilMember>());
+			session.setAbsentNationalCouncilMembers(new HashSet<NationalCouncilMember>());
 
-		sessionRepository.save(session);
-		chairMen.forEach(cm -> loadSessionChairMan(cm));
-		discussions.forEach(d -> loadDiscussion(d));
-		presentNationalCouncilMembers.forEach(ncm -> loadMandate(ncm));
-		absentNationalCouncilMembers.forEach(ncm -> loadMandate(ncm));
+			sessionRepository.save(session);
+			chairMen.forEach(cm -> loadSessionChairMan(cm));
+			discussions.forEach(d -> loadDiscussion(d));
+			presentNationalCouncilMembers.forEach(ncm -> loadMandate(ncm));
+			absentNationalCouncilMembers.forEach(ncm -> loadMandate(ncm));
 
-		session.setChairMen(chairMen);
-		session.setDiscussions(discussions);
-		session.setPresentNationalCouncilMembers(presentNationalCouncilMembers);
-		session.setAbsentNationalCouncilMembers(absentNationalCouncilMembers);
+			session.setChairMen(chairMen);
+			session.setDiscussions(discussions);
+			session.setPresentNationalCouncilMembers(presentNationalCouncilMembers);
+			session.setAbsentNationalCouncilMembers(absentNationalCouncilMembers);
 
-		// to save the councilmember-associations
-		sessionRepository.save(session);
+			// to save the councilmember-associations
+			sessionRepository.save(session);
+		}
 	}
 
 	private void loadSessionChairMan(SessionChairMan sessionChairMan) {
-		Politician politician = sessionChairMan.getPolitician();
-		loadPolitician(politician);
+		if (sessionChairManRepository.findOne(sessionChairMan.getId()) == null) {
+			Politician politician = sessionChairMan.getPolitician();
+			loadPolitician(politician);
 
-		sessionChairManRepository.save(sessionChairMan);
+			sessionChairManRepository.save(sessionChairMan);
+		}
 	}
 
 	private void loadDiscussion(Discussion discussion) {
-		List<DiscussionSpeech> speeches = discussion.getSpeeches();
+		if (discussionRepository.findOne(discussion.getId()) == null) {
+			List<DiscussionSpeech> speeches = discussion.getSpeeches();
 
-		discussion.setSpeeches(new ArrayList<DiscussionSpeech>());
+			discussion.setSpeeches(new ArrayList<DiscussionSpeech>());
 
-		discussionRepository.save(discussion);
-		speeches.forEach(s -> loadDiscussionSpeech(s));
+			discussionRepository.save(discussion);
+			speeches.forEach(s -> loadDiscussionSpeech(s));
 
-		discussion.setSpeeches(speeches);
+			discussion.setSpeeches(speeches);
+		}
 	}
 
 	private void loadDiscussionSpeech(DiscussionSpeech speech) {

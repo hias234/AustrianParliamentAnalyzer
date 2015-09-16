@@ -1,12 +1,10 @@
 package at.jku.tk.hiesmair.gv.parliament.db;
 
-import javax.transaction.Transactional;
-
 import org.springframework.data.repository.CrudRepository;
 
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.Discussion;
+import at.jku.tk.hiesmair.gv.parliament.entities.discussion.Discussion.DiscussionId;
 
-@Transactional
-public interface DiscussionRepository extends CrudRepository<Discussion, Integer>{
+public interface DiscussionRepository extends CrudRepository<Discussion, DiscussionId>{
 
 }
