@@ -9,6 +9,9 @@ import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 public interface PoliticianRepository extends CrudRepository<Politician, String> {
 
 	@Query("SELECT COUNT(ncm) FROM Session s INNER JOIN s.presentNationalCouncilMembers ncm WHERE ncm.id.politician.id = :politicianId")
-	public long countSessionsPresences(@Param("politicianId") String id);
+	public long countSessionPresences(@Param("politicianId") String id);
 
+	@Query("SELECT COUNT(ncm) FROM Session s INNER JOIN s.absentNationalCouncilMembers ncm WHERE ncm.id.politician.id = :politicianId")
+	public long countSessionAbsences(@Param("politicianId") String id);
+	
 }
