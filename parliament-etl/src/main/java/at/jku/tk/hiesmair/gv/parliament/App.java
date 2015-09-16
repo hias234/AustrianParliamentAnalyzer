@@ -42,10 +42,10 @@ public class App implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		//periodJob.start(Arrays.asList(20,21));
 		
-		System.out.println(politicianRep.countSessionPresences("http://www.parlament.gv.at/WWER/PAD_36450/index.shtml"));
-		System.out.println(politicianRep.countSessionAbsences("http://www.parlament.gv.at/WWER/PAD_36450/index.shtml"));
-		System.out.println(politicianRep.countSessionPresencesByPeriod("http://www.parlament.gv.at/WWER/PAD_36450/index.shtml", 25));
-		System.out.println(politicianRep.countSessionAbsencesByPeriod("http://www.parlament.gv.at/WWER/PAD_36450/index.shtml", 25));
+		System.out.println(politicianRep.countSessionPresencesOfPolitician("http://www.parlament.gv.at/WWER/PAD_36450/index.shtml"));
+		System.out.println(politicianRep.countSessionAbsencesOfPolitician("http://www.parlament.gv.at/WWER/PAD_36450/index.shtml"));
+		System.out.println(politicianRep.countSessionPresencesOfPoliticianByPeriod("http://www.parlament.gv.at/WWER/PAD_36450/index.shtml", 25));
+		System.out.println(politicianRep.countSessionAbsencesOfPoliticianByPeriod("http://www.parlament.gv.at/WWER/PAD_36450/index.shtml", 25));
 		System.out.println();
 		
 		System.out.println(clubRep.countSessionAbsencesOfClub("ÖVP"));
@@ -53,5 +53,8 @@ public class App implements CommandLineRunner {
 		System.out.println(clubRep.countSessionPresencesOfClub("ÖVP"));
 		System.out.println(clubRep.countSessionPresencesOfClubByPeriod("ÖVP", 25));
 		System.out.println();
+		
+		System.out.println(politicianRep.countSpeechesOfPoliticianByPeriod("http://www.parlament.gv.at/WWER/PAD_36450/index.shtml", 25));
+		System.out.println(politicianRep.countSpeechesOfPolitician("http://www.parlament.gv.at/WWER/PAD_36450/index.shtml"));
 	}
 }
