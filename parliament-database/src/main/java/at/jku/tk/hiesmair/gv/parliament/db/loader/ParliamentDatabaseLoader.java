@@ -87,23 +87,27 @@ public class ParliamentDatabaseLoader {
 	}
 
 	public void loadPeriod(LegislativePeriod period) {
+		List<Session> sessions = period.getSessions();
+		Set<NationalCouncilMember> nationalCouncilMembers = period.getNationalCouncilMembers();
+
+		period.setSessions(new ArrayList<Session>());
+		period.setNationalCouncilMembers(new HashSet<NationalCouncilMember>());
+
 		LegislativePeriod periodInDb = periodRepository.findOne(period.getPeriod());
-
 		if (periodInDb == null) {
-			List<Session> sessions = period.getSessions();
-			Set<NationalCouncilMember> nationalCouncilMembers = period.getNationalCouncilMembers();
-
-			period.setSessions(new ArrayList<Session>());
-			period.setNationalCouncilMembers(new HashSet<NationalCouncilMember>());
-
-			periodRepository.save(period);
-			sessions.forEach(s -> loadSession(s));
-			// TODO check if nationalcouncilmembers are set on the other side
-			// (should be)
-
-			period.setSessions(sessions);
-			period.setNationalCouncilMembers(nationalCouncilMembers);
+			periodInDb = periodRepository.save(period);
 		}
+		
+		for (Session s : sessions){
+			s.setPeriod(periodInDb);
+			loadSession(s);
+		}
+		
+		// TODO check if nationalcouncilmembers are set on the other side
+		// (should be)
+
+		period.setSessions(sessions);
+		period.setNationalCouncilMembers(nationalCouncilMembers);
 	}
 
 	private void loadSession(Session session) {

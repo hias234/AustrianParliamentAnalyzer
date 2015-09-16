@@ -1,5 +1,7 @@
 package at.jku.tk.hiesmair.gv.parliament;
 
+import java.util.Arrays;
+
 import javax.inject.Inject;
 
 import org.springframework.boot.CommandLineRunner;
@@ -40,7 +42,7 @@ public class App implements CommandLineRunner {
 	
 	@Override
 	public void run(String... args) throws Exception {
-//		periodJob.start(Arrays.asList(25));
+		periodJob.start(Arrays.asList(22,23));
 		
 		System.out.println(politicianRep.countSessionPresences("http://www.parlament.gv.at/WWER/PAD_36450/index.shtml"));
 		System.out.println(politicianRep.countSessionAbsences("http://www.parlament.gv.at/WWER/PAD_36450/index.shtml"));
@@ -48,9 +50,10 @@ public class App implements CommandLineRunner {
 		System.out.println(politicianRep.countSessionAbsencesByPeriod("http://www.parlament.gv.at/WWER/PAD_36450/index.shtml", 25));
 		System.out.println();
 		
-		System.out.println(clubRep.countSessionAbsencesOfClub("FPÖ"));
-		System.out.println(clubRep.countSessionAbsencesOfClubByPeriod("FPÖ", 25));
-		System.out.println(clubRep.countSessionPresencesOfClub("FPÖ"));
-		System.out.println(clubRep.countSessionPresencesOfClubByPeriod("FPÖ", 25));
+		System.out.println(clubRep.countSessionAbsencesOfClub("ÖVP"));
+		System.out.println(clubRep.countSessionAbsencesOfClubByPeriod("ÖVP", 25));
+		System.out.println(clubRep.countSessionPresencesOfClub("ÖVP"));
+		System.out.println(clubRep.countSessionPresencesOfClubByPeriod("ÖVP", 25));
+		System.out.println();
 	}
 }
