@@ -36,6 +36,7 @@ import at.jku.tk.hiesmair.gv.parliament.entities.mandate.FederalViceChancellor;
 import at.jku.tk.hiesmair.gv.parliament.entities.mandate.Mandate;
 import at.jku.tk.hiesmair.gv.parliament.entities.mandate.NationalCouncilMember;
 import at.jku.tk.hiesmair.gv.parliament.entities.mandate.NationalCouncilPresident;
+import at.jku.tk.hiesmair.gv.parliament.entities.mandate.StateSecretary;
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Name;
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.PoliticianName;
@@ -375,6 +376,12 @@ public class PoliticianTransformer extends AbstractTransformer {
 		else if (description.contains("Präsident des Bundesrates")
 				|| description.contains("Präsidentin des Bundesrates")) {
 			mandate = new FederalCouncilPresident();
+		}
+		else if (description.contains("Staatssekretär")){
+			mandate = new StateSecretary();
+			
+			String department = description.replaceAll("Staatssekretär(in)? im (Bundesministerium für )?", "");
+			((StateSecretary) mandate).setDepartment(department);
 		}
 		else if (description.contains("Bundesminister")) {
 			mandate = new FederalMinister();
