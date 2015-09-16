@@ -78,7 +78,7 @@ public class ParliamentDatabaseLoader {
 		if (mandate instanceof NationalCouncilMember) {
 			Set<LegislativePeriod> periods = ((NationalCouncilMember) mandate).getPeriods();
 
-			periods.forEach(p -> loadPeriod(p));
+			periods.forEach(p -> loadPeriod(p, false));
 			mandateRepository.save(mandate);
 		}
 		else {
@@ -87,6 +87,10 @@ public class ParliamentDatabaseLoader {
 	}
 
 	public void loadPeriod(LegislativePeriod period) {
+		loadPeriod(period, true);
+	}
+
+	protected void loadPeriod(LegislativePeriod period, boolean shouldLoadSessions) {
 		List<Session> sessions = period.getSessions();
 		Set<NationalCouncilMember> nationalCouncilMembers = period.getNationalCouncilMembers();
 
@@ -97,12 +101,14 @@ public class ParliamentDatabaseLoader {
 		if (periodInDb == null) {
 			periodInDb = periodRepository.save(period);
 		}
-		
-		for (Session s : sessions){
-			s.setPeriod(periodInDb);
-			loadSession(s);
+
+		if (shouldLoadSessions) {
+			for (Session s : sessions) {
+				s.setPeriod(periodInDb);
+				loadSession(s);
+			}
 		}
-		
+
 		// TODO check if nationalcouncilmembers are set on the other side
 		// (should be)
 
