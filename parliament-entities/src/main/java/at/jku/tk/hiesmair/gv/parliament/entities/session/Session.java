@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,14 +15,17 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.UniqueConstraint;
 
 import at.jku.tk.hiesmair.gv.parliament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.Discussion;
 import at.jku.tk.hiesmair.gv.parliament.entities.mandate.NationalCouncilMember;
 
 @Entity
+@Table(name = "session", uniqueConstraints = { @UniqueConstraint(columnNames = { "period", "session_nr" }) })
 public class Session implements Serializable {
 
 	private static final long serialVersionUID = -4429469608872326606L;
@@ -37,6 +41,7 @@ public class Session implements Serializable {
 	/** e.g. 72. Sitzung */
 	private String sessionTitle;
 
+	@Column(name = "session_nr")
 	private Integer sessionNr;
 
 	@Temporal(TemporalType.TIMESTAMP)

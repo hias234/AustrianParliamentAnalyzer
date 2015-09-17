@@ -42,7 +42,7 @@ public class App implements CommandLineRunner {
 	
 	@Override
 	public void run(String... args) throws Exception {
-		periodJob.start(Arrays.asList(25));
+		periodJob.start(Arrays.asList(23));
 		
 		System.out.println(politicianRep.countSessionPresencesOfPolitician("http://www.parlament.gv.at/WWER/PAD_36450/index.shtml"));
 		System.out.println(politicianRep.countSessionAbsencesOfPolitician("http://www.parlament.gv.at/WWER/PAD_36450/index.shtml"));
