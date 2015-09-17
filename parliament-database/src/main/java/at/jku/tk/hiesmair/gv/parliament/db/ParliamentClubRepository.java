@@ -6,7 +6,7 @@ import org.springframework.data.repository.query.Param;
 
 import at.jku.tk.hiesmair.gv.parliament.entities.club.ParliamentClub;
 
-public interface ParliamentClubRepository extends CrudRepository<ParliamentClub, Long> {
+public interface ParliamentClubRepository extends CrudRepository<ParliamentClub, String> {
 
 	@Query("SELECT COUNT(ncm) FROM Session s INNER JOIN s.presentNationalCouncilMembers ncm WHERE ncm.club.shortName = :clubShortName")
 	public long countSessionPresencesOfClub(@Param("clubShortName") String clubShortName);

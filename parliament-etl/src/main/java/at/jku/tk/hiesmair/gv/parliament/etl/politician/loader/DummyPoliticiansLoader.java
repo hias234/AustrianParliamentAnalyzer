@@ -2,8 +2,6 @@ package at.jku.tk.hiesmair.gv.parliament.etl.politician.loader;
 
 import java.util.List;
 
-import org.springframework.stereotype.Component;
-
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 
 /**
@@ -11,7 +9,7 @@ import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
  * @author Markus
  *
  */
-@Component
+//@Component
 public class DummyPoliticiansLoader implements PoliticiansLoader {
 
 	@Override

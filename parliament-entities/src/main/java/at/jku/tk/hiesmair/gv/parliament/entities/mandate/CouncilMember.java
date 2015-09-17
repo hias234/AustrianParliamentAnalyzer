@@ -2,9 +2,7 @@ package at.jku.tk.hiesmair.gv.parliament.entities.mandate;
 
 import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 
 import at.jku.tk.hiesmair.gv.parliament.entities.club.ParliamentClub;
@@ -15,7 +13,7 @@ public abstract class CouncilMember extends Mandate {
 
 	private static final long serialVersionUID = 1216373484049667243L;
 	
-	@ManyToOne(cascade = { CascadeType.ALL })
+	@ManyToOne
 	protected ParliamentClub club;
 
 	public CouncilMember() {

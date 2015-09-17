@@ -34,7 +34,7 @@ public class Politician implements Serializable {
 	@Temporal(TemporalType.DATE)
 	private Date birthDate;
 
-	@OneToMany(mappedBy = "id.politician")
+	@OneToMany(mappedBy = "politician")
 	private Set<Mandate> mandates = new HashSet<Mandate>();
 
 	@OneToMany(mappedBy = "id.politician", cascade = CascadeType.ALL)

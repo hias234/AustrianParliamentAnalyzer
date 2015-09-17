@@ -67,9 +67,15 @@ public class ParliamentDatabaseLoader {
 			politician.setMandates(mandates);
 		}
 	}
+	
+	public void loadPoliticianIfNotExists(Politician politician){
+		if (!politicianRepository.exists(politician.getId())){
+			loadPolitician(politician);
+		}
+	}
 
 	protected void loadMandate(Mandate mandate) {
-		loadPolitician(mandate.getPolitician());
+		loadPoliticianIfNotExists(mandate.getPolitician());
 
 		if (mandate instanceof CouncilMember) {
 			clubRepository.save(((CouncilMember) mandate).getClub());
@@ -151,8 +157,7 @@ public class ParliamentDatabaseLoader {
 				sessionChairMan.getPosition());
 
 		if (chairManInDb == null) {
-			Politician politician = sessionChairMan.getPolitician();
-			loadPolitician(politician);
+			loadPoliticianIfNotExists(sessionChairMan.getPolitician());
 
 			sessionChairManRepository.save(sessionChairMan);
 		}
@@ -178,7 +183,7 @@ public class ParliamentDatabaseLoader {
 		DiscussionSpeech speechInDb = speechRepository.findByDiscussionAndOrder(speech.getDiscussion(), speech.getOrder());
 		
 		if (speechInDb == null){
-			loadPolitician(speech.getPolitician());
+			loadPoliticianIfNotExists(speech.getPolitician());
 	
 			speechRepository.save(speech);
 		}
