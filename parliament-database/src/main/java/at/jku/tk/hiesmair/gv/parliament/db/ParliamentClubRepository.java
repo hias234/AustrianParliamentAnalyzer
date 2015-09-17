@@ -14,13 +14,13 @@ public interface ParliamentClubRepository extends CrudRepository<ParliamentClub,
 	@Query("SELECT COUNT(ncm) FROM Session s INNER JOIN s.presentNationalCouncilMembers ncm WHERE ncm.club.shortName = :clubShortName")
 	public long countSessionPresencesOfClub(@Param("clubShortName") String clubShortName);
 	
-	@Query("SELECT COUNT(ncm) FROM Session s INNER JOIN s.presentNationalCouncilMembers ncm WHERE ncm.club.shortName = :clubShortName AND s.id.period.period = :period")
+	@Query("SELECT COUNT(ncm) FROM Session s INNER JOIN s.presentNationalCouncilMembers ncm WHERE ncm.club.shortName = :clubShortName AND s.period.period = :period")
 	public long countSessionPresencesOfClubByPeriod(@Param("clubShortName") String clubShortName, @Param("period") Integer period);
 
 	@Query("SELECT COUNT(ncm) FROM Session s INNER JOIN s.absentNationalCouncilMembers ncm WHERE ncm.club.shortName = :clubShortName")
 	public long countSessionAbsencesOfClub(@Param("clubShortName") String clubShortName);
 
-	@Query("SELECT COUNT(ncm) FROM Session s INNER JOIN s.absentNationalCouncilMembers ncm WHERE ncm.club.shortName = :clubShortName AND s.id.period.period = :period")
+	@Query("SELECT COUNT(ncm) FROM Session s INNER JOIN s.absentNationalCouncilMembers ncm WHERE ncm.club.shortName = :clubShortName AND s.period.period = :period")
 	public long countSessionAbsencesOfClubByPeriod(@Param("clubShortName") String clubShortName, @Param("period") Integer period);
 	
 	

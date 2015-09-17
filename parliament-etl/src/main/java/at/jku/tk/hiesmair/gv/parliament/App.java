@@ -1,5 +1,7 @@
 package at.jku.tk.hiesmair.gv.parliament;
 
+import java.util.Arrays;
+
 import javax.inject.Inject;
 
 import org.springframework.boot.CommandLineRunner;
@@ -40,7 +42,7 @@ public class App implements CommandLineRunner {
 	
 	@Override
 	public void run(String... args) throws Exception {
-		//periodJob.start(Arrays.asList(20,21));
+		periodJob.start(Arrays.asList(25));
 		
 		System.out.println(politicianRep.countSessionPresencesOfPolitician("http://www.parlament.gv.at/WWER/PAD_36450/index.shtml"));
 		System.out.println(politicianRep.countSessionAbsencesOfPolitician("http://www.parlament.gv.at/WWER/PAD_36450/index.shtml"));

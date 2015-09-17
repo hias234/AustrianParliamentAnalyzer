@@ -6,17 +6,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Embeddable;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 
 import at.jku.tk.hiesmair.gv.parliament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.Discussion;
@@ -27,82 +26,16 @@ public class Session implements Serializable {
 
 	private static final long serialVersionUID = -4429469608872326606L;
 
-	@Embeddable
-	public static class SessionId implements Serializable {
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Integer id;
 
-		private static final long serialVersionUID = -6013583214876970566L;
+	@JoinColumn(name = "period")
+	@ManyToOne(optional = false)
+	private LegislativePeriod period;
 
-		@ManyToOne(optional = false)
-		private LegislativePeriod period;
-
-		/** e.g. 72. Sitzung */
-		private String sessionTitle;
-
-		public SessionId() {
-			super();
-		}
-
-		public SessionId(LegislativePeriod period, String sessionTitle) {
-			super();
-			this.period = period;
-			this.sessionTitle = sessionTitle;
-		}
-
-		public LegislativePeriod getPeriod() {
-			return period;
-		}
-
-		public void setPeriod(LegislativePeriod period) {
-			this.period = period;
-		}
-
-		public String getSessionTitle() {
-			return sessionTitle;
-		}
-
-		public void setSessionTitle(String sessionTitle) {
-			this.sessionTitle = sessionTitle;
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((period == null) ? 0 : period.hashCode());
-			result = prime * result + ((sessionTitle == null) ? 0 : sessionTitle.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			SessionId other = (SessionId) obj;
-			if (period == null) {
-				if (other.period != null)
-					return false;
-			}
-			else
-				if (!period.equals(other.period))
-					return false;
-			if (sessionTitle == null) {
-				if (other.sessionTitle != null)
-					return false;
-			}
-			else
-				if (!sessionTitle.equals(other.sessionTitle))
-					return false;
-			return true;
-		}
-
-	}
-
-	@EmbeddedId
-	private SessionId id;
+	/** e.g. 72. Sitzung */
+	private String sessionTitle;
 
 	private Integer sessionNr;
 
@@ -121,28 +54,26 @@ public class Session implements Serializable {
 	@OneToMany(mappedBy = "id.session")
 	private List<Discussion> discussions;
 
-	@OneToMany(mappedBy = "id.session")
+	@OneToMany(mappedBy = "session")
 	private List<SessionChairMan> chairMen;
 
 	public Session() {
-		super();
-		id = new SessionId();
 	}
 
-	public SessionId getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(SessionId id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	public LegislativePeriod getPeriod() {
-		return id.getPeriod();
+		return period;
 	}
 
 	public void setPeriod(LegislativePeriod period) {
-		this.id.setPeriod(period);
+		this.period = period;
 	}
 
 	public Integer getSessionNr() {
@@ -154,11 +85,11 @@ public class Session implements Serializable {
 	}
 
 	public String getSessionTitle() {
-		return id.getSessionTitle();
+		return sessionTitle;
 	}
 
 	public void setSessionTitle(String sessionTitle) {
-		id.setSessionTitle(sessionTitle);
+		this.sessionTitle = sessionTitle;
 	}
 
 	public Date getStartDate() {
@@ -210,17 +141,12 @@ public class Session implements Serializable {
 	}
 
 	@Override
-	public String toString() {
-		return "Session [period=" + getPeriod().getPeriod() + ", sessionNr=" + getSessionNr() + ", startDate="
-				+ startDate + ", endDate=" + endDate + ", absentPoliticians=" + absentNationalCouncilMembers
-				+ ", discussions=" + discussions + "]";
-	}
-
-	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((period == null) ? 0 : period.hashCode());
+		result = prime * result + ((sessionNr == null) ? 0 : sessionNr.hashCode());
+		result = prime * result + ((sessionTitle == null) ? 0 : sessionTitle.hashCode());
 		return result;
 	}
 
@@ -233,14 +159,32 @@ public class Session implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Session other = (Session) obj;
-		if (id == null) {
-			if (other.id != null)
+		if (period == null) {
+			if (other.period != null)
 				return false;
 		}
-		else
-			if (!id.equals(other.id))
+		else if (!period.equals(other.period))
+			return false;
+		if (sessionNr == null) {
+			if (other.sessionNr != null)
 				return false;
+		}
+		else if (!sessionNr.equals(other.sessionNr))
+			return false;
+		if (sessionTitle == null) {
+			if (other.sessionTitle != null)
+				return false;
+		}
+		else if (!sessionTitle.equals(other.sessionTitle))
+			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "Session [period=" + getPeriod().getPeriod() + ", sessionNr=" + getSessionNr() + ", startDate="
+				+ startDate + ", endDate=" + endDate + ", absentPoliticians=" + absentNationalCouncilMembers
+				+ ", discussions=" + discussions + "]";
 	}
 
 }

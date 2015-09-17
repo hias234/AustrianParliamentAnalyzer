@@ -1,10 +1,12 @@
 package at.jku.tk.hiesmair.gv.parliament.db;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
 
+import at.jku.tk.hiesmair.gv.parliament.entities.session.Session;
 import at.jku.tk.hiesmair.gv.parliament.entities.session.SessionChairMan;
-import at.jku.tk.hiesmair.gv.parliament.entities.session.SessionChairMan.SessionChairManId;
 
-public interface SessionChairManRepository extends JpaRepository<SessionChairMan, SessionChairManId> {
+public interface SessionChairManRepository extends CrudRepository<SessionChairMan, Integer> {
 
+	public SessionChairMan findBySessionAndPosition(Session session, Integer position);
+	
 }

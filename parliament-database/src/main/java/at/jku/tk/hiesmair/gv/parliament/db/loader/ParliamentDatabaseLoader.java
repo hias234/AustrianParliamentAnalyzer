@@ -117,7 +117,9 @@ public class ParliamentDatabaseLoader {
 	}
 
 	private void loadSession(Session session) {
-		if (sessionRepository.findOne(session.getId()) == null) {
+		Session sessionInDb = sessionRepository.findByPeriodAndSessionNr(session.getPeriod(), session.getSessionNr());
+		
+		if (sessionInDb == null) {
 			List<SessionChairMan> chairMen = session.getChairMen();
 			List<Discussion> discussions = session.getDiscussions();
 			Set<NationalCouncilMember> presentNationalCouncilMembers = session.getPresentNationalCouncilMembers();
@@ -145,7 +147,10 @@ public class ParliamentDatabaseLoader {
 	}
 
 	private void loadSessionChairMan(SessionChairMan sessionChairMan) {
-		if (sessionChairManRepository.findOne(sessionChairMan.getId()) == null) {
+		SessionChairMan chairManInDb = sessionChairManRepository.findBySessionAndPosition(sessionChairMan.getSession(),
+				sessionChairMan.getPosition());
+
+		if (chairManInDb == null) {
 			Politician politician = sessionChairMan.getPolitician();
 			loadPolitician(politician);
 

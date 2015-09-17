@@ -9,13 +9,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import javax.persistence.Transient;
 
 import org.apache.commons.lang.time.DateUtils;
 
@@ -31,7 +28,7 @@ public class LegislativePeriod implements Serializable {
 	@Id
 	private Integer period;
 
-	@OneToMany(mappedBy = "id.period")
+	@OneToMany(mappedBy = "period")
 	private List<Session> sessions = new ArrayList<Session>();
 
 	@ManyToMany(mappedBy = "periods")
