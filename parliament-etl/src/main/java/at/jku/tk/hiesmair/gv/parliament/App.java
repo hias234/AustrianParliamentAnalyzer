@@ -1,6 +1,6 @@
 package at.jku.tk.hiesmair.gv.parliament;
 
-import java.util.Arrays;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import at.jku.tk.hiesmair.gv.parliament.db.ParliamentClubRepository;
 import at.jku.tk.hiesmair.gv.parliament.db.PoliticianRepository;
+import at.jku.tk.hiesmair.gv.parliament.db.result.AbsenceResult;
 import at.jku.tk.hiesmair.gv.parliament.etl.period.LegislativePeriodEtlJob;
 import at.jku.tk.hiesmair.gv.parliament.etl.politician.PoliticiansEtlJob;
 
@@ -42,7 +43,7 @@ public class App implements CommandLineRunner {
 	
 	@Override
 	public void run(String... args) throws Exception {
-		periodJob.start(Arrays.asList(20,21,22,23,24,25));
+//		periodJob.start(Arrays.asList(20,21,22,23,24,25));
 //		politiciansJob.start();
 		
 		System.out.println(politicianRep.countSessionPresencesOfPolitician("http://www.parlament.gv.at/WWER/PAD_36450/index.shtml"));
@@ -59,5 +60,8 @@ public class App implements CommandLineRunner {
 		
 		System.out.println(politicianRep.countSpeechesOfPoliticianByPeriod("http://www.parlament.gv.at/WWER/PAD_36450/index.shtml", 25));
 		System.out.println(politicianRep.countSpeechesOfPolitician("http://www.parlament.gv.at/WWER/PAD_36450/index.shtml"));
+		
+		List<AbsenceResult> absences = politicianRep.countSessionAbsences();
+		absences.forEach(a -> System.out.println(a.getId() + " " + a.getAbsenceCount() + " " + a.getPresenceCount()));
 	}
 }

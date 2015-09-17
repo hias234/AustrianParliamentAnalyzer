@@ -1,9 +1,12 @@
 package at.jku.tk.hiesmair.gv.parliament.db;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import at.jku.tk.hiesmair.gv.parliament.db.result.AbsenceResult;
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 
 public interface PoliticianRepository extends CrudRepository<Politician, String> {
@@ -19,6 +22,9 @@ public interface PoliticianRepository extends CrudRepository<Politician, String>
 
 	@Query("SELECT COUNT(ncm) FROM Session s INNER JOIN s.absentNationalCouncilMembers ncm WHERE ncm.id.politician.id = :politicianId AND s.period.period = :period")
 	public long countSessionAbsencesOfPoliticianByPeriod(@Param("politicianId") String id, @Param("period") Integer period);
+	
+	@Query(nativeQuery = true)
+	public List<AbsenceResult> countSessionAbsences();
 	
 	@Query("SELECT COUNT(ds) FROM DiscussionSpeech ds WHERE ds.politician.id = :politicianId")
 	public long countSpeechesOfPolitician(@Param("politicianId") String id);
