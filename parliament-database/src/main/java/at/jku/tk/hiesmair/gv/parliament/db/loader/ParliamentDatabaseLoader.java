@@ -91,6 +91,10 @@ public class ParliamentDatabaseLoader {
 		if (nameInDb == null){
 			nameInDb = nameRepository.save(name);
 		}
+		else {
+			nameInDb.setName(name.getName());
+			nameInDb = nameRepository.save(nameInDb);
+		}
 		
 		return nameInDb;
 	}
