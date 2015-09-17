@@ -18,11 +18,7 @@ public class SessionTitleParser implements TitleParser {
 	
 	@Override
 	public String parse(String input) {
-		if(input != null) {
-			String[] arr = input.split(". ");
-			return period + "_" + arr[0];
-		}
-		return period + "_" + input;
+		return input;
 	}
 
 }

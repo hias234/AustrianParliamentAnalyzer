@@ -132,7 +132,7 @@ public class ParliamentDatabaseLoader {
 			if (mandate instanceof NationalCouncilMember) {
 				Set<LegislativePeriod> periods = ((NationalCouncilMember) mandate).getPeriods();
 
-				((NationalCouncilMember)mandateInDb).setPeriods(loadPeriods(periods, false));
+				((NationalCouncilMember) mandateInDb).setPeriods(loadPeriods(periods, false));
 			}
 			mandateInDb = mandateRepository.save(mandateInDb);
 		}
@@ -161,17 +161,17 @@ public class ParliamentDatabaseLoader {
 		return mandatesInDb;
 	}
 
-	public Set<LegislativePeriod> loadPeriods(Set<LegislativePeriod> periods, boolean shouldLoadSessions){
+	public Set<LegislativePeriod> loadPeriods(Set<LegislativePeriod> periods, boolean shouldLoadSessions) {
 		Set<LegislativePeriod> periodsInDb = new HashSet<LegislativePeriod>();
-		
-		for (LegislativePeriod period : periods){
+
+		for (LegislativePeriod period : periods) {
 			periodsInDb.add(loadPeriod(period, shouldLoadSessions));
 		}
-		
+
 		return periodsInDb;
 	}
-	
- 	public LegislativePeriod loadPeriod(LegislativePeriod period) {
+
+	public LegislativePeriod loadPeriod(LegislativePeriod period) {
 		return loadPeriod(period, true);
 	}
 
@@ -216,38 +216,44 @@ public class ParliamentDatabaseLoader {
 	private Session loadSession(Session session) {
 		Session sessionInDb = sessionRepository.findByPeriodAndSessionNr(session.getPeriod(), session.getSessionNr());
 
+		List<SessionChairMan> chairMen = session.getChairMen();
+		List<Discussion> discussions = session.getDiscussions();
+		Set<NationalCouncilMember> presentNationalCouncilMembers = session.getPresentNationalCouncilMembers();
+		Set<NationalCouncilMember> absentNationalCouncilMembers = session.getAbsentNationalCouncilMembers();
+
+		session.setChairMen(new ArrayList<SessionChairMan>());
+		session.setDiscussions(new ArrayList<Discussion>());
+		session.setPresentNationalCouncilMembers(new HashSet<NationalCouncilMember>());
+		session.setAbsentNationalCouncilMembers(new HashSet<NationalCouncilMember>());
+
 		if (sessionInDb == null) {
-			List<SessionChairMan> chairMen = session.getChairMen();
-			List<Discussion> discussions = session.getDiscussions();
-			Set<NationalCouncilMember> presentNationalCouncilMembers = session.getPresentNationalCouncilMembers();
-			Set<NationalCouncilMember> absentNationalCouncilMembers = session.getAbsentNationalCouncilMembers();
-
-			session.setChairMen(new ArrayList<SessionChairMan>());
-			session.setDiscussions(new ArrayList<Discussion>());
-			session.setPresentNationalCouncilMembers(new HashSet<NationalCouncilMember>());
-			session.setAbsentNationalCouncilMembers(new HashSet<NationalCouncilMember>());
-
 			sessionInDb = sessionRepository.save(session);
-			chairMen = loadSessionChairMen(chairMen);
-			discussions = loadDiscussions(discussions);
-			presentNationalCouncilMembers = loadNationalCouncilMembers(presentNationalCouncilMembers);
-			absentNationalCouncilMembers = loadNationalCouncilMembers(absentNationalCouncilMembers);
-
-			sessionInDb.setChairMen(chairMen);
-			sessionInDb.setDiscussions(discussions);
-			sessionInDb.setPresentNationalCouncilMembers(presentNationalCouncilMembers);
-			sessionInDb.setAbsentNationalCouncilMembers(absentNationalCouncilMembers);
-
-			// to save the councilmember-associations
-			sessionInDb = sessionRepository.save(sessionInDb);
 		}
+		
+		chairMen = loadSessionChairMen(chairMen, sessionInDb);
+		discussions = loadDiscussions(discussions, sessionInDb);
+		presentNationalCouncilMembers = loadNationalCouncilMembers(presentNationalCouncilMembers);
+		absentNationalCouncilMembers = loadNationalCouncilMembers(absentNationalCouncilMembers);
+
+		sessionInDb.setChairMen(chairMen);
+		sessionInDb.setDiscussions(discussions);
+		sessionInDb.setPresentNationalCouncilMembers(presentNationalCouncilMembers);
+		sessionInDb.setAbsentNationalCouncilMembers(absentNationalCouncilMembers);
+
+		sessionInDb.setStartDate(session.getStartDate());
+		sessionInDb.setEndDate(session.getEndDate());
+		sessionInDb.setSessionTitle(session.getSessionTitle());
+
+		// to save the councilmember-associations
+		sessionInDb = sessionRepository.save(sessionInDb);
 		return sessionInDb;
 	}
 
-	protected List<SessionChairMan> loadSessionChairMen(List<SessionChairMan> chairMen) {
+	protected List<SessionChairMan> loadSessionChairMen(List<SessionChairMan> chairMen, Session session) {
 		List<SessionChairMan> chairMenInDb = new ArrayList<SessionChairMan>();
 
 		for (SessionChairMan scm : chairMen) {
+			scm.setSession(session);
 			chairMenInDb.add(loadSessionChairMan(scm));
 		}
 
@@ -258,18 +264,23 @@ public class ParliamentDatabaseLoader {
 		SessionChairMan chairManInDb = sessionChairManRepository.findBySessionAndPosition(sessionChairMan.getSession(),
 				sessionChairMan.getPosition());
 
+		loadPoliticianIfNotExists(sessionChairMan.getPolitician());
+		
 		if (chairManInDb == null) {
-			loadPoliticianIfNotExists(sessionChairMan.getPolitician());
-
 			chairManInDb = sessionChairManRepository.save(sessionChairMan);
+		}
+		else {
+			chairManInDb.setPolitician(sessionChairMan.getPolitician());
+			chairManInDb = sessionChairManRepository.save(chairManInDb);
 		}
 		return chairManInDb;
 	}
 
-	protected List<Discussion> loadDiscussions(List<Discussion> discussions) {
+	protected List<Discussion> loadDiscussions(List<Discussion> discussions, Session session) {
 		List<Discussion> discussionsInDb = new ArrayList<Discussion>();
 
 		for (Discussion d : discussions) {
+			d.setSession(session);
 			discussionsInDb.add(loadDiscussion(d));
 		}
 
@@ -288,6 +299,13 @@ public class ParliamentDatabaseLoader {
 			discussionInDb = discussionRepository.save(discussion);
 			discussionInDb.setSpeeches(loadSpeeches(speeches));
 		}
+		else{
+			discussionInDb.setTopic(discussion.getTopic());
+			discussionInDb.setType(discussion.getType());
+
+			discussionInDb.setSpeeches(loadSpeeches(discussion.getSpeeches()));
+			discussionInDb = discussionRepository.save(discussionInDb);
+		}
 		return discussionInDb;
 	}
 
@@ -305,10 +323,17 @@ public class ParliamentDatabaseLoader {
 		DiscussionSpeech speechInDb = speechRepository.findByDiscussionAndOrder(speech.getDiscussion(),
 				speech.getOrder());
 
+		loadPoliticianIfNotExists(speech.getPolitician());
+		
 		if (speechInDb == null) {
-			loadPoliticianIfNotExists(speech.getPolitician());
-
 			speechInDb = speechRepository.save(speech);
+		}
+		else {
+			speechInDb.setText(speech.getText());
+			speechInDb.setStartTime(speech.getStartTime());
+			speechInDb.setEndTime(speech.getEndTime());
+			speechInDb.setType(speech.getType());
+			speechInDb = speechRepository.save(speechInDb);
 		}
 		return speechInDb;
 	}
