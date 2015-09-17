@@ -65,37 +65,37 @@ public class ParliamentDatabaseLoader {
 
 		politician.setMandates(new HashSet<Mandate>());
 		politician.setPreviousNames(new ArrayList<PoliticianName>());
-		
+
 		Politician politicianInDb = politicianRepository.save(politician);
-		
+
 		politicianInDb.setMandates(loadMandates(mandates, politicianInDb));
 		politicianInDb.setPreviousNames(loadPoliticianNames(prevNames));
 
 		return politicianInDb;
 	}
 
-	private List<PoliticianName> loadPoliticianNames(List<PoliticianName> names){
+	private List<PoliticianName> loadPoliticianNames(List<PoliticianName> names) {
 		List<PoliticianName> namesInDb = new ArrayList<PoliticianName>();
-		
-		for (PoliticianName name : names){
+
+		for (PoliticianName name : names) {
 			namesInDb.add(loadPoliticianName(name));
 		}
-		
+
 		return namesInDb;
 	}
-	
+
 	private PoliticianName loadPoliticianName(PoliticianName name) {
 		PoliticianName nameInDb = nameRepository.findByPoliticianAndValidUntil(name.getPolitician(),
 				name.getValidUntil());
-		
-		if (nameInDb == null){
+
+		if (nameInDb == null) {
 			nameInDb = nameRepository.save(name);
 		}
 		else {
 			nameInDb.setName(name.getName());
 			nameInDb = nameRepository.save(nameInDb);
 		}
-		
+
 		return nameInDb;
 	}
 
@@ -109,19 +109,32 @@ public class ParliamentDatabaseLoader {
 		Mandate mandateInDb = mandateRepository.findByPoliticianAndDescriptionAndValidFrom(mandate.getPolitician(),
 				mandate.getDescription(), mandate.getValidFrom());
 
+		if (mandate instanceof CouncilMember) {
+			clubRepository.save(((CouncilMember) mandate).getClub());
+		}
+
 		if (mandateInDb == null) {
 			loadPoliticianIfNotExists(mandate.getPolitician());
 
+			if (mandate instanceof NationalCouncilMember) {
+				Set<LegislativePeriod> periods = ((NationalCouncilMember) mandate).getPeriods();
+
+				((NationalCouncilMember) mandate).setPeriods(loadPeriods(periods, false));
+			}
+			mandateInDb = mandateRepository.save(mandate);
+		}
+		else {
+			mandateInDb.setValidUntil(mandate.getValidUntil());
 			if (mandate instanceof CouncilMember) {
-				clubRepository.save(((CouncilMember) mandate).getClub());
+				((CouncilMember) mandateInDb).setClub(((CouncilMember) mandate).getClub());
 			}
 
 			if (mandate instanceof NationalCouncilMember) {
 				Set<LegislativePeriod> periods = ((NationalCouncilMember) mandate).getPeriods();
 
-				periods.forEach(p -> loadPeriod(p, false));
+				((NationalCouncilMember)mandateInDb).setPeriods(loadPeriods(periods, false));
 			}
-			mandateInDb = mandateRepository.save(mandate);
+			mandateInDb = mandateRepository.save(mandateInDb);
 		}
 
 		return mandateInDb;
@@ -148,7 +161,17 @@ public class ParliamentDatabaseLoader {
 		return mandatesInDb;
 	}
 
-	public LegislativePeriod loadPeriod(LegislativePeriod period) {
+	public Set<LegislativePeriod> loadPeriods(Set<LegislativePeriod> periods, boolean shouldLoadSessions){
+		Set<LegislativePeriod> periodsInDb = new HashSet<LegislativePeriod>();
+		
+		for (LegislativePeriod period : periods){
+			periodsInDb.add(loadPeriod(period, shouldLoadSessions));
+		}
+		
+		return periodsInDb;
+	}
+	
+ 	public LegislativePeriod loadPeriod(LegislativePeriod period) {
 		return loadPeriod(period, true);
 	}
 
