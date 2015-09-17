@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -37,7 +36,7 @@ public class Politician implements Serializable {
 	@OneToMany(mappedBy = "politician")
 	private Set<Mandate> mandates = new HashSet<Mandate>();
 
-	@OneToMany(mappedBy = "id.politician", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "politician")
 	private List<PoliticianName> previousNames = new ArrayList<PoliticianName>();
 
 	public String getId() {

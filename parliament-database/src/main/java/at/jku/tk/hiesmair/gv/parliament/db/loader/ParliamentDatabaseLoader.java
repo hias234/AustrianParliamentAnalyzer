@@ -14,6 +14,7 @@ import at.jku.tk.hiesmair.gv.parliament.db.DiscussionSpeechRepository;
 import at.jku.tk.hiesmair.gv.parliament.db.LegislativePeriodRepository;
 import at.jku.tk.hiesmair.gv.parliament.db.MandateRepository;
 import at.jku.tk.hiesmair.gv.parliament.db.ParliamentClubRepository;
+import at.jku.tk.hiesmair.gv.parliament.db.PoliticianNameRepository;
 import at.jku.tk.hiesmair.gv.parliament.db.PoliticianRepository;
 import at.jku.tk.hiesmair.gv.parliament.db.SessionChairManRepository;
 import at.jku.tk.hiesmair.gv.parliament.db.SessionRepository;
@@ -24,6 +25,7 @@ import at.jku.tk.hiesmair.gv.parliament.entities.mandate.CouncilMember;
 import at.jku.tk.hiesmair.gv.parliament.entities.mandate.Mandate;
 import at.jku.tk.hiesmair.gv.parliament.entities.mandate.NationalCouncilMember;
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
+import at.jku.tk.hiesmair.gv.parliament.entities.politician.PoliticianName;
 import at.jku.tk.hiesmair.gv.parliament.entities.session.Session;
 import at.jku.tk.hiesmair.gv.parliament.entities.session.SessionChairMan;
 
@@ -32,6 +34,9 @@ public class ParliamentDatabaseLoader {
 
 	@Inject
 	private PoliticianRepository politicianRepository;
+
+	@Inject
+	private PoliticianNameRepository nameRepository;
 
 	@Inject
 	private MandateRepository mandateRepository;
@@ -54,18 +59,43 @@ public class ParliamentDatabaseLoader {
 	@Inject
 	private DiscussionSpeechRepository speechRepository;
 
-	public void loadPolitician(Politician politician) {
+	public Politician loadPolitician(Politician politician) {
 		Set<Mandate> mandates = politician.getMandates();
+		List<PoliticianName> prevNames = politician.getPreviousNames();
 
 		politician.setMandates(new HashSet<Mandate>());
-
+		politician.setPreviousNames(new ArrayList<PoliticianName>());
+		
 		Politician politicianInDb = politicianRepository.findOne(politician.getId());
-		if (politicianInDb == null) {
-			politicianRepository.save(politician);
+		
+		if (politicianInDb == null){
+			politicianInDb = politicianRepository.save(politician);
 		}
-		mandates.forEach(m -> loadMandate(m));
+		politicianInDb.setMandates(loadMandates(mandates, politicianInDb));
+		politicianInDb.setPreviousNames(loadPoliticianNames(prevNames));
 
-		politician.setMandates(mandates);
+		return politicianInDb;
+	}
+
+	private List<PoliticianName> loadPoliticianNames(List<PoliticianName> names){
+		List<PoliticianName> namesInDb = new ArrayList<PoliticianName>();
+		
+		for (PoliticianName name : names){
+			namesInDb.add(loadPoliticianName(name));
+		}
+		
+		return namesInDb;
+	}
+	
+	private PoliticianName loadPoliticianName(PoliticianName name) {
+		PoliticianName nameInDb = nameRepository.findByPoliticianAndValidUntil(name.getPolitician(),
+				name.getValidUntil());
+		
+		if (nameInDb == null){
+			nameInDb = nameRepository.save(name);
+		}
+		
+		return nameInDb;
 	}
 
 	public void loadPoliticianIfNotExists(Politician politician) {
@@ -78,32 +108,43 @@ public class ParliamentDatabaseLoader {
 		Mandate mandateInDb = mandateRepository.findByPoliticianAndDescriptionAndValidFrom(mandate.getPolitician(),
 				mandate.getDescription(), mandate.getValidFrom());
 
-		if (mandateInDb == null){
+		if (mandateInDb == null) {
 			loadPoliticianIfNotExists(mandate.getPolitician());
-	
+
 			if (mandate instanceof CouncilMember) {
 				clubRepository.save(((CouncilMember) mandate).getClub());
 			}
-	
+
 			if (mandate instanceof NationalCouncilMember) {
 				Set<LegislativePeriod> periods = ((NationalCouncilMember) mandate).getPeriods();
-	
+
 				periods.forEach(p -> loadPeriod(p, false));
 			}
 			mandateInDb = mandateRepository.save(mandate);
 		}
-		
+
 		return mandateInDb;
 	}
-	
-	public Set<NationalCouncilMember> loadNationalCouncilMembers(Set<NationalCouncilMember> ncms){
+
+	public Set<NationalCouncilMember> loadNationalCouncilMembers(Set<NationalCouncilMember> ncms) {
 		Set<NationalCouncilMember> ncmsInDb = new HashSet<NationalCouncilMember>();
-		
-		for (NationalCouncilMember ncm : ncms){
+
+		for (NationalCouncilMember ncm : ncms) {
 			ncmsInDb.add((NationalCouncilMember) loadMandate(ncm));
 		}
-		
+
 		return ncmsInDb;
+	}
+
+	public Set<Mandate> loadMandates(Set<Mandate> mandates, Politician politician) {
+		Set<Mandate> mandatesInDb = new HashSet<Mandate>();
+
+		for (Mandate mandate : mandates) {
+			mandate.setPolitician(politician);
+			mandatesInDb.add(loadMandate(mandate));
+		}
+
+		return mandatesInDb;
 	}
 
 	public LegislativePeriod loadPeriod(LegislativePeriod period) {
@@ -131,21 +172,23 @@ public class ParliamentDatabaseLoader {
 
 		periodInDb.setSessions(sessions);
 		periodInDb.setNationalCouncilMembers(nationalCouncilMembers);
-		
+		period.setSessions(sessions);
+		period.setNationalCouncilMembers(nationalCouncilMembers);
+
 		return periodInDb;
 	}
 
-	protected List<Session> loadSessions(List<Session> sessions, LegislativePeriod period){
+	protected List<Session> loadSessions(List<Session> sessions, LegislativePeriod period) {
 		List<Session> sessionsInDb = new ArrayList<Session>();
-		
-		for (Session s : sessions){
+
+		for (Session s : sessions) {
 			s.setPeriod(period);
 			sessionsInDb.add(loadSession(s));
 		}
-		
+
 		return sessionsInDb;
 	}
-	
+
 	private Session loadSession(Session session) {
 		Session sessionInDb = sessionRepository.findByPeriodAndSessionNr(session.getPeriod(), session.getSessionNr());
 
@@ -177,16 +220,16 @@ public class ParliamentDatabaseLoader {
 		return sessionInDb;
 	}
 
-	protected List<SessionChairMan> loadSessionChairMen(List<SessionChairMan> chairMen){
+	protected List<SessionChairMan> loadSessionChairMen(List<SessionChairMan> chairMen) {
 		List<SessionChairMan> chairMenInDb = new ArrayList<SessionChairMan>();
-		
-		for (SessionChairMan scm : chairMen){
+
+		for (SessionChairMan scm : chairMen) {
 			chairMenInDb.add(loadSessionChairMan(scm));
 		}
-		
+
 		return chairMenInDb;
 	}
-	
+
 	private SessionChairMan loadSessionChairMan(SessionChairMan sessionChairMan) {
 		SessionChairMan chairManInDb = sessionChairManRepository.findBySessionAndPosition(sessionChairMan.getSession(),
 				sessionChairMan.getPosition());
@@ -199,16 +242,16 @@ public class ParliamentDatabaseLoader {
 		return chairManInDb;
 	}
 
-	protected List<Discussion> loadDiscussions(List<Discussion> discussions){
+	protected List<Discussion> loadDiscussions(List<Discussion> discussions) {
 		List<Discussion> discussionsInDb = new ArrayList<Discussion>();
-		
-		for (Discussion d : discussions){
+
+		for (Discussion d : discussions) {
 			discussionsInDb.add(loadDiscussion(d));
 		}
-		
+
 		return discussionsInDb;
 	}
-	
+
 	private Discussion loadDiscussion(Discussion discussion) {
 		Discussion discussionInDb = discussionRepository.findBySessionAndOrder(discussion.getSession(),
 				discussion.getOrder());
@@ -224,16 +267,16 @@ public class ParliamentDatabaseLoader {
 		return discussionInDb;
 	}
 
-	protected List<DiscussionSpeech> loadSpeeches(List<DiscussionSpeech> speeches){
+	protected List<DiscussionSpeech> loadSpeeches(List<DiscussionSpeech> speeches) {
 		List<DiscussionSpeech> speechesInDb = new ArrayList<DiscussionSpeech>();
-		
-		for (DiscussionSpeech s : speeches){
+
+		for (DiscussionSpeech s : speeches) {
 			speechesInDb.add(loadDiscussionSpeech(s));
 		}
-		
+
 		return speechesInDb;
 	}
-	
+
 	private DiscussionSpeech loadDiscussionSpeech(DiscussionSpeech speech) {
 		DiscussionSpeech speechInDb = speechRepository.findByDiscussionAndOrder(speech.getDiscussion(),
 				speech.getOrder());

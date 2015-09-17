@@ -3,128 +3,65 @@ package at.jku.tk.hiesmair.gv.parliament.entities.politician;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Embeddable;
+import javax.persistence.Column;
 import javax.persistence.Embedded;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.UniqueConstraint;
 
 @Entity
+@Table(name = "politician_name", uniqueConstraints = { @UniqueConstraint(columnNames = { "politician_id", "valid_until" }) })
 public class PoliticianName implements Serializable {
 
 	private static final long serialVersionUID = -6403166498610007401L;
 
-	@Embeddable
-	public static class PoliticianNameId implements Serializable {
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Integer id;
 
-		private static final long serialVersionUID = -975500665494352271L;
+	@JoinColumn(name = "politician_id")
+	@ManyToOne(optional = false)
+	private Politician politician;
 
-		@ManyToOne(optional = false)
-		private Politician politician;
-
-		@Temporal(TemporalType.DATE)
-		private Date validUntil;
-
-		public PoliticianNameId() {
-			super();
-		}
-
-		public PoliticianNameId(Politician politician, Date validUntil) {
-			super();
-			this.politician = politician;
-			this.validUntil = validUntil;
-		}
-
-		public Politician getPolitician() {
-			return politician;
-		}
-
-		public void setPolitician(Politician politician) {
-			this.politician = politician;
-		}
-
-		public Date getValidUntil() {
-			return validUntil;
-		}
-
-		public void setValidUntil(Date validUntil) {
-			this.validUntil = validUntil;
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((politician == null) ? 0 : politician.hashCode());
-			result = prime * result + ((validUntil == null) ? 0 : validUntil.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			PoliticianNameId other = (PoliticianNameId) obj;
-			if (politician == null) {
-				if (other.politician != null)
-					return false;
-			}
-			else
-				if (!politician.equals(other.politician))
-					return false;
-			if (validUntil == null) {
-				if (other.validUntil != null)
-					return false;
-			}
-			else
-				if (!validUntil.equals(other.validUntil))
-					return false;
-			return true;
-		}
-
-	}
-
-	@EmbeddedId
-	private PoliticianNameId id;
+	@Column(name = "valid_until", nullable = false)
+	@Temporal(TemporalType.DATE)
+	private Date validUntil;
 
 	@Embedded
 	private Name name;
 
 	public PoliticianName() {
-		this.id = new PoliticianNameId();
 		this.name = new Name();
 	}
 
 	public PoliticianName(Politician politician, Name name, Date validUntil) {
 		super();
-		this.id = new PoliticianNameId(politician, validUntil);
+		this.politician = politician;
+		this.validUntil = validUntil;
 		this.name = name;
 	}
 
-	public PoliticianNameId getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(PoliticianNameId id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	public Politician getPolitician() {
-		return id.getPolitician();
+		return politician;
 	}
 
 	public void setPolitician(Politician politician) {
-		this.id.setPolitician(politician);
+		this.politician = politician;
 	}
 
 	public Name getName() {
@@ -172,18 +109,19 @@ public class PoliticianName implements Serializable {
 	}
 
 	public Date getValidUntil() {
-		return id.getValidUntil();
+		return validUntil;
 	}
 
 	public void setValidUntil(Date validUntil) {
-		this.id.setValidUntil(validUntil);
+		this.validUntil = validUntil;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((politician == null) ? 0 : politician.hashCode());
+		result = prime * result + ((validUntil == null) ? 0 : validUntil.hashCode());
 		return result;
 	}
 
@@ -196,13 +134,18 @@ public class PoliticianName implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		PoliticianName other = (PoliticianName) obj;
-		if (id == null) {
-			if (other.id != null)
+		if (politician == null) {
+			if (other.politician != null)
 				return false;
 		}
-		else
-			if (!id.equals(other.id))
+		else if (!politician.equals(other.politician))
+			return false;
+		if (validUntil == null) {
+			if (other.validUntil != null)
 				return false;
+		}
+		else if (!validUntil.equals(other.validUntil))
+			return false;
 		return true;
 	}
 
