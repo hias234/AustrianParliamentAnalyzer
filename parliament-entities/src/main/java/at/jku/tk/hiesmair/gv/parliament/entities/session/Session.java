@@ -56,7 +56,7 @@ public class Session implements Serializable {
 	@ManyToMany
 	private Set<NationalCouncilMember> absentNationalCouncilMembers = new HashSet<NationalCouncilMember>();
 
-	@OneToMany(mappedBy = "id.session")
+	@OneToMany(mappedBy = "session")
 	private List<Discussion> discussions;
 
 	@OneToMany(mappedBy = "session")

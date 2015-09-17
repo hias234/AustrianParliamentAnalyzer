@@ -118,7 +118,7 @@ public class ParliamentDatabaseLoader {
 
 	private void loadSession(Session session) {
 		Session sessionInDb = sessionRepository.findByPeriodAndSessionNr(session.getPeriod(), session.getSessionNr());
-		
+
 		if (sessionInDb == null) {
 			List<SessionChairMan> chairMen = session.getChairMen();
 			List<Discussion> discussions = session.getDiscussions();
@@ -159,7 +159,10 @@ public class ParliamentDatabaseLoader {
 	}
 
 	private void loadDiscussion(Discussion discussion) {
-		if (discussionRepository.findOne(discussion.getId()) == null) {
+		Discussion discussionInDb = discussionRepository.findBySessionAndOrder(discussion.getSession(),
+				discussion.getOrder());
+		
+		if (discussionInDb == null) {
 			List<DiscussionSpeech> speeches = discussion.getSpeeches();
 
 			discussion.setSpeeches(new ArrayList<DiscussionSpeech>());

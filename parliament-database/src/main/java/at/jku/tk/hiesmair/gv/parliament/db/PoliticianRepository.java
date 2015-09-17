@@ -23,6 +23,6 @@ public interface PoliticianRepository extends CrudRepository<Politician, String>
 	@Query("SELECT COUNT(ds) FROM DiscussionSpeech ds WHERE ds.politician.id = :politicianId")
 	public long countSpeechesOfPolitician(@Param("politicianId") String id);
 	
-	@Query("SELECT COUNT(ds) FROM DiscussionSpeech ds WHERE ds.politician.id = :politicianId AND ds.id.discussion.id.session.period.period = :period")
+	@Query("SELECT COUNT(ds) FROM DiscussionSpeech ds WHERE ds.politician.id = :politicianId AND ds.id.discussion.session.period.period = :period")
 	public long countSpeechesOfPoliticianByPeriod(@Param("politicianId") String id, @Param("period") Integer period);
 }

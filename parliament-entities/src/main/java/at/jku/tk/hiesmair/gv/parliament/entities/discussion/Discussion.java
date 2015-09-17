@@ -4,100 +4,36 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.DiscussionSpeech;
 import at.jku.tk.hiesmair.gv.parliament.entities.session.Session;
 
 @Entity
+@Table(name = "discussion", uniqueConstraints = { @UniqueConstraint(columnNames = { "session_id", "discussion_order" }) })
 public class Discussion implements Serializable {
 
 	private static final long serialVersionUID = -2386763775742073194L;
 
-	public static class DiscussionId implements Serializable {
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Integer id;
 
-		private static final long serialVersionUID = 1778296173315289747L;
+	@JoinColumn(name = "session_id")
+	@ManyToOne(optional = false)
+	private Session session;
 
-		@ManyToOne(optional = false)
-		private Session session;
-
-		@Column(name = "discussion_order")
-		private Integer order;
-
-		public DiscussionId() {
-			super();
-		}
-
-		public DiscussionId(Session session, Integer order) {
-			super();
-			this.session = session;
-			this.order = order;
-		}
-
-		public Integer getOrder() {
-			return order;
-		}
-
-		public void setOrder(Integer order) {
-			this.order = order;
-		}
-
-		public Session getSession() {
-			return session;
-		}
-
-		public void setSession(Session session) {
-			this.session = session;
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((order == null) ? 0 : order.hashCode());
-			result = prime * result + ((session == null) ? 0 : session.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			DiscussionId other = (DiscussionId) obj;
-			if (order == null) {
-				if (other.order != null)
-					return false;
-			}
-			else
-				if (!order.equals(other.order))
-					return false;
-			if (session == null) {
-				if (other.session != null)
-					return false;
-			}
-			else
-				if (!session.equals(other.session))
-					return false;
-			return true;
-		}
-
-	}
-
-	@EmbeddedId
-	private DiscussionId id;
+	@Column(name = "discussion_order", nullable = false)
+	private Integer order;
 
 	private String topic;
 	private String type;
@@ -106,38 +42,38 @@ public class Discussion implements Serializable {
 	private List<DiscussionSpeech> speeches = new ArrayList<DiscussionSpeech>();
 
 	public Discussion() {
-		id = new DiscussionId();
 	}
 
 	public Discussion(Session session, Integer order, String topic, String type, List<DiscussionSpeech> speeches) {
-		this.id = new DiscussionId(session, order);
+		this.session = session;
+		this.order = order;
 		this.topic = topic;
 		this.type = type;
 		this.speeches = speeches;
 	}
 
-	public DiscussionId getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(DiscussionId id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	public Integer getOrder() {
-		return id.getOrder();
+		return order;
 	}
 
 	public void setOrder(Integer order) {
-		this.id.setOrder(order);
+		this.order = order;
 	}
 
 	public Session getSession() {
-		return id.getSession();
+		return session;
 	}
 
 	public void setSession(Session session) {
-		this.id.setSession(session);
+		this.session = session;
 	}
 
 	public String getTopic() {
@@ -165,15 +101,11 @@ public class Discussion implements Serializable {
 	}
 
 	@Override
-	public String toString() {
-		return "Discussion [topic=" + topic + ", type=" + type + ", " + speeches.size() + " Speeches=" + speeches + "]";
-	}
-
-	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((order == null) ? 0 : order.hashCode());
+		result = prime * result + ((session == null) ? 0 : session.hashCode());
 		return result;
 	}
 
@@ -186,14 +118,24 @@ public class Discussion implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Discussion other = (Discussion) obj;
-		if (id == null) {
-			if (other.id != null)
+		if (order == null) {
+			if (other.order != null)
 				return false;
 		}
-		else
-			if (!id.equals(other.id))
+		else if (!order.equals(other.order))
+			return false;
+		if (session == null) {
+			if (other.session != null)
 				return false;
+		}
+		else if (!session.equals(other.session))
+			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "Discussion [topic=" + topic + ", type=" + type + ", " + speeches.size() + " Speeches=" + speeches + "]";
 	}
 
 }
