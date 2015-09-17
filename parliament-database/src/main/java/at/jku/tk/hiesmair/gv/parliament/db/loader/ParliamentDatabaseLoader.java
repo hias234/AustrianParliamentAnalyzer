@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import at.jku.tk.hiesmair.gv.parliament.db.DiscussionRepository;
 import at.jku.tk.hiesmair.gv.parliament.db.DiscussionSpeechRepository;
+import at.jku.tk.hiesmair.gv.parliament.db.DiscussionSpeechSentimentRepository;
 import at.jku.tk.hiesmair.gv.parliament.db.LegislativePeriodRepository;
 import at.jku.tk.hiesmair.gv.parliament.db.MandateRepository;
 import at.jku.tk.hiesmair.gv.parliament.db.ParliamentClubRepository;
@@ -21,6 +22,7 @@ import at.jku.tk.hiesmair.gv.parliament.db.SessionRepository;
 import at.jku.tk.hiesmair.gv.parliament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.Discussion;
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.DiscussionSpeech;
+import at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.sentiment.DiscussionSpeechSentiment;
 import at.jku.tk.hiesmair.gv.parliament.entities.mandate.CouncilMember;
 import at.jku.tk.hiesmair.gv.parliament.entities.mandate.Mandate;
 import at.jku.tk.hiesmair.gv.parliament.entities.mandate.NationalCouncilMember;
@@ -58,6 +60,9 @@ public class ParliamentDatabaseLoader {
 
 	@Inject
 	private DiscussionSpeechRepository speechRepository;
+	
+	@Inject
+	private DiscussionSpeechSentimentRepository sentimentRepository;
 
 	public Politician loadPolitician(Politician politician) {
 		Set<Mandate> mandates = politician.getMandates();
@@ -191,9 +196,6 @@ public class ParliamentDatabaseLoader {
 			sessions = loadSessions(sessions, periodInDb);
 		}
 
-		// TODO check if nationalcouncilmembers are set on the other side
-		// (should be)
-
 		periodInDb.setSessions(sessions);
 		periodInDb.setNationalCouncilMembers(nationalCouncilMembers);
 		period.setSessions(sessions);
@@ -297,22 +299,23 @@ public class ParliamentDatabaseLoader {
 			discussion.setSpeeches(new ArrayList<DiscussionSpeech>());
 
 			discussionInDb = discussionRepository.save(discussion);
-			discussionInDb.setSpeeches(loadSpeeches(speeches));
+			discussionInDb.setSpeeches(loadSpeeches(speeches, discussionInDb));
 		}
 		else{
 			discussionInDb.setTopic(discussion.getTopic());
 			discussionInDb.setType(discussion.getType());
 
-			discussionInDb.setSpeeches(loadSpeeches(discussion.getSpeeches()));
+			discussionInDb.setSpeeches(loadSpeeches(discussion.getSpeeches(), discussionInDb));
 			discussionInDb = discussionRepository.save(discussionInDb);
 		}
 		return discussionInDb;
 	}
 
-	protected List<DiscussionSpeech> loadSpeeches(List<DiscussionSpeech> speeches) {
+	protected List<DiscussionSpeech> loadSpeeches(List<DiscussionSpeech> speeches, Discussion d) {
 		List<DiscussionSpeech> speechesInDb = new ArrayList<DiscussionSpeech>();
 
 		for (DiscussionSpeech s : speeches) {
+			s.setDiscussion(d);
 			speechesInDb.add(loadDiscussionSpeech(s));
 		}
 
@@ -326,16 +329,39 @@ public class ParliamentDatabaseLoader {
 		loadPoliticianIfNotExists(speech.getPolitician());
 		
 		if (speechInDb == null) {
+			List<DiscussionSpeechSentiment> sentiments = speech.getSentiments();
+			speech.setSentiments(new ArrayList<DiscussionSpeechSentiment>());
 			speechInDb = speechRepository.save(speech);
+			speechInDb.setSentiments(loadSentiments(sentiments, speechInDb));
 		}
 		else {
 			speechInDb.setText(speech.getText());
 			speechInDb.setStartTime(speech.getStartTime());
 			speechInDb.setEndTime(speech.getEndTime());
 			speechInDb.setType(speech.getType());
+			for (DiscussionSpeechSentiment sentiment : speechInDb.getSentiments()){
+				sentimentRepository.delete(sentiment);
+			}
+			speechInDb.setSentiments(loadSentiments(speech.getSentiments(), speechInDb));
 			speechInDb = speechRepository.save(speechInDb);
 		}
 		return speechInDb;
 	}
 
+	private List<DiscussionSpeechSentiment> loadSentiments(List<DiscussionSpeechSentiment> sentiments, DiscussionSpeech speech){
+		List<DiscussionSpeechSentiment> sentimentsInDb = new ArrayList<DiscussionSpeechSentiment>();
+		
+		if (sentiments != null){
+			for (DiscussionSpeechSentiment s : sentiments){
+				s.setSpeech(speech);
+				sentimentsInDb.add(loadSentiment(s));
+			}
+		}
+		
+		return sentimentsInDb;
+	}
+
+	private DiscussionSpeechSentiment loadSentiment(DiscussionSpeechSentiment s) {
+		return sentimentRepository.save(s);
+	}
 }

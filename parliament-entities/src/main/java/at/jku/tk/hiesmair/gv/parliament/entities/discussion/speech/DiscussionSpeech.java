@@ -1,14 +1,15 @@
 package at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -45,8 +46,8 @@ public class DiscussionSpeech implements Serializable {
 	@ManyToOne(optional = false)
 	private Politician politician;
 
-	@OneToMany(mappedBy = "speech", cascade = CascadeType.ALL)
-	private List<DiscussionSpeechSentiment> sentiments;
+	@OneToMany(mappedBy = "speech", fetch = FetchType.EAGER)
+	private List<DiscussionSpeechSentiment> sentiments = new ArrayList<DiscussionSpeechSentiment>();
 
 	@Temporal(TemporalType.TIME)
 	private Date startTime;

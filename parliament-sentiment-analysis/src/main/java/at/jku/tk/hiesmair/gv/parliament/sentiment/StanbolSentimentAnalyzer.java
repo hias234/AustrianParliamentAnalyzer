@@ -17,7 +17,6 @@ import org.apache.stanbol.client.enhancer.model.TextAnnotation;
 import org.apache.stanbol.client.exception.StanbolClientException;
 import org.apache.stanbol.client.services.exception.StanbolServiceException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.sentiment.Sentiment;
 
@@ -27,7 +26,7 @@ import at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.sentiment.Sen
  * @author Markus
  *
  */
-@Component
+//@Component
 public class StanbolSentimentAnalyzer implements SentimentAnalyzer {
 
 	private static final Logger logger = Logger.getLogger(StanbolSentimentAnalyzer.class.getSimpleName());
