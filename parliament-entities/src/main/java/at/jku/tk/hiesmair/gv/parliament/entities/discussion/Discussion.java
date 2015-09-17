@@ -38,7 +38,7 @@ public class Discussion implements Serializable {
 	private String topic;
 	private String type;
 
-	@OneToMany(mappedBy = "id.discussion")
+	@OneToMany(mappedBy = "discussion")
 	private List<DiscussionSpeech> speeches = new ArrayList<DiscussionSpeech>();
 
 	public Discussion() {

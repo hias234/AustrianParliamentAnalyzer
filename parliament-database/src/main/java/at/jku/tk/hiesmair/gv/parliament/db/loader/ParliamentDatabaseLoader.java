@@ -175,9 +175,13 @@ public class ParliamentDatabaseLoader {
 	}
 
 	private void loadDiscussionSpeech(DiscussionSpeech speech) {
-		loadPolitician(speech.getPolitician());
-
-		speechRepository.save(speech);
+		DiscussionSpeech speechInDb = speechRepository.findByDiscussionAndOrder(speech.getDiscussion(), speech.getOrder());
+		
+		if (speechInDb == null){
+			loadPolitician(speech.getPolitician());
+	
+			speechRepository.save(speech);
+		}
 	}
 
 }

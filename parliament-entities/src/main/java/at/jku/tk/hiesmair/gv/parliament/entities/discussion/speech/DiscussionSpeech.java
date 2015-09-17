@@ -6,99 +6,41 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.UniqueConstraint;
 
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.Discussion;
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.sentiment.DiscussionSpeechSentiment;
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 
 @Entity
+@Table(name = "discussion_speech", uniqueConstraints = { @UniqueConstraint(columnNames = { "discussion_id",
+		"speech_order" }) })
 public class DiscussionSpeech implements Serializable {
 
 	private static final long serialVersionUID = -3611117803439285095L;
 
-	public static class DiscussionSpeechId implements Serializable {
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Integer id;
 
-		private static final long serialVersionUID = -3881934045732709180L;
+	@Column(name = "speech_order", nullable = false)
+	private Integer order;
 
-		@Column(name = "speech_order")
-		private Integer order;
-
-		@ManyToOne(optional = false)
-		private Discussion discussion;
-
-		public DiscussionSpeechId() {
-			super();
-		}
-
-		public DiscussionSpeechId(Integer order, Discussion discussion) {
-			super();
-			this.order = order;
-			this.discussion = discussion;
-		}
-
-		public Integer getOrder() {
-			return order;
-		}
-
-		public void setOrder(Integer order) {
-			this.order = order;
-		}
-
-		public Discussion getDiscussion() {
-			return discussion;
-		}
-
-		public void setDiscussion(Discussion discussion) {
-			this.discussion = discussion;
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((discussion == null) ? 0 : discussion.hashCode());
-			result = prime * result + ((order == null) ? 0 : order.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			DiscussionSpeechId other = (DiscussionSpeechId) obj;
-			if (discussion == null) {
-				if (other.discussion != null)
-					return false;
-			}
-			else
-				if (!discussion.equals(other.discussion))
-					return false;
-			if (order == null) {
-				if (other.order != null)
-					return false;
-			}
-			else
-				if (!order.equals(other.order))
-					return false;
-			return true;
-		}
-
-	}
-
-	@EmbeddedId
-	private DiscussionSpeechId id;
+	@JoinColumn(name = "discussion_id")
+	@ManyToOne(optional = false)
+	private Discussion discussion;
 
 	@ManyToOne(optional = false)
 	private Politician politician;
@@ -119,12 +61,12 @@ public class DiscussionSpeech implements Serializable {
 	private String text;
 
 	public DiscussionSpeech() {
-		id = new DiscussionSpeechId();
 	}
 
 	public DiscussionSpeech(Discussion discussion, Integer order, Politician politician,
 			List<DiscussionSpeechSentiment> sentiments, Date startTime, Date endTime, SpeechType type, String text) {
-		this.id = new DiscussionSpeechId(order, discussion);
+		this.discussion = discussion;
+		this.order = order;
 		this.politician = politician;
 		this.sentiments = sentiments;
 		this.startTime = startTime;
@@ -133,28 +75,28 @@ public class DiscussionSpeech implements Serializable {
 		this.text = text;
 	}
 
-	public DiscussionSpeechId getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(DiscussionSpeechId id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
 	public Integer getOrder() {
-		return id.getOrder();
+		return order;
 	}
 
 	public void setOrder(Integer order) {
-		this.id.setOrder(order);
+		this.order = order;
 	}
 
 	public Discussion getDiscussion() {
-		return id.getDiscussion();
+		return discussion;
 	}
 
 	public void setDiscussion(Discussion discussion) {
-		this.id.setDiscussion(discussion);
+		this.discussion = discussion;
 	}
 
 	public Politician getPolitician() {
@@ -206,18 +148,11 @@ public class DiscussionSpeech implements Serializable {
 	}
 
 	@Override
-	public String toString() {
-		return "DiscussionSpeech " + (text == null) + " [discussion="
-				+ (getDiscussion() == null ? "null" : getDiscussion().getTopic()) + ", politician="
-				+ (politician == null ? "null" : politician.getSurName()) + ", startTime=" + startTime + ", endTime="
-				+ endTime + ", type=" + type + ", text=" + text + "]";
-	}
-
-	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((discussion == null) ? 0 : discussion.hashCode());
+		result = prime * result + ((order == null) ? 0 : order.hashCode());
 		return result;
 	}
 
@@ -230,14 +165,27 @@ public class DiscussionSpeech implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		DiscussionSpeech other = (DiscussionSpeech) obj;
-		if (id == null) {
-			if (other.id != null)
+		if (discussion == null) {
+			if (other.discussion != null)
 				return false;
 		}
-		else
-			if (!id.equals(other.id))
+		else if (!discussion.equals(other.discussion))
+			return false;
+		if (order == null) {
+			if (other.order != null)
 				return false;
+		}
+		else if (!order.equals(other.order))
+			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "DiscussionSpeech " + (text == null) + " [discussion="
+				+ (getDiscussion() == null ? "null" : getDiscussion().getTopic()) + ", politician="
+				+ (politician == null ? "null" : politician.getSurName()) + ", startTime=" + startTime + ", endTime="
+				+ endTime + ", type=" + type + ", text=" + text + "]";
 	}
 
 }
