@@ -66,11 +66,8 @@ public class ParliamentDatabaseLoader {
 		politician.setMandates(new HashSet<Mandate>());
 		politician.setPreviousNames(new ArrayList<PoliticianName>());
 		
-		Politician politicianInDb = politicianRepository.findOne(politician.getId());
+		Politician politicianInDb = politicianRepository.save(politician);
 		
-		if (politicianInDb == null){
-			politicianInDb = politicianRepository.save(politician);
-		}
 		politicianInDb.setMandates(loadMandates(mandates, politicianInDb));
 		politicianInDb.setPreviousNames(loadPoliticianNames(prevNames));
 
