@@ -13,6 +13,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.time.DateUtils;
@@ -24,6 +25,7 @@ import at.jku.tk.hiesmair.gv.parliament.util.ParliamentDateUtils;
 
 @Entity
 @Table(name = DBConstants.TAB_NAME_LEGISLATIVE_PERIOD)
+@SecondaryTable(name = DBConstants.TAB_NAME_LEGISLATIVE_PERIOD)
 public class LegislativePeriod implements Serializable {
 
 	private static final long serialVersionUID = -1229415676697571846L;

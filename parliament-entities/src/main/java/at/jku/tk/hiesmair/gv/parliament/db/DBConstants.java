@@ -13,4 +13,7 @@ public class DBConstants {
 	public static final String TAB_NAME_SPEECH_SENTIMENT = "discussion_speech_sentiment";
 	public static final String TAB_NAME_PARLIAMENT_CLUB = "parliament_club";
 	
+	public static final String JOIN_TAB_NAME_NCM_PERIOD = "ncm_period";
+	public static final String JOIN_TAB_NAME_SESSION_ABSENT_NCM = "session_absent_ncm";
+	public static final String JOIN_TAB_NAME_SESSION_PRESENT_NCM = "session_present_ncm";
 }

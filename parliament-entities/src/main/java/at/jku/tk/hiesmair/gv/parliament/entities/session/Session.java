@@ -12,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -26,7 +27,8 @@ import at.jku.tk.hiesmair.gv.parliament.entities.discussion.Discussion;
 import at.jku.tk.hiesmair.gv.parliament.entities.mandate.NationalCouncilMember;
 
 @Entity
-@Table(name = DBConstants.TAB_NAME_SESSION, uniqueConstraints = { @UniqueConstraint(columnNames = { "period", "session_nr" }) })
+@Table(name = DBConstants.TAB_NAME_SESSION, uniqueConstraints = { @UniqueConstraint(columnNames = { "period",
+		"session_nr" }) })
 public class Session implements Serializable {
 
 	private static final long serialVersionUID = -4429469608872326606L;
@@ -51,9 +53,11 @@ public class Session implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date endDate;
 
+	@JoinTable(name = DBConstants.JOIN_TAB_NAME_SESSION_PRESENT_NCM, inverseJoinColumns = { @JoinColumn(table = DBConstants.TAB_NAME_MANDATE, name = "present_ncm_id", referencedColumnName = "id") })
 	@ManyToMany
 	private Set<NationalCouncilMember> presentNationalCouncilMembers = new HashSet<NationalCouncilMember>();
 
+	@JoinTable(name = DBConstants.JOIN_TAB_NAME_SESSION_ABSENT_NCM, inverseJoinColumns = { @JoinColumn(table = DBConstants.TAB_NAME_MANDATE, name = "absent_ncm_id", referencedColumnName = "id") })
 	@ManyToMany
 	private Set<NationalCouncilMember> absentNationalCouncilMembers = new HashSet<NationalCouncilMember>();
 
