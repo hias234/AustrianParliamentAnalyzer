@@ -22,6 +22,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import at.jku.tk.hiesmair.gv.parliament.db.DBConstants;
+import at.jku.tk.hiesmair.gv.parliament.db.NativeQueries;
 import at.jku.tk.hiesmair.gv.parliament.db.result.AbsenceResult;
 import at.jku.tk.hiesmair.gv.parliament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parliament.entities.mandate.Mandate;
@@ -29,26 +30,10 @@ import at.jku.tk.hiesmair.gv.parliament.entities.mandate.NationalCouncilMember;
 
 @Entity
 @Table(name = DBConstants.TAB_NAME_POLITICIAN)
-@SqlResultSetMapping(name = "absenceResultMapper",
-		classes = {
-			@ConstructorResult(
-					targetClass = AbsenceResult.class,
-					columns = {
-						@ColumnResult(name = "id", type = String.class),
-						@ColumnResult(name = "absence_count", type = Long.class),
-						@ColumnResult(name = "presence_count", type = Long.class)
-					}
-			)
-})
-@NamedNativeQueries({
-	@NamedNativeQuery(name = "Politician.countSessionAbsences", resultSetMapping="absenceResultMapper",
-			query = "SELECT p.id as id, (select count(*) from session_absent_national_council_members acm inner join mandate m on (m.id = acm.absent_national_council_members_id) where m.politician_id = p.id) as absence_count, " +
-			"(select count(*) from session_present_national_council_members pcm inner join mandate m on (m.id = pcm.present_national_council_members_id) where m.politician_id = p.id) as presence_count " +
-			"from politician p " +
-			"where (select count(*) from session_present_national_council_members pcm inner join mandate m on (m.id = pcm.present_national_council_members_id) where m.politician_id = p.id) > 0 " +
-			"order by cast((select count(*) from session_absent_national_council_members acm inner join mandate m on (m.id = acm.absent_national_council_members_id) where m.politician_id = p.id) as double precision) / " +
-			"((select count(*) from session_present_national_council_members pcm inner join mandate m on (m.id = pcm.present_national_council_members_id) where m.politician_id = p.id)) desc")
-})
+@SqlResultSetMapping(name = "absenceResultMapper", classes = { @ConstructorResult(targetClass = AbsenceResult.class, columns = {
+		@ColumnResult(name = "id", type = String.class), @ColumnResult(name = "absence_count", type = Long.class),
+		@ColumnResult(name = "presence_count", type = Long.class) }) })
+@NamedNativeQueries({ @NamedNativeQuery(name = "Politician.countSessionAbsences", resultSetMapping = "absenceResultMapper", query = NativeQueries.COUNT_SESSION_ABSENCES_QUERY) })
 public class Politician implements Serializable {
 
 	private static final long serialVersionUID = -384408204868853820L;
@@ -161,8 +146,8 @@ public class Politician implements Serializable {
 	public boolean isInNationalCouncilAt(Date date) {
 		return getNationalCouncilMemberships().stream().anyMatch(ncm -> ncm.isValidAt(date));
 	}
-	
-	public Set<Mandate> getMandatesAt(Date date){
+
+	public Set<Mandate> getMandatesAt(Date date) {
 		return mandates.stream().filter(m -> m.isValidAt(date)).collect(Collectors.toSet());
 	}
 
