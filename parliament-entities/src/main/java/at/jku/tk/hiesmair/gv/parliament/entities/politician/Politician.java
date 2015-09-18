@@ -17,15 +17,18 @@ import javax.persistence.NamedNativeQueries;
 import javax.persistence.NamedNativeQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.SqlResultSetMapping;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import at.jku.tk.hiesmair.gv.parliament.db.DBConstants;
 import at.jku.tk.hiesmair.gv.parliament.db.result.AbsenceResult;
 import at.jku.tk.hiesmair.gv.parliament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parliament.entities.mandate.Mandate;
 import at.jku.tk.hiesmair.gv.parliament.entities.mandate.NationalCouncilMember;
 
 @Entity
+@Table(name = DBConstants.TAB_NAME_POLITICIAN)
 @SqlResultSetMapping(name = "absenceResultMapper",
 		classes = {
 			@ConstructorResult(
@@ -44,8 +47,7 @@ import at.jku.tk.hiesmair.gv.parliament.entities.mandate.NationalCouncilMember;
 			"from politician p " +
 			"where (select count(*) from session_present_national_council_members pcm inner join mandate m on (m.id = pcm.present_national_council_members_id) where m.politician_id = p.id) > 0 " +
 			"order by cast((select count(*) from session_absent_national_council_members acm inner join mandate m on (m.id = acm.absent_national_council_members_id) where m.politician_id = p.id) as double precision) / " +
-			"((select count(*) from session_present_national_council_members pcm inner join mandate m on (m.id = pcm.present_national_council_members_id) where m.politician_id = p.id)) desc " +
-			" limit 100")
+			"((select count(*) from session_present_national_council_members pcm inner join mandate m on (m.id = pcm.present_national_council_members_id) where m.politician_id = p.id)) desc")
 })
 public class Politician implements Serializable {
 

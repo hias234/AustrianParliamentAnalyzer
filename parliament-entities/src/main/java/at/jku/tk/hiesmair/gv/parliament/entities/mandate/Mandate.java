@@ -22,11 +22,12 @@ import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.lang.time.DateUtils;
 
+import at.jku.tk.hiesmair.gv.parliament.db.DBConstants;
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 import at.jku.tk.hiesmair.gv.parliament.util.ParliamentDateUtils;
 
 @Entity
-@Table(name = "mandate", uniqueConstraints = { @UniqueConstraint(columnNames = { "politician_id", "description",
+@Table(name = DBConstants.TAB_NAME_MANDATE, uniqueConstraints = { @UniqueConstraint(columnNames = { "politician_id", "description",
 		"valid_from" }) })
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "mandate_type")

@@ -15,11 +15,13 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import at.jku.tk.hiesmair.gv.parliament.db.DBConstants;
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.DiscussionSpeech;
 import at.jku.tk.hiesmair.gv.parliament.entities.session.Session;
 
 @Entity
-@Table(name = "discussion", uniqueConstraints = { @UniqueConstraint(columnNames = { "session_id", "discussion_order" }) })
+@Table(name = DBConstants.TAB_NAME_DISCUSSION, uniqueConstraints = { @UniqueConstraint(columnNames = { "session_id",
+		"discussion_order" }) })
 public class Discussion implements Serializable {
 
 	private static final long serialVersionUID = -2386763775742073194L;

@@ -16,8 +16,11 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 
+import at.jku.tk.hiesmair.gv.parliament.db.DBConstants;
+
 @Entity
-@Table(name = "politician_name", uniqueConstraints = { @UniqueConstraint(columnNames = { "politician_id", "valid_until" }) })
+@Table(name = DBConstants.TAB_NAME_POLITICIAN_NAME, uniqueConstraints = { @UniqueConstraint(columnNames = {
+		"politician_id", "valid_until" }) })
 public class PoliticianName implements Serializable {
 
 	private static final long serialVersionUID = -6403166498610007401L;

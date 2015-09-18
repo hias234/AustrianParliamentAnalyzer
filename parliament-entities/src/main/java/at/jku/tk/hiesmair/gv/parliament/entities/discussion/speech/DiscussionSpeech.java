@@ -21,12 +21,13 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 
+import at.jku.tk.hiesmair.gv.parliament.db.DBConstants;
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.Discussion;
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.sentiment.DiscussionSpeechSentiment;
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 
 @Entity
-@Table(name = "discussion_speech", uniqueConstraints = { @UniqueConstraint(columnNames = { "discussion_id",
+@Table(name = DBConstants.TAB_NAME_DISCUSSION_SPEECH, uniqueConstraints = { @UniqueConstraint(columnNames = { "discussion_id",
 		"speech_order" }) })
 public class DiscussionSpeech implements Serializable {
 

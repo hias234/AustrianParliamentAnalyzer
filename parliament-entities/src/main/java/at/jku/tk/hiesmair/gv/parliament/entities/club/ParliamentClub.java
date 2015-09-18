@@ -4,8 +4,12 @@ import java.io.Serializable;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
+
+import at.jku.tk.hiesmair.gv.parliament.db.DBConstants;
 
 @Entity
+@Table(name = DBConstants.TAB_NAME_PARLIAMENT_CLUB)
 public class ParliamentClub implements Serializable {
 
 	private static final long serialVersionUID = 5594894950661535139L;

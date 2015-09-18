@@ -20,12 +20,13 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 
+import at.jku.tk.hiesmair.gv.parliament.db.DBConstants;
 import at.jku.tk.hiesmair.gv.parliament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.Discussion;
 import at.jku.tk.hiesmair.gv.parliament.entities.mandate.NationalCouncilMember;
 
 @Entity
-@Table(name = "session", uniqueConstraints = { @UniqueConstraint(columnNames = { "period", "session_nr" }) })
+@Table(name = DBConstants.TAB_NAME_SESSION, uniqueConstraints = { @UniqueConstraint(columnNames = { "period", "session_nr" }) })
 public class Session implements Serializable {
 
 	private static final long serialVersionUID = -4429469608872326606L;

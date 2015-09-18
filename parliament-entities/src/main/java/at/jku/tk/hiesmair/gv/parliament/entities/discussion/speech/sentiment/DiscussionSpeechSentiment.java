@@ -8,10 +8,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
+import at.jku.tk.hiesmair.gv.parliament.db.DBConstants;
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.DiscussionSpeech;
 
 @Entity
+@Table(name = DBConstants.TAB_NAME_SPEECH_SENTIMENT)
 public class DiscussionSpeechSentiment implements Serializable {
 
 	private static final long serialVersionUID = 6011897124215436250L;

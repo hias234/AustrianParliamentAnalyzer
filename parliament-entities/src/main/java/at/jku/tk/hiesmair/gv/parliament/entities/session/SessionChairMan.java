@@ -11,10 +11,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import at.jku.tk.hiesmair.gv.parliament.db.DBConstants;
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 
 @Entity
-@Table(name = "session_chair_man", uniqueConstraints = { @UniqueConstraint(columnNames = { "session_id", "position" }) })
+@Table(name = DBConstants.TAB_NAME_SESSION_CHAIR_MAN, uniqueConstraints = { @UniqueConstraint(columnNames = { "session_id", "position" }) })
 public class SessionChairMan implements Serializable {
 
 	private static final long serialVersionUID = -2773729654909781365L;
