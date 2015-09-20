@@ -1,5 +1,7 @@
 package at.jku.tk.hiesmair.gv.parliament.db.result;
 
+
+
 public class AbsenceResult {
 
 	private String id;

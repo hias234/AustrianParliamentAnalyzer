@@ -21,7 +21,7 @@ public class NativeQueries {
 	public final static String COUNT_SESSION_ABSENCES_PER_CLUB_QUERY = "SELECT c.short_name as id, ("
 			+ COUNT_SESSION_ABSENCES_OF_POLITICIAN + " where m.club_shortname = c.short_name) as absence_count, ("
 			+ COUNT_SESSION_PRESENCES_OF_POLITICIAN + " where m.club_shortname = c.short_name) as presence_count " + "from "
-			+ DBConstants.TAB_NAME_POLITICIAN + " p where (" + COUNT_SESSION_PRESENCES_OF_POLITICIAN
+			+ DBConstants.TAB_NAME_PARLIAMENT_CLUB + " c where (" + COUNT_SESSION_PRESENCES_OF_POLITICIAN
 			+ " where m.club_shortname = c.short_name) > 0 order by cast((" + COUNT_SESSION_ABSENCES_OF_POLITICIAN
 			+ " where m.club_shortname = c.short_name) as double precision) / (" + COUNT_SESSION_PRESENCES_OF_POLITICIAN
 			+ " where m.club_shortname = c.short_name) desc";

@@ -4,19 +4,23 @@ import java.io.Serializable;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.Table;
 
 import at.jku.tk.hiesmair.gv.parliament.db.DBConstants;
+import at.jku.tk.hiesmair.gv.parliament.db.NativeQueries;
 
 @Entity
 @Table(name = DBConstants.TAB_NAME_PARLIAMENT_CLUB)
+@NamedNativeQueries({ @NamedNativeQuery(name = "ParliamentClub.countSessionAbsencesPerClub", resultSetMapping = "absenceResultMapper", query = NativeQueries.COUNT_SESSION_ABSENCES_PER_CLUB_QUERY) })
 public class ParliamentClub implements Serializable {
 
 	private static final long serialVersionUID = 5594894950661535139L;
 
 	@Id
 	private String shortName;
-	
+
 	private String longName;
 
 	public ParliamentClub() {
@@ -71,9 +75,8 @@ public class ParliamentClub implements Serializable {
 			if (other.shortName != null)
 				return false;
 		}
-		else
-			if (!shortName.equals(other.shortName))
-				return false;
+		else if (!shortName.equals(other.shortName))
+			return false;
 		return true;
 	}
 

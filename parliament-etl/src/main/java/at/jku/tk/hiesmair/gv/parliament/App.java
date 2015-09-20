@@ -62,5 +62,8 @@ public class App implements CommandLineRunner {
 		
 		List<AbsenceResult> absences = politicianRep.countSessionAbsences();
 		absences.forEach(a -> System.out.println(a.getId() + " " + a.getAbsenceCount() + " " + a.getPresenceCount()));
+		
+		absences = clubRep.countSessionAbsencesPerClub();
+		absences.forEach(a -> System.out.println(a.getId() + " " + a.getAbsenceCount() + " " + a.getPresenceCount()));
 	}
 }
