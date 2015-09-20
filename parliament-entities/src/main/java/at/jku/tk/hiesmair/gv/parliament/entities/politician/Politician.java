@@ -33,7 +33,7 @@ import at.jku.tk.hiesmair.gv.parliament.entities.mandate.NationalCouncilMember;
 @SqlResultSetMapping(name = "absenceResultMapper", classes = { @ConstructorResult(targetClass = AbsenceResult.class, columns = {
 	@ColumnResult(name = "id", type = String.class), @ColumnResult(name = "absence_count", type = Long.class),
 	@ColumnResult(name = "presence_count", type = Long.class) }) })
-@NamedNativeQueries({ @NamedNativeQuery(name = "Politician.countSessionAbsences", resultSetMapping = "absenceResultMapper", query = NativeQueries.COUNT_SESSION_ABSENCES_QUERY) })
+@NamedNativeQueries({ @NamedNativeQuery(name = "Politician.countSessionAbsences", resultSetMapping = "absenceResultMapper", query = NativeQueries.COUNT_SESSION_ABSENCES_PER_POLITICIAN_QUERY) })
 public class Politician implements Serializable {
 
 	private static final long serialVersionUID = -384408204868853820L;
