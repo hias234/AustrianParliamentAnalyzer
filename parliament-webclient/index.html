@@ -8,34 +8,24 @@
 		<link rel="import" href="bower_components/paper-toolbar/paper-toolbar.html">
 		<link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
 		<link rel="import" href="bower_components/iron-icons/iron-icons.html">
+		<link rel="import" href="bower_components/iron-pages/iron-pages.html">
+		<link rel="import" href="bower_components/paper-tabs/paper-tabs.html">
+		<link rel="import" href="bower_components/font-roboto/roboto.html">
+
+		<link rel="import" href="elements/header.html">
 
 		<style type="text/css">
 			body {
 				margin: 0px;
-			}
-
-			.title {
-				font-family: 'Roboto', 'Noto', sans-serif;
-			    -webkit-font-smoothing: antialiased;
-			    text-rendering: optimizeLegibility;
-			    white-space: nowrap;
-			    overflow: hidden;
-			    text-overflow: ellipsis;
-			    font-size: 20px;
-			    font-weight: 500;
-			    line-height: 28px;
-			    -ms-flex: 1 1 0.000000001px;
-			    -webkit-flex: 1;
-			    flex: 1;
-			    -webkit-flex-basis: 0.000000001px;
-			    flex-basis: 0.000000001px;
+      			font-family: RobotoDraft, 'Helvetica Neue', Helvetica, Arial;
 			}
 		</style>
 	</head>
-	<body>
-		<paper-toolbar>
-			<paper-icon-button icon="menu" on-tap="menuAction"></paper-icon-button>
-			<div class="title">Test</div>
-		</paper-toolbar>
+	<body unresolved>
+		<parliament-header selected="0">
+			<div>Page 1</div>
+			<div>Page 2</div>
+			<div>Page 3</div>
+		</parliament-header>
 	</body>
 </html>

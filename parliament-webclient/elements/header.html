@@ -1,0 +1,75 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module name="parliament-header" attributes="selected">
+	<template>
+		<style>
+			.title {
+				font-family: 'Roboto', 'Noto', sans-serif;
+			    -webkit-font-smoothing: antialiased;
+			    text-rendering: optimizeLegibility;
+			    white-space: nowrap;
+			    overflow: hidden;
+			    text-overflow: ellipsis;
+			    font-size: 20px;
+			    font-weight: 500;
+			    line-height: 28px;
+			    -ms-flex: 1 1 0.000000001px;
+			    -webkit-flex: 1;
+			    flex: 1;
+			    -webkit-flex-basis: 0.000000001px;
+			    flex-basis: 0.000000001px;
+			}
+
+			paper-tabs, core-toolbar {
+		    	background-color: #3f51b5;
+		    	color: #fff;
+		    	box-shadow: 0px 3px 2px rgba(0, 0, 0, 0.2);
+		    }
+		    
+		    core-toolbar paper-tabs {
+		    	box-shadow: none;
+		    }
+		    
+		    paper-tabs[noink][nobar] paper-tab.core-selected {
+		    	color: #ffff8d;
+		    }
+		    
+		    paper-tabs.transparent-teal {
+		    	background-color: transparent;
+		     	color: #00bcd4;
+		      	box-shadow: none;
+		    }
+		    
+		    paper-tabs.transparent-teal::shadow #selectionBar {
+		      	background-color: #3f51b5;
+		    }
+		    
+		    paper-tabs.transparent-teal paper-tab::shadow #ink {
+		      	color: #3f51b5;
+		    }
+		</style>
+
+		<paper-toolbar>
+			<paper-icon-button icon="menu" on-tap="menuAction"></paper-icon-button>
+			<div class="title">Austrian Parliament</div>
+		</paper-toolbar>
+		<paper-tabs selected="{{selected}}" noink>
+			<paper-tab>Tab 1</paper-tab>
+			<paper-tab>Tab 2</paper-tab>
+			<paper-tab>Tab 3</paper-tab>
+		</paper-tabs>
+
+		<iron-pages selected="{{selected}}">
+			<content></content>
+		</iron-pages>
+	</template>
+	<script>
+		Polymer({
+			is: 'parliament-header',
+
+			properties: {
+				selected: 0
+			}
+		});
+	</script>
+</dom-module>
