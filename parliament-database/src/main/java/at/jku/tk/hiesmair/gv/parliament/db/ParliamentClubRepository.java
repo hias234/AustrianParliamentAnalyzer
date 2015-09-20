@@ -26,4 +26,8 @@ public interface ParliamentClubRepository extends CrudRepository<ParliamentClub,
 	@Query(nativeQuery = true)
 	public List<AbsenceResult> countSessionAbsencesPerClub();
 	
+
+	@Query(nativeQuery = true)
+	public List<AbsenceResult> countSessionAbsencesPerClubByPeriod(@Param("periodFrom") Integer periodFrom, @Param("periodTo") Integer periodTo);
+	
 }

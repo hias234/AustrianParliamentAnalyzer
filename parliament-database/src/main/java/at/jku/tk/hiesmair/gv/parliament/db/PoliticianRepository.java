@@ -26,6 +26,9 @@ public interface PoliticianRepository extends CrudRepository<Politician, String>
 	@Query(nativeQuery = true)
 	public List<AbsenceResult> countSessionAbsences();
 	
+	@Query(nativeQuery = true)
+	public List<AbsenceResult> countSessionAbsencesByPeriod(@Param("periodFrom") Integer periodFrom, @Param("periodTo") Integer periodTo);
+	
 	@Query("SELECT COUNT(ds) FROM DiscussionSpeech ds WHERE ds.politician.id = :politicianId")
 	public long countSpeechesOfPolitician(@Param("politicianId") String id);
 	

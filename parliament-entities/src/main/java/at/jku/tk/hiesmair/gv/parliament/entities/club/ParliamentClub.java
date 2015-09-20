@@ -13,7 +13,8 @@ import at.jku.tk.hiesmair.gv.parliament.db.NativeQueries;
 
 @Entity
 @Table(name = DBConstants.TAB_NAME_PARLIAMENT_CLUB)
-@NamedNativeQueries({ @NamedNativeQuery(name = "ParliamentClub.countSessionAbsencesPerClub", resultSetMapping = "absenceResultMapper", query = NativeQueries.COUNT_SESSION_ABSENCES_PER_CLUB_QUERY) })
+@NamedNativeQueries({ @NamedNativeQuery(name = "ParliamentClub.countSessionAbsencesPerClub", resultSetMapping = "absenceResultMapper", query = NativeQueries.COUNT_SESSION_ABSENCES_PER_CLUB_QUERY),
+	@NamedNativeQuery(name = "ParliamentClub.countSessionAbsencesPerClubByPeriod", resultSetMapping = "absenceResultMapper", query = NativeQueries.COUNT_SESSION_ABSENCES_PER_CLUB_BY_PERIOD_QUERY) })
 public class ParliamentClub implements Serializable {
 
 	private static final long serialVersionUID = 5594894950661535139L;
