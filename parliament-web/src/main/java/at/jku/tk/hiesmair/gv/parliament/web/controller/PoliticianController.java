@@ -13,24 +13,25 @@ import org.springframework.web.bind.annotation.RestController;
 import at.jku.tk.hiesmair.gv.parliament.db.PoliticianRepository;
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 import at.jku.tk.hiesmair.gv.parliament.web.dto.PoliticianDTO;
+import at.jku.tk.hiesmair.gv.parliament.web.service.PoliticianService;
 
 @RestController
 @RequestMapping("politician/")
 public class PoliticianController {
 
 	@Inject
-	private PoliticianRepository politicianRep;
+	private PoliticianService politicianService;
 	
 	@Inject
 	private ModelMapper mapper;
 	
 	@RequestMapping(value = "period/{period}", method = RequestMethod.GET)
 	public List<PoliticianDTO> findPolticiansByPeriod(@PathVariable("period") Integer period){
-		return PoliticianDTO.fromPoliticians(mapper, politicianRep.findNationalCouncilMembersOfPeriod(period));
+		return PoliticianDTO.fromPoliticians(mapper, politicianService.findNationalCouncilMembersOfPeriod(period));
 	}
 	
 	@RequestMapping(value = "test", method = RequestMethod.GET)
 	public PoliticianDTO test(){
-		return PoliticianDTO.fromPoliticians(mapper, politicianRep.findNationalCouncilMembersOfPeriod(25)).get(0);
+		return PoliticianDTO.fromPoliticians(mapper, politicianService.findNationalCouncilMembersOfPeriod(25)).get(0);
 	}
 }
