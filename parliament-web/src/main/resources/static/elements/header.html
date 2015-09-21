@@ -21,9 +21,13 @@
 			}
 
 			paper-tabs, core-toolbar {
-		    	background-color: #3f51b5;
+		    	background-color: #9C27B0;
 		    	color: #fff;
-		    	box-shadow: 0px 3px 2px rgba(0, 0, 0, 0.2);
+		    }
+		    
+		    paper-toolbar {
+		    	background: #9C27B0;
+		    	color: #ffffff;
 		    }
 		    
 		    core-toolbar paper-tabs {
@@ -41,24 +45,27 @@
 		    }
 		    
 		    paper-tabs.transparent-teal::shadow #selectionBar {
-		      	background-color: #3f51b5;
+		      	background-color: #9C27B0;
 		    }
 		    
 		    paper-tabs.transparent-teal paper-tab::shadow #ink {
-		      	color: #3f51b5;
+		      	color: #9C27B0;
 		    }
 		</style>
 
-		<paper-toolbar>
-			<paper-icon-button icon="menu" on-tap="menuAction"></paper-icon-button>
-			<div class="title">Austrian Parliament</div>
-		</paper-toolbar>
-		<paper-tabs selected="{{selected}}" noink>
-			<paper-tab>Tab 1</paper-tab>
-			<paper-tab>Tab 2</paper-tab>
-			<paper-tab>Tab 3</paper-tab>
-		</paper-tabs>
-
+		<div class="primary-color" style="box-shadow: 0px 3px 2px rgba(0, 0, 0, 0.2);">
+			<div class="container">
+				<paper-toolbar>
+					<div class="title">Austrian Parliament Analyzer</div>
+				</paper-toolbar>
+				<paper-tabs selected="{{selected}}" noink>
+					<paper-tab>Tab 1</paper-tab>
+					<paper-tab>Tab 2</paper-tab>
+					<paper-tab>Tab 3</paper-tab>
+				</paper-tabs>
+			</div>
+		</div>
+		
 		<iron-pages selected="{{selected}}">
 			<content></content>
 		</iron-pages>
