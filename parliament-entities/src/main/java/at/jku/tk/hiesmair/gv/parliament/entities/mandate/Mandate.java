@@ -18,6 +18,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.lang.time.DateUtils;
@@ -110,6 +111,11 @@ public class Mandate implements Serializable {
 				getValidUntil());
 	}
 
+	@Transient
+	public String getType(){
+		return getClass().getSimpleName();
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

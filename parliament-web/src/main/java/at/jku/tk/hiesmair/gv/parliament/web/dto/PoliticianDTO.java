@@ -1,13 +1,9 @@
 package at.jku.tk.hiesmair.gv.parliament.web.dto;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import javax.persistence.Embedded;
-import javax.persistence.Id;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import org.modelmapper.ModelMapper;
 
@@ -19,6 +15,7 @@ public class PoliticianDTO {
 	private String id;
 	private Name name = new Name();
 	private Date birthDate;
+	private List<MandateDTO> mandates = new ArrayList<MandateDTO>();
 
 	public String getId() {
 		return id;
@@ -44,11 +41,19 @@ public class PoliticianDTO {
 		this.birthDate = birthDate;
 	}
 
-	public static PoliticianDTO fromPolitician(ModelMapper mapper, Politician politician){
+	public List<MandateDTO> getMandates() {
+		return mandates;
+	}
+
+	public void setMandates(List<MandateDTO> mandates) {
+		this.mandates = mandates;
+	}
+
+	public static PoliticianDTO fromPolitician(ModelMapper mapper, Politician politician) {
 		return mapper.map(politician, PoliticianDTO.class);
 	}
-	
-	public static List<PoliticianDTO> fromPoliticians(ModelMapper mapper, List<Politician> politicians){
+
+	public static List<PoliticianDTO> fromPoliticians(ModelMapper mapper, List<Politician> politicians) {
 		return politicians.stream().map(p -> fromPolitician(mapper, p)).collect(Collectors.toList());
 	}
 }

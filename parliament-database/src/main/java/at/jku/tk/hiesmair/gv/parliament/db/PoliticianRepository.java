@@ -23,7 +23,7 @@ public interface PoliticianRepository extends CrudRepository<Politician, String>
 	@Query("SELECT COUNT(ncm) FROM Session s INNER JOIN s.absentNationalCouncilMembers ncm WHERE ncm.id.politician.id = :politicianId AND s.period.period = :period")
 	public long countSessionAbsencesOfPoliticianByPeriod(@Param("politicianId") String id, @Param("period") Integer period);
 	
-	@Query("SELECT p FROM Politician p INNER JOIN TREAT(p.mandates as NationalCouncilMember) ncm INNER JOIN ncm.periods per WHERE per.period = :period")
+	@Query("SELECT p FROM Politician p INNER JOIN TREAT(p.mandates as NationalCouncilMember) ncm INNER JOIN ncm.periods per WHERE per.period = :period GROUP BY p ORDER BY p.name.surName")
 	public List<Politician> findNationalCouncilMembersOfPeriod(@Param("period") Integer period);
 	
 	@Query(nativeQuery = true)
