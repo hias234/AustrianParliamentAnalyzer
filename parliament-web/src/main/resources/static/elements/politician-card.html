@@ -2,8 +2,11 @@
 
 <dom-module name="politician-card">
 	<template>
-		<iron-ajax auto url="http://localhost:8080/politician/test.jsonp" handle-as="json" last-response="{{politician}}" />
-		<h1><span>{{politician.name.surName}}</span></h1>
+		<iron-ajax auto url="/politician/test.json" handle-as="json" last-response="{{politician}}" />
+		
+		<paper-card heading="{{fullPoliticianName}}">
+			<div class=""></div>
+		</paper-card>
 	</template>
 	<script>
 		Polymer({
@@ -12,8 +15,17 @@
 			properties: {
 				politician: {
 					type: Object
+				},
+				fullPoliticianName: {
+					type: String,
+					computed: 'computeFullPoliticianName(politician)'
 				}
+			},
+		
+			computeFullPoliticianName: function(p) {
+				return p.name.firstName + ' ' + p.name.surName;
 			}
+		
 		});
 	</script>
 </dom-module>
