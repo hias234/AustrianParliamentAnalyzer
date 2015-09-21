@@ -1,0 +1,18 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module name="politician-card">
+	<template>
+		<h1><span>{{politician}}</span></h1>
+	</template>
+	<script>
+		Polymer({
+			is: 'politician-card',
+
+			properties: {
+				politician: {
+					type: String
+				}
+			}
+		});
+	</script>
+</dom-module>
