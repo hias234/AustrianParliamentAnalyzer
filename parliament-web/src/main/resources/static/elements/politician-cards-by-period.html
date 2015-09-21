@@ -1,0 +1,63 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module name="politician-cards-by-period">
+	<template>
+		<style>
+			paper-menu {
+		        display: block;
+		    }
+		    paper-dropdown-menu {
+		        text-align: left;
+		        margin: auto;
+		        width: 180px;
+		    }
+		    paper-dropdown-menu.letters {
+		        width: 90px;
+		    }
+		    paper-tabs {
+		        width: 400px;
+		    }
+		    .horizontal-section {
+		        text-align: center;
+		    }
+		</style>
+	
+		<iron-ajax auto url="{{url}}" handle-as="json" last-response="{{politicians}}" />
+		
+		<div class="horizontal-section">
+			<paper-dropdown-menu label="Show politicians of period" style="width: 300px">
+				<paper-menu class="dropdown-content">
+			    	<paper-item>25</paper-item>
+			    	<paper-item>24</paper-item>
+			    	<paper-item>23</paper-item>
+			    	<paper-item>22</paper-item>
+			  	</paper-menu>
+			</paper-dropdown-menu>
+		</div>
+		
+		<politician-cards politicians="{{politicians}}"></politician-cards>
+	</template>
+	<script>
+		Polymer({
+			is: 'politician-cards-by-period',
+	
+			properties: {
+				politicians: {
+					type: Object
+				},
+				selectedperiod: {
+					type: Number,
+					value: 25
+				},
+				url: {
+					type: String,
+					computed: 'computeUrl(selectedperiod)'
+				}
+			},
+			
+			computeUrl: function(selectedperiod) {
+				return '/politician/period/' + selectedperiod + '.json';
+			}
+		});
+	</script>
+</dom-module>
