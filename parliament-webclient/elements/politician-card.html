@@ -2,7 +2,8 @@
 
 <dom-module name="politician-card">
 	<template>
-		<h1><span>{{politician}}</span></h1>
+		<iron-ajax auto url="http://localhost:8080/politician/test.jsonp" handle-as="json" last-response="{{politician}}" />
+		<h1><span>{{politician.name.surName}}</span></h1>
 	</template>
 	<script>
 		Polymer({
@@ -10,7 +11,7 @@
 
 			properties: {
 				politician: {
-					type: String
+					type: Object
 				}
 			}
 		});

@@ -29,4 +29,8 @@ public class PoliticianController {
 		return PoliticianDTO.fromPoliticians(mapper, politicianRep.findNationalCouncilMembersOfPeriod(period));
 	}
 	
+	@RequestMapping(value = "test", method = RequestMethod.GET)
+	public PoliticianDTO test(){
+		return PoliticianDTO.fromPoliticians(mapper, politicianRep.findNationalCouncilMembersOfPeriod(25)).get(0);
+	}
 }
