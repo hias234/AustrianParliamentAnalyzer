@@ -9,6 +9,7 @@ public class MandateDTO {
 	protected Date validFrom;
 	protected Date validUntil;
 	protected String type;
+	protected ParliamentClubDTO club;
 
 	public Integer getId() {
 		return id;
@@ -40,6 +41,14 @@ public class MandateDTO {
 
 	public void setValidUntil(Date validUntil) {
 		this.validUntil = validUntil;
+	}
+
+	public ParliamentClubDTO getClub() {
+		return club;
+	}
+
+	public void setClub(ParliamentClubDTO club) {
+		this.club = club;
 	}
 
 	public String getType() {
