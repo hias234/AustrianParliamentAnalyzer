@@ -2,8 +2,19 @@
 
 <dom-module name="politician-card">
 	<template>
-		<paper-card heading="{{fullPoliticianName}}">
-			<div><span>{{clubs}}</span></div>
+		<style>
+			.politician-name {
+				padding-top: 16px;
+				font-size: 22px;
+				font-weight: bold;
+			}
+		</style>
+		<paper-card>
+			<div>
+				<br/>
+				<span class="politician-name">{{fullPoliticianName}}</span>
+				<br/>
+				<span>{{clubs}}</span></div>
 		</paper-card>
 	</template>
 	<script>
