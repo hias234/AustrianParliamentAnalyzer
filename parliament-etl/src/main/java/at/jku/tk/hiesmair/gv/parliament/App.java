@@ -1,6 +1,5 @@
 package at.jku.tk.hiesmair.gv.parliament;
 
-import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -11,6 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import at.jku.tk.hiesmair.gv.parliament.db.ParliamentClubRepository;
 import at.jku.tk.hiesmair.gv.parliament.db.PoliticianRepository;
+import at.jku.tk.hiesmair.gv.parliament.db.loader.ParliamentDatabaseLoader;
 import at.jku.tk.hiesmair.gv.parliament.db.result.AbsenceResult;
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 import at.jku.tk.hiesmair.gv.parliament.etl.period.LegislativePeriodEtlJob;
@@ -42,10 +42,15 @@ public class App implements CommandLineRunner {
 	
 	@Inject
 	private ParliamentClubRepository clubRep;
+
+	@Inject
+	private ParliamentDatabaseLoader databaseLoader;
 	
 	@Override
 	public void run(String... args) throws Exception {
 //		periodJob.start(Arrays.asList(25));
+
+		databaseLoader.updatePoliticianAttitudeRelations();
 		
 		System.out.println(politicianRep.countSessionPresencesOfPolitician("http://www.parlament.gv.at/WWER/PAD_36450/index.shtml"));
 		System.out.println(politicianRep.countSessionAbsencesOfPolitician("http://www.parlament.gv.at/WWER/PAD_36450/index.shtml"));

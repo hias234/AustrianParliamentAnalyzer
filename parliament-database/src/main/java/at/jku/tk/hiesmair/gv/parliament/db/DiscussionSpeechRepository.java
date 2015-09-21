@@ -1,5 +1,7 @@
 package at.jku.tk.hiesmair.gv.parliament.db;
 
+import java.util.List;
+
 import org.springframework.data.repository.CrudRepository;
 
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.Discussion;
@@ -9,4 +11,5 @@ public interface DiscussionSpeechRepository extends CrudRepository<DiscussionSpe
 
 	public DiscussionSpeech findByDiscussionAndOrder(Discussion discussion, Integer order);
 	
+	public List<DiscussionSpeech> findByDiscussion(Discussion discussion);
 }

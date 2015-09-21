@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -15,6 +16,7 @@ import at.jku.tk.hiesmair.gv.parliament.db.DiscussionSpeechSentimentRepository;
 import at.jku.tk.hiesmair.gv.parliament.db.LegislativePeriodRepository;
 import at.jku.tk.hiesmair.gv.parliament.db.MandateRepository;
 import at.jku.tk.hiesmair.gv.parliament.db.ParliamentClubRepository;
+import at.jku.tk.hiesmair.gv.parliament.db.PoliticianAttitudeRelationRepository;
 import at.jku.tk.hiesmair.gv.parliament.db.PoliticianNameRepository;
 import at.jku.tk.hiesmair.gv.parliament.db.PoliticianRepository;
 import at.jku.tk.hiesmair.gv.parliament.db.SessionChairManRepository;
@@ -22,11 +24,13 @@ import at.jku.tk.hiesmair.gv.parliament.db.SessionRepository;
 import at.jku.tk.hiesmair.gv.parliament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.Discussion;
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.DiscussionSpeech;
+import at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.SpeechType;
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.sentiment.DiscussionSpeechSentiment;
 import at.jku.tk.hiesmair.gv.parliament.entities.mandate.CouncilMember;
 import at.jku.tk.hiesmair.gv.parliament.entities.mandate.Mandate;
 import at.jku.tk.hiesmair.gv.parliament.entities.mandate.NationalCouncilMember;
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
+import at.jku.tk.hiesmair.gv.parliament.entities.politician.PoliticianAttitudeRelation;
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.PoliticianName;
 import at.jku.tk.hiesmair.gv.parliament.entities.session.Session;
 import at.jku.tk.hiesmair.gv.parliament.entities.session.SessionChairMan;
@@ -60,9 +64,12 @@ public class ParliamentDatabaseLoader {
 
 	@Inject
 	private DiscussionSpeechRepository speechRepository;
-	
+
 	@Inject
 	private DiscussionSpeechSentimentRepository sentimentRepository;
+
+	@Inject
+	private PoliticianAttitudeRelationRepository politicianRelationRepository;
 
 	public Politician loadPolitician(Politician politician) {
 		Set<Mandate> mandates = politician.getMandates();
@@ -231,7 +238,7 @@ public class ParliamentDatabaseLoader {
 		if (sessionInDb == null) {
 			sessionInDb = sessionRepository.save(session);
 		}
-		
+
 		chairMen = loadSessionChairMen(chairMen, sessionInDb);
 		discussions = loadDiscussions(discussions, sessionInDb);
 		presentNationalCouncilMembers = loadNationalCouncilMembers(presentNationalCouncilMembers);
@@ -267,7 +274,7 @@ public class ParliamentDatabaseLoader {
 				sessionChairMan.getPosition());
 
 		loadPoliticianIfNotExists(sessionChairMan.getPolitician());
-		
+
 		if (chairManInDb == null) {
 			chairManInDb = sessionChairManRepository.save(sessionChairMan);
 		}
@@ -301,7 +308,7 @@ public class ParliamentDatabaseLoader {
 			discussionInDb = discussionRepository.save(discussion);
 			discussionInDb.setSpeeches(loadSpeeches(speeches, discussionInDb));
 		}
-		else{
+		else {
 			discussionInDb.setTopic(discussion.getTopic());
 			discussionInDb.setType(discussion.getType());
 
@@ -327,7 +334,7 @@ public class ParliamentDatabaseLoader {
 				speech.getOrder());
 
 		loadPoliticianIfNotExists(speech.getPolitician());
-		
+
 		if (speechInDb == null) {
 			List<DiscussionSpeechSentiment> sentiments = speech.getSentiments();
 			speech.setSentiments(new ArrayList<DiscussionSpeechSentiment>());
@@ -339,7 +346,7 @@ public class ParliamentDatabaseLoader {
 			speechInDb.setStartTime(speech.getStartTime());
 			speechInDb.setEndTime(speech.getEndTime());
 			speechInDb.setType(speech.getType());
-			for (DiscussionSpeechSentiment sentiment : speechInDb.getSentiments()){
+			for (DiscussionSpeechSentiment sentiment : speechInDb.getSentiments()) {
 				sentimentRepository.delete(sentiment);
 			}
 			speechInDb.setSentiments(loadSentiments(speech.getSentiments(), speechInDb));
@@ -348,20 +355,123 @@ public class ParliamentDatabaseLoader {
 		return speechInDb;
 	}
 
-	private List<DiscussionSpeechSentiment> loadSentiments(List<DiscussionSpeechSentiment> sentiments, DiscussionSpeech speech){
+	private List<DiscussionSpeechSentiment> loadSentiments(List<DiscussionSpeechSentiment> sentiments,
+			DiscussionSpeech speech) {
 		List<DiscussionSpeechSentiment> sentimentsInDb = new ArrayList<DiscussionSpeechSentiment>();
-		
-		if (sentiments != null){
-			for (DiscussionSpeechSentiment s : sentiments){
+
+		if (sentiments != null) {
+			for (DiscussionSpeechSentiment s : sentiments) {
 				s.setSpeech(speech);
 				sentimentsInDb.add(loadSentiment(s));
 			}
 		}
-		
+
 		return sentimentsInDb;
 	}
 
 	private DiscussionSpeechSentiment loadSentiment(DiscussionSpeechSentiment s) {
 		return sentimentRepository.save(s);
+	}
+
+	public void updatePoliticianAttitudeRelations() {
+		politicianRelationRepository.deleteAll();
+
+		for (Discussion d : discussionRepository.findAll()) {
+			List<PoliticianAttitudeRelation> speechAttitudeRelations = getSpeechAttitudeRelations(d);
+			politicianRelationRepository.save(speechAttitudeRelations);
+		}
+	}
+
+	private List<PoliticianAttitudeRelation> getSpeechAttitudeRelations(Discussion discussion) {
+		List<PoliticianAttitudeRelation> relations = new ArrayList<PoliticianAttitudeRelation>();
+
+		List<DiscussionSpeech> speeches = speechRepository.findByDiscussion(discussion);
+		Set<PoliticianAttitude> politicianAttitudes = speeches.stream()
+				.filter(sp -> sp.getType() == SpeechType.PRO || sp.getType() == SpeechType.CONTRA)
+				.map(sp -> new PoliticianAttitude(sp.getPolitician(), sp.getType())).collect(Collectors.toSet());
+
+		politicianAttitudes.removeIf(pa -> politicianAttitudes.stream()
+				.filter(paInner -> paInner.getPolitician().equals(pa.getPolitician())).count() > 1);
+
+		List<PoliticianAttitude> politicianAttitudeList = new ArrayList<ParliamentDatabaseLoader.PoliticianAttitude>();
+		politicianAttitudeList.addAll(politicianAttitudes);
+
+		for (int i = 0; i < politicianAttitudeList.size(); i++) {
+			PoliticianAttitude pa1 = politicianAttitudeList.get(i);
+			for (int j = i + 1; j < politicianAttitudeList.size(); j++) {
+				PoliticianAttitude pa2 = politicianAttitudeList.get(j);
+				Integer weight;
+				if (pa1.getSpeechType() == pa2.getSpeechType()) {
+					weight = 1;
+				}
+				else {
+					weight = -1;
+				}
+
+				relations.add(new PoliticianAttitudeRelation(pa1.getPolitician(), pa2.getPolitician(),
+						discussion, weight));
+				relations.add(new PoliticianAttitudeRelation(pa2.getPolitician(), pa1.getPolitician(),
+						discussion, weight));
+			}
+		}
+
+		return relations;
+	}
+
+	protected static class PoliticianAttitude {
+		private Politician politician;
+		private SpeechType speechType;
+
+		public PoliticianAttitude(Politician politician, SpeechType speechType) {
+			super();
+			this.politician = politician;
+			this.speechType = speechType;
+		}
+
+		public Politician getPolitician() {
+			return politician;
+		}
+
+		public void setPolitician(Politician politician) {
+			this.politician = politician;
+		}
+
+		public SpeechType getSpeechType() {
+			return speechType;
+		}
+
+		public void setSpeechType(SpeechType speechType) {
+			this.speechType = speechType;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((politician == null) ? 0 : politician.hashCode());
+			result = prime * result + ((speechType == null) ? 0 : speechType.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			PoliticianAttitude other = (PoliticianAttitude) obj;
+			if (politician == null) {
+				if (other.politician != null)
+					return false;
+			}
+			else if (!politician.equals(other.politician))
+				return false;
+			if (speechType != other.speechType)
+				return false;
+			return true;
+		}
+
 	}
 }

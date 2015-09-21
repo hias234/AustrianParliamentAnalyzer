@@ -19,6 +19,7 @@ public class LegislativePeriodDatabaseLoader implements LegislativePeriodLoader 
 	@Override
 	public void loadLegislativePeriods(List<LegislativePeriod> periods) {
 		periods.forEach(p -> databaseLoader.loadPeriod(p));
+		databaseLoader.updatePoliticianAttitudeRelations();
 	}
 
 }
