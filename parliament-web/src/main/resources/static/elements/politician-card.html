@@ -2,10 +2,8 @@
 
 <dom-module name="politician-card">
 	<template>
-		<iron-ajax auto url="/politician/test.json" handle-as="json" last-response="{{politician}}" />
-		
-		<paper-card heading="{{fullPoliticianName}}">
-			<div class=""></div>
+		<paper-card heading="{{fullPoliticianName}}" class="politician-card">
+			<div class="card-content">geb.: <span>{{politician.birthDate}}</span></div>
 		</paper-card>
 	</template>
 	<script>

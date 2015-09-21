@@ -1,0 +1,23 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module name="politician-cards">
+	<template>
+		<iron-ajax auto url="/politician/period/25.json" handle-as="json" last-response="{{politicians}}" />
+		
+		<template is="dom-repeat" items="{{politicians}}">
+			<politician-card politician="{{item}}"></politician-card>
+		</template>
+	</template>
+	<script>
+		Polymer({
+			is: 'politician-cards',
+	
+			properties: {
+				politicians: {
+					type: Object
+				}
+			},
+		
+		});
+	</script>
+</dom-module>
