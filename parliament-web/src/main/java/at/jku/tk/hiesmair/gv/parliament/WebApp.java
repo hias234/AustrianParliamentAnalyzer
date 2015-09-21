@@ -1,13 +1,14 @@
-package at.jku.tk.hiesmair.gv.parliament.web;
+package at.jku.tk.hiesmair.gv.parliament;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-public class App {
+public class WebApp {
 
 	public static void main(String[] args) {
-		SpringApplication.run(App.class, args);
+		SpringApplication.run(WebApp.class, args);
 	}
 	
 }

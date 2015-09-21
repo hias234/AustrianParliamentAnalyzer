@@ -4,13 +4,10 @@
         <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
+        <dependent-module archiveName="parliament-entities-0.0.2-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/parliament-entities/parliament-entities">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <dependent-module archiveName="parliament-database-0.0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/parliament-database/parliament-database">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="parliament-sentiment-analysis-0.0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/parliament-sentiment-analysis/parliament-sentiment-analysis">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="parliament-etl-0.0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/parliament-etl/parliament-etl">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="context-root" value="parliament-web"/>
