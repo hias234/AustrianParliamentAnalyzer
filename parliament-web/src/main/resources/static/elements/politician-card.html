@@ -3,7 +3,7 @@
 <dom-module name="politician-card">
 	<template>
 		<paper-card heading="{{fullPoliticianName}}" class="politician-card">
-			<div class="card-content">geb.: <span>{{politician.birthDate}}</span></div>
+			<div><span>{{clubs}}</span></div>
 		</paper-card>
 	</template>
 	<script>
@@ -17,11 +17,36 @@
 				fullPoliticianName: {
 					type: String,
 					computed: 'computeFullPoliticianName(politician)'
+				},
+				clubs: {
+					type: String,
+					computed: 'computeClubs(politician)'
 				}
 			},
 		
 			computeFullPoliticianName: function(p) {
 				return p.name.firstName + ' ' + p.name.surName;
+			},
+			
+			computeClubs: function(p) {
+				var distinctClubs = [];
+				for (var i = 0; i < p.mandates.length; i++){
+					if (p.mandates[i].club != null){
+						if (distinctClubs.indexOf(p.mandates[i].club.shortName) == -1){
+							distinctClubs.push(p.mandates[i].club.shortName);
+						}
+					}
+				}
+				
+				var clubStr = '';
+				for (var i = 0; i < distinctClubs.length; i++){
+					if (i > 0){
+						clubStr += ', ';
+					}
+					clubStr += distinctClubs[i];
+				}
+				
+				return clubStr;
 			}
 		
 		});
