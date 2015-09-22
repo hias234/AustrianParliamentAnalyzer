@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import at.jku.tk.hiesmair.gv.parliament.db.repositories.PoliticianRepository;
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
+import at.jku.tk.hiesmair.gv.parliament.graph.gephi.GephiGraphConstructor;
 import at.jku.tk.hiesmair.gv.parliament.web.dto.PoliticianDTO;
 import at.jku.tk.hiesmair.gv.parliament.web.service.PoliticianService;
 
@@ -32,6 +33,8 @@ public class PoliticianController {
 	
 	@RequestMapping(value = "test", method = RequestMethod.GET)
 	public PoliticianDTO test(){
+		new GephiGraphConstructor().doWork();
+		
 		return PoliticianDTO.fromPoliticians(mapper, politicianService.findNationalCouncilMembersOfPeriod(25)).get(0);
 	}
 }
