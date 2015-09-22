@@ -44,6 +44,15 @@ public class PoliticianAttitudeRelationByPeriod {
 		this.period = period;
 		this.weight = weight;
 	}
+	
+	public PoliticianAttitudeRelationByPeriod(Politician politician1, Politician politician2, LegislativePeriod period,
+			Long weight) {
+		super();
+		this.politician1 = politician1;
+		this.politician2 = politician2;
+		this.period = period;
+		this.weight = weight.intValue();
+	}
 
 	public Integer getId() {
 		return id;

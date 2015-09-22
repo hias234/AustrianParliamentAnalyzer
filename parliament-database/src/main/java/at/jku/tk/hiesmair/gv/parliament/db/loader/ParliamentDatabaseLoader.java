@@ -399,8 +399,8 @@ public class ParliamentDatabaseLoader {
 					weight = -1;
 				}
 
-				relations.add(new PoliticianAttitudeRelation(pa1.getPolitician(), pa2.getPolitician(),
-						discussion, weight));
+				relations.add(new PoliticianAttitudeRelation(pa1.getPolitician(), pa2.getPolitician(), discussion,
+						weight));
 			}
 		}
 
@@ -470,8 +470,9 @@ public class ParliamentDatabaseLoader {
 				if (other.politician != null)
 					return false;
 			}
-			else if (!politician.equals(other.politician))
-				return false;
+			else
+				if (!politician.equals(other.politician))
+					return false;
 			if (speechType != other.speechType)
 				return false;
 			return true;
