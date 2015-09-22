@@ -1,4 +1,4 @@
-package at.jku.tk.hiesmair.gv.parliament.db;
+package at.jku.tk.hiesmair.gv.parliament.db.repositories;
 
 import org.springframework.data.repository.CrudRepository;
 

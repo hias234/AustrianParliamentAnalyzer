@@ -1,4 +1,4 @@
-package at.jku.tk.hiesmair.gv.parliament.entities.politician;
+package at.jku.tk.hiesmair.gv.parliament.entities.relation;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,11 +8,13 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import at.jku.tk.hiesmair.gv.parliament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.Discussion;
+import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 
 @Entity
-@Table(name = "politician_attitude_relation")
-public class PoliticianAttitudeRelation {
+@Table(name = "politician_attitude_relation_by_period")
+public class PoliticianAttitudeRelationByPeriod {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -25,21 +27,21 @@ public class PoliticianAttitudeRelation {
 	protected Politician politician2;
 
 	@ManyToOne(optional = false)
-	protected Discussion discussion;
+	protected LegislativePeriod period;
 
 	@Column(nullable = false)
 	protected Integer weight;
 
-	public PoliticianAttitudeRelation() {
+	public PoliticianAttitudeRelationByPeriod() {
 		super();
 	}
 
-	public PoliticianAttitudeRelation(Politician politician1, Politician politician2,
-			Discussion discussion, Integer weight) {
+	public PoliticianAttitudeRelationByPeriod(Politician politician1, Politician politician2, LegislativePeriod period,
+			Integer weight) {
 		super();
 		this.politician1 = politician1;
 		this.politician2 = politician2;
-		this.discussion = discussion;
+		this.period = period;
 		this.weight = weight;
 	}
 
@@ -67,12 +69,12 @@ public class PoliticianAttitudeRelation {
 		this.politician2 = politician2;
 	}
 
-	public Discussion getDiscussion() {
-		return discussion;
+	public LegislativePeriod getPeriod() {
+		return period;
 	}
 
-	public void setDiscussion(Discussion discussion) {
-		this.discussion = discussion;
+	public void setPeriod(LegislativePeriod period) {
+		this.period = period;
 	}
 
 	public Integer getWeight() {
@@ -87,7 +89,7 @@ public class PoliticianAttitudeRelation {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((discussion == null) ? 0 : discussion.hashCode());
+		result = prime * result + ((period == null) ? 0 : period.hashCode());
 		result = prime * result + ((politician1 == null) ? 0 : politician1.hashCode());
 		result = prime * result + ((politician2 == null) ? 0 : politician2.hashCode());
 		return result;
@@ -101,25 +103,28 @@ public class PoliticianAttitudeRelation {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		PoliticianAttitudeRelation other = (PoliticianAttitudeRelation) obj;
-		if (discussion == null) {
-			if (other.discussion != null)
+		PoliticianAttitudeRelationByPeriod other = (PoliticianAttitudeRelationByPeriod) obj;
+		if (period == null) {
+			if (other.period != null)
 				return false;
 		}
-		else if (!discussion.equals(other.discussion))
-			return false;
+		else
+			if (!period.equals(other.period))
+				return false;
 		if (politician1 == null) {
 			if (other.politician1 != null)
 				return false;
 		}
-		else if (!politician1.equals(other.politician1))
-			return false;
+		else
+			if (!politician1.equals(other.politician1))
+				return false;
 		if (politician2 == null) {
 			if (other.politician2 != null)
 				return false;
 		}
-		else if (!politician2.equals(other.politician2))
-			return false;
+		else
+			if (!politician2.equals(other.politician2))
+				return false;
 		return true;
 	}
 

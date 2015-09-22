@@ -15,7 +15,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import at.jku.tk.hiesmair.gv.parlament.db.DummyDbApp;
 import at.jku.tk.hiesmair.gv.parlament.entities.DummyEntitiesApp;
 import at.jku.tk.hiesmair.gv.parlament.etl.period.DummyPeriodEtlApp;
-import at.jku.tk.hiesmair.gv.parliament.db.LegislativePeriodRepository;
+import at.jku.tk.hiesmair.gv.parliament.db.repositories.LegislativePeriodRepository;
 import at.jku.tk.hiesmair.gv.parliament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parliament.etl.period.loader.db.LegislativePeriodDatabaseLoader;
 

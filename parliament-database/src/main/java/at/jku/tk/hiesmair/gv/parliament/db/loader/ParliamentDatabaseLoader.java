@@ -10,17 +10,17 @@ import javax.inject.Inject;
 
 import org.springframework.stereotype.Component;
 
-import at.jku.tk.hiesmair.gv.parliament.db.DiscussionRepository;
-import at.jku.tk.hiesmair.gv.parliament.db.DiscussionSpeechRepository;
-import at.jku.tk.hiesmair.gv.parliament.db.DiscussionSpeechSentimentRepository;
-import at.jku.tk.hiesmair.gv.parliament.db.LegislativePeriodRepository;
-import at.jku.tk.hiesmair.gv.parliament.db.MandateRepository;
-import at.jku.tk.hiesmair.gv.parliament.db.ParliamentClubRepository;
-import at.jku.tk.hiesmair.gv.parliament.db.PoliticianAttitudeRelationRepository;
-import at.jku.tk.hiesmair.gv.parliament.db.PoliticianNameRepository;
-import at.jku.tk.hiesmair.gv.parliament.db.PoliticianRepository;
-import at.jku.tk.hiesmair.gv.parliament.db.SessionChairManRepository;
-import at.jku.tk.hiesmair.gv.parliament.db.SessionRepository;
+import at.jku.tk.hiesmair.gv.parliament.db.repositories.DiscussionRepository;
+import at.jku.tk.hiesmair.gv.parliament.db.repositories.DiscussionSpeechRepository;
+import at.jku.tk.hiesmair.gv.parliament.db.repositories.DiscussionSpeechSentimentRepository;
+import at.jku.tk.hiesmair.gv.parliament.db.repositories.LegislativePeriodRepository;
+import at.jku.tk.hiesmair.gv.parliament.db.repositories.MandateRepository;
+import at.jku.tk.hiesmair.gv.parliament.db.repositories.ParliamentClubRepository;
+import at.jku.tk.hiesmair.gv.parliament.db.repositories.PoliticianNameRepository;
+import at.jku.tk.hiesmair.gv.parliament.db.repositories.PoliticianRepository;
+import at.jku.tk.hiesmair.gv.parliament.db.repositories.SessionChairManRepository;
+import at.jku.tk.hiesmair.gv.parliament.db.repositories.SessionRepository;
+import at.jku.tk.hiesmair.gv.parliament.db.repositories.relation.PoliticianAttitudeRelationRepository;
 import at.jku.tk.hiesmair.gv.parliament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.Discussion;
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.DiscussionSpeech;
@@ -30,8 +30,8 @@ import at.jku.tk.hiesmair.gv.parliament.entities.mandate.CouncilMember;
 import at.jku.tk.hiesmair.gv.parliament.entities.mandate.Mandate;
 import at.jku.tk.hiesmair.gv.parliament.entities.mandate.NationalCouncilMember;
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
-import at.jku.tk.hiesmair.gv.parliament.entities.politician.PoliticianAttitudeRelation;
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.PoliticianName;
+import at.jku.tk.hiesmair.gv.parliament.entities.relation.PoliticianAttitudeRelation;
 import at.jku.tk.hiesmair.gv.parliament.entities.session.Session;
 import at.jku.tk.hiesmair.gv.parliament.entities.session.SessionChairMan;
 
@@ -385,16 +385,7 @@ public class ParliamentDatabaseLoader {
 	private List<PoliticianAttitudeRelation> getSpeechAttitudeRelations(Discussion discussion) {
 		List<PoliticianAttitudeRelation> relations = new ArrayList<PoliticianAttitudeRelation>();
 
-		List<DiscussionSpeech> speeches = speechRepository.findByDiscussion(discussion);
-		Set<PoliticianAttitude> politicianAttitudes = speeches.stream()
-				.filter(sp -> sp.getType() == SpeechType.PRO || sp.getType() == SpeechType.CONTRA)
-				.map(sp -> new PoliticianAttitude(sp.getPolitician(), sp.getType())).collect(Collectors.toSet());
-
-		politicianAttitudes.removeIf(pa -> politicianAttitudes.stream()
-				.filter(paInner -> paInner.getPolitician().equals(pa.getPolitician())).count() > 1);
-
-		List<PoliticianAttitude> politicianAttitudeList = new ArrayList<ParliamentDatabaseLoader.PoliticianAttitude>();
-		politicianAttitudeList.addAll(politicianAttitudes);
+		List<PoliticianAttitude> politicianAttitudeList = getPoliticianAttitudesOfDiscussion(discussion);
 
 		for (int i = 0; i < politicianAttitudeList.size(); i++) {
 			PoliticianAttitude pa1 = politicianAttitudeList.get(i);
@@ -410,12 +401,25 @@ public class ParliamentDatabaseLoader {
 
 				relations.add(new PoliticianAttitudeRelation(pa1.getPolitician(), pa2.getPolitician(),
 						discussion, weight));
-				relations.add(new PoliticianAttitudeRelation(pa2.getPolitician(), pa1.getPolitician(),
-						discussion, weight));
 			}
 		}
 
 		return relations;
+	}
+
+	private List<PoliticianAttitude> getPoliticianAttitudesOfDiscussion(Discussion discussion) {
+		List<DiscussionSpeech> speeches = speechRepository.findByDiscussion(discussion);
+		Set<PoliticianAttitude> politicianAttitudes = speeches.stream()
+				.filter(sp -> sp.getType() == SpeechType.PRO || sp.getType() == SpeechType.CONTRA)
+				.map(sp -> new PoliticianAttitude(sp.getPolitician(), sp.getType())).collect(Collectors.toSet());
+
+		politicianAttitudes.removeIf(pa -> politicianAttitudes.stream()
+				.filter(paInner -> paInner.getPolitician().equals(pa.getPolitician())).count() > 1);
+
+		List<PoliticianAttitude> politicianAttitudeList = new ArrayList<ParliamentDatabaseLoader.PoliticianAttitude>();
+		politicianAttitudeList.addAll(politicianAttitudes);
+		politicianAttitudeList.sort((pa1, pa2) -> pa1.politician.getId().compareTo(pa2.politician.getId()));
+		return politicianAttitudeList;
 	}
 
 	protected static class PoliticianAttitude {

@@ -6,7 +6,7 @@ import javax.inject.Inject;
 
 import org.springframework.stereotype.Service;
 
-import at.jku.tk.hiesmair.gv.parliament.db.LegislativePeriodRepository;
+import at.jku.tk.hiesmair.gv.parliament.db.repositories.LegislativePeriodRepository;
 import at.jku.tk.hiesmair.gv.parliament.entities.LegislativePeriod;
 
 @Service

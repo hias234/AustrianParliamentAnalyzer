@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import at.jku.tk.hiesmair.gv.parliament.db.PoliticianRepository;
+import at.jku.tk.hiesmair.gv.parliament.db.repositories.PoliticianRepository;
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 import at.jku.tk.hiesmair.gv.parliament.web.dto.PoliticianDTO;
 import at.jku.tk.hiesmair.gv.parliament.web.service.PoliticianService;

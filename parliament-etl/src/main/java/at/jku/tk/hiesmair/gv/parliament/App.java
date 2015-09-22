@@ -8,9 +8,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import at.jku.tk.hiesmair.gv.parliament.db.ParliamentClubRepository;
-import at.jku.tk.hiesmair.gv.parliament.db.PoliticianRepository;
 import at.jku.tk.hiesmair.gv.parliament.db.loader.ParliamentDatabaseLoader;
+import at.jku.tk.hiesmair.gv.parliament.db.repositories.ParliamentClubRepository;
+import at.jku.tk.hiesmair.gv.parliament.db.repositories.PoliticianRepository;
 import at.jku.tk.hiesmair.gv.parliament.db.result.AbsenceResult;
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 import at.jku.tk.hiesmair.gv.parliament.etl.period.LegislativePeriodEtlJob;
