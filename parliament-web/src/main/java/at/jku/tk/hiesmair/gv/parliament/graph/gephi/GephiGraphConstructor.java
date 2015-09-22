@@ -2,6 +2,7 @@ package at.jku.tk.hiesmair.gv.parliament.graph.gephi;
 
 
 import java.io.ByteArrayOutputStream;
+import java.io.StringWriter;
 import java.util.concurrent.TimeUnit;
 
 import org.gephi.graph.api.GraphController;
@@ -9,6 +10,7 @@ import org.gephi.graph.api.GraphModel;
 import org.gephi.io.database.drivers.PostgreSQLDriver;
 import org.gephi.io.exporter.api.ExportController;
 import org.gephi.io.exporter.preview.PNGExporter;
+import org.gephi.io.exporter.preview.SVGExporter;
 import org.gephi.io.importer.api.Container;
 import org.gephi.io.importer.api.ImportController;
 import org.gephi.io.importer.plugin.database.EdgeListDatabaseImpl;
@@ -21,13 +23,14 @@ import org.gephi.layout.plugin.forceAtlas.ForceAtlasLayout;
 import org.gephi.layout.spi.LayoutProperty;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
+import org.gephi.visualization.VizController;
 import org.openide.util.Lookup;
 
 import com.mysql.jdbc.ExportControlled;
 
 public class GephiGraphConstructor {
 
-	public byte[] doWork(){
+	public String doWork(){
 		ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
 		pc.newProject();
 		Workspace workspace = pc.getCurrentWorkspace();
@@ -44,6 +47,8 @@ public class GephiGraphConstructor {
 		db.setNodeQuery("select politician.id as id, sur_name as label from politician " +
 						"inner join mandate on (mandate_type = 'NationalCouncilMember' and mandate.politician_id = politician.id) " +
 						"inner join ncm_period on (ncm_id = mandate.id) where period = 25");
+		
+//		db.setNodeAttributesQuery("");
 		
 		db.setEdgeQuery("select politician1_id as source, politician2_id as target, sum(weight) as weight from politician_attitude_relation " +
 						"inner join discussion on (discussion.id = discussion_id) " +
@@ -69,15 +74,15 @@ public class GephiGraphConstructor {
 		
 		autoLayout.execute();
 		
+		VizController.getInstance().getTextManager().getModel().setShowNodeLabels(true);
+		
 		ExportController ec = Lookup.getDefault().lookup(ExportController.class);
-		PNGExporter pngExporter = (PNGExporter) ec.getExporter("png");
-		pngExporter.setWidth(10000);
-		pngExporter.setHeight(10000);
+		SVGExporter svgExporter = (SVGExporter) ec.getExporter("svg");
 		
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ec.exportStream(baos, pngExporter);
+		StringWriter writer = new StringWriter();
+		ec.exportWriter(writer, svgExporter);
 		
-		return baos.toByteArray();
+		return writer.toString();
 	}
 	
 }

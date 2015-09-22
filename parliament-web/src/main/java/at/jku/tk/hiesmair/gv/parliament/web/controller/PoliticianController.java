@@ -32,8 +32,8 @@ public class PoliticianController {
 		return PoliticianDTO.fromPoliticians(mapper, politicianService.findNationalCouncilMembersOfPeriod(period));
 	}
 	
-	@RequestMapping(value = "test", method = RequestMethod.GET, produces = MediaType.IMAGE_PNG_VALUE)
-	public byte[] test(){
+	@RequestMapping(value = "test", method = RequestMethod.GET, produces = "image/svg+xml")
+	public String test(){
 		return new GephiGraphConstructor().doWork();
 	}
 }

@@ -69,6 +69,13 @@
 			<scope>system</scope>
 			<systemPath>${project.basedir}/src/lib/gephi-toolkit.jar</systemPath>
 		</dependency>
+		<dependency>
+			<groupId>org.gephi</groupId>
+			<artifactId>gephi-visualization</artifactId>
+			<version>0.9-SNAPSHOT</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/src/lib/org-gephi-visualization.jar</systemPath>
+		</dependency>
 
 		<!-- test -->
 		<dependency>
