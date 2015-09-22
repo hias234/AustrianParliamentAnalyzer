@@ -5,6 +5,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -31,10 +32,8 @@ public class PoliticianController {
 		return PoliticianDTO.fromPoliticians(mapper, politicianService.findNationalCouncilMembersOfPeriod(period));
 	}
 	
-	@RequestMapping(value = "test", method = RequestMethod.GET)
-	public PoliticianDTO test(){
-		new GephiGraphConstructor().doWork();
-		
-		return PoliticianDTO.fromPoliticians(mapper, politicianService.findNationalCouncilMembersOfPeriod(25)).get(0);
+	@RequestMapping(value = "test", method = RequestMethod.GET, produces = MediaType.IMAGE_PNG_VALUE)
+	public byte[] test(){
+		return new GephiGraphConstructor().doWork();
 	}
 }

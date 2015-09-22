@@ -1,11 +1,14 @@
 package at.jku.tk.hiesmair.gv.parliament.graph.gephi;
 
 
+import java.io.ByteArrayOutputStream;
 import java.util.concurrent.TimeUnit;
 
 import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.io.database.drivers.PostgreSQLDriver;
+import org.gephi.io.exporter.api.ExportController;
+import org.gephi.io.exporter.preview.PNGExporter;
 import org.gephi.io.importer.api.Container;
 import org.gephi.io.importer.api.ImportController;
 import org.gephi.io.importer.plugin.database.EdgeListDatabaseImpl;
@@ -15,13 +18,16 @@ import org.gephi.layout.plugin.AutoLayout;
 import org.gephi.layout.plugin.force.StepDisplacement;
 import org.gephi.layout.plugin.force.yifanHu.YifanHuLayout;
 import org.gephi.layout.plugin.forceAtlas.ForceAtlasLayout;
+import org.gephi.layout.spi.LayoutProperty;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.openide.util.Lookup;
 
+import com.mysql.jdbc.ExportControlled;
+
 public class GephiGraphConstructor {
 
-	public void doWork(){
+	public byte[] doWork(){
 		ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
 		pc.newProject();
 		Workspace workspace = pc.getCurrentWorkspace();
@@ -50,18 +56,28 @@ public class GephiGraphConstructor {
 		
 		GraphModel graphModel = Lookup.getDefault().lookup(GraphController.class).getModel();
 		
-		AutoLayout autoLayout = new AutoLayout(1, TimeUnit.MINUTES);
+		AutoLayout autoLayout = new AutoLayout(30, TimeUnit.SECONDS);
 		autoLayout.setGraphModel(graphModel);
 		YifanHuLayout firstLayout = new YifanHuLayout(null, new StepDisplacement(1f));
 		ForceAtlasLayout secondLayout = new ForceAtlasLayout(null);
 		
-		AutoLayout.DynamicProperty adjustBySizeProperty = AutoLayout.createDynamicProperty("Adjust by Sizes", true, 0.1F);
-		AutoLayout.DynamicProperty repulsionProperty = AutoLayout.createDynamicProperty("Repulsion strength", new Double(500.), 0f);
+		AutoLayout.DynamicProperty adjustBySizeProperty = AutoLayout.createDynamicProperty("forceAtlas.adjustSizes.name", true, 0.1F);
+		AutoLayout.DynamicProperty repulsionProperty = AutoLayout.createDynamicProperty("forceAtlas.repulsionStrength.name", new Double(500.), 0f);
 		
 		autoLayout.addLayout(firstLayout, 0.5f);
 		autoLayout.addLayout(secondLayout, 0.5f, new AutoLayout.DynamicProperty[] { adjustBySizeProperty, repulsionProperty });
 		
 		autoLayout.execute();
+		
+		ExportController ec = Lookup.getDefault().lookup(ExportController.class);
+		PNGExporter pngExporter = (PNGExporter) ec.getExporter("png");
+		pngExporter.setWidth(10000);
+		pngExporter.setHeight(10000);
+		
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ec.exportStream(baos, pngExporter);
+		
+		return baos.toByteArray();
 	}
 	
 }
