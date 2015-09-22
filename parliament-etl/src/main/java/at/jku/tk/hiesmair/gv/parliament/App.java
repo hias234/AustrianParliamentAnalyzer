@@ -14,6 +14,7 @@ import at.jku.tk.hiesmair.gv.parliament.db.repositories.PoliticianRepository;
 import at.jku.tk.hiesmair.gv.parliament.db.repositories.relation.PoliticianAttitudeRelationRepository;
 import at.jku.tk.hiesmair.gv.parliament.db.result.AbsenceResult;
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
+import at.jku.tk.hiesmair.gv.parliament.entities.relation.ClubAttitudeRelationByPeriod;
 import at.jku.tk.hiesmair.gv.parliament.entities.relation.PoliticianAttitudeRelationByPeriod;
 import at.jku.tk.hiesmair.gv.parliament.etl.period.LegislativePeriodEtlJob;
 import at.jku.tk.hiesmair.gv.parliament.etl.politician.PoliticiansEtlJob;
@@ -59,6 +60,9 @@ public class App implements CommandLineRunner {
 		
 		List<PoliticianAttitudeRelationByPeriod> result = paRep.getPoliticianAttitudesByPeriods();
 		System.out.println(result.size());
+		
+		List<ClubAttitudeRelationByPeriod> clubResult = paRep.getClubAttitudesByPeriods();
+		System.out.println(clubResult.size());
 		
 		System.out.println(politicianRep.countSessionPresencesOfPolitician("http://www.parlament.gv.at/WWER/PAD_36450/index.shtml"));
 		System.out.println(politicianRep.countSessionAbsencesOfPolitician("http://www.parlament.gv.at/WWER/PAD_36450/index.shtml"));
