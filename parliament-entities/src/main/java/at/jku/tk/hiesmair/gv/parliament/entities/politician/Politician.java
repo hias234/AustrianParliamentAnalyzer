@@ -168,6 +168,11 @@ public class Politician implements Serializable {
 		return periods;
 	}
 
+	public List<NationalCouncilMember> getNationalCouncilMemberMandates(int period) {
+		return getNationalCouncilMemberships().stream()
+				.filter(ncm -> ncm.getPeriods().contains(new LegislativePeriod(period))).collect(Collectors.toList());
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
