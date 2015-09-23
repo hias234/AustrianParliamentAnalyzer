@@ -4,6 +4,7 @@ public class LegislativePeriodStatisticDataDTO {
 
 	private Integer period;
 	private Double absencePercentage;
+	private Integer sessionCount;
 
 	public LegislativePeriodStatisticDataDTO() {
 		super();
@@ -13,6 +14,13 @@ public class LegislativePeriodStatisticDataDTO {
 		super();
 		this.period = period;
 		this.absencePercentage = absencePercentage;
+	}
+
+	public LegislativePeriodStatisticDataDTO(Integer period, Double absencePercentage, Integer sessionCount) {
+		super();
+		this.period = period;
+		this.absencePercentage = absencePercentage;
+		this.sessionCount = sessionCount;
 	}
 
 	public Integer getPeriod() {
@@ -29,6 +37,14 @@ public class LegislativePeriodStatisticDataDTO {
 
 	public void setAbsencePercentage(Double absencePercentage) {
 		this.absencePercentage = absencePercentage;
+	}
+
+	public Integer getSessionCount() {
+		return sessionCount;
+	}
+
+	public void setSessionCount(Integer sessionCount) {
+		this.sessionCount = sessionCount;
 	}
 
 }

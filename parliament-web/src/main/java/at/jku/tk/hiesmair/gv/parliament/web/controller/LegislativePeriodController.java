@@ -30,7 +30,8 @@ public class LegislativePeriodController {
 	public LegislativePeriodStatisticDataDTO getStatDataOfLatestPeriod() {
 		Integer latestPeriod = periodService.getLatestPeriod();
 		Double absencePercentage = periodService.getAbsencePercentage(latestPeriod);
+		Integer sessionCount = periodService.findOne(latestPeriod).getSessions().size();
 		
-		return new LegislativePeriodStatisticDataDTO(latestPeriod, absencePercentage);
+		return new LegislativePeriodStatisticDataDTO(latestPeriod, absencePercentage, sessionCount);
 	}
 }

@@ -27,4 +27,8 @@ public class LegislativePeriodService {
 	public int getLatestPeriod(){
 		return periodRep.getLatestPeriod();
 	}
+	
+	public LegislativePeriod findOne(Integer period){
+		return periodRep.findOne(period);
+	}
 }

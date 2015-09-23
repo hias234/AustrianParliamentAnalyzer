@@ -37,7 +37,7 @@
 				height: auto;
 			}
 			
-			progress-bubble {
+			.absencePercentage {
 		        --progress-bubble-stroke-color: rgba(255, 0, 0, 0.8);
 		        --progress-bubble-bg-stroke-color: rgba(193, 193, 193, 0.2);
 		        --progress-bubble-background-color: rgba(0, 0, 0, 1);
@@ -52,18 +52,25 @@
 				<div class="section-title">General Analysis</div>
 				<paper-card class="startPageCard" heading="Legislative Period Analysis">
 					<div class="card-content">
-						Here you can find general statstics of the different legislative periods.
+						Here you can find general statistics of the different legislative periods.
 						<br/><br/>
 						Data from the <b><span>{{latestPeriodStats.period}}</span>. Period</b>:
 						<br/>
 						<div>
 							<div style="text-align: center; width: 120px;">
-								<progress-bubble value="{{latestPeriodStats.absencePercentage}}" max="1">
+								<progress-bubble class="absencePercentage" value="{{latestPeriodStats.absencePercentage}}" max="1">
 								    <strong><span>{{latestPeriodAbsencePercentage}}</span>%</strong>
 								</progress-bubble>
 								Absence-Percentage
 							</div>
+							<div style="width: 120px; text-align: center">
+								<progress-bubble value="{{latestPeriodStats.absencePercentage}}" max="{{latestPeriodStats.absencePercentage}}">
+								    <strong><span>{{latestPeriodStats.sessionCount}}</span></strong>
+								</progress-bubble>
+								Session-Count
+							</div>
 							<div style="width: 100%;">
+							
 							</div>
 						</div>
 							
