@@ -45,7 +45,7 @@ public class PoliticianAttitudeService {
 		Integer maxAbsWeight = politicianAttitudes.stream().mapToInt(ca -> Math.abs(ca.getWeight())).max().getAsInt();
 		
 		for (PoliticianAttitudeRelationByPeriod politicianRelation : politicianAttitudes){
-			if (!politicianRelation.getPolitician1().equals(politicianRelation.getPolitician2())) {
+			if (Math.abs(politicianRelation.getWeight()) > 3 && !politicianRelation.getPolitician1().equals(politicianRelation.getPolitician2())) {
 				links.add(getLink(politicianRelation, nodes, maxAbsWeight));
 			}
 		}
@@ -68,7 +68,9 @@ public class PoliticianAttitudeService {
 	protected D3Link getLink(PoliticianAttitudeRelationByPeriod clubRelation, List<D3Node> nodes, Integer maxAbsWeight){
 		Integer sourceIndex = getNodeIndex(clubRelation.getPolitician1(), nodes);
 		Integer targetIndex = getNodeIndex(clubRelation.getPolitician2(), nodes);
-		Double weight = clubRelation.getWeight() / Double.valueOf(maxAbsWeight);
+		
+//		Double weight = clubRelation.getWeight() / Double.valueOf(maxAbsWeight);
+		Double weight = Double.valueOf(clubRelation.getWeight());
 		
 		return new D3Link(sourceIndex, targetIndex, weight);
 	}

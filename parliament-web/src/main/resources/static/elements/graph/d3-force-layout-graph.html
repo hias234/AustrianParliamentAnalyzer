@@ -2,7 +2,13 @@
 
 <dom-module name="d3-force-layout-graph">
 	<template>
-		<div id="graph" style="width: 100%; height: 600px;"></div>
+		<style>
+			.graphContainer {
+				width: 100%;
+				height: 600px;
+			}
+		</style>
+		<div id="{{id}}" class="graphContainer"></div>
 	</template>
 	<script>
 		Polymer({
@@ -12,19 +18,25 @@
 				graph: {
 					type: Object,
 					observer: '_createGraph'
+				},
+				id: {
+					type: String
+				},
+				maxLinkWidth: {
+					type: Number,
+					value: 500
 				}
 			},
 			
 			_createGraph: function() {
 				console.log('createGraph');
+				document.getElementById(this.id).children[0].innerHTML = '';
 				
-				var graphContainer = d3.select('#graph');
-				this.$.graph.innerHTML = '';
+				var graphContainer = d3.select('#' + this.id + ' > div');
+				var graphElement = graphContainer.append('svg:svg').attr('width', '100%').attr('height', '100%');
 				
-				var graphElement = graphContainer.append("svg:svg").attr("width", "100%").attr("height", "100%")
-				
-				var width = this.$.graph.offsetWidth;
-				var height = this.$.graph.offsetHeight;
+				var width = document.getElementById(this.id).children[0].offsetWidth;
+				var height = document.getElementById(this.id).children[0].offsetHeight;
 				
 				console.log(width);
 				console.log(height);
@@ -50,7 +62,7 @@
 					});
 				};
 				
-				var maxLinkWidth = width / 2;
+				var maxLinkWidth = this.maxLinkWidth
 				var graph = this.graph;
 				
 				var force = d3.layout.force().size([width, height]).nodes(nodes).links(links).gravity(0.1).charge(-3000).linkDistance(function(x) {

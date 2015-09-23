@@ -1,6 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
-<dom-module name="club-relation-graph">
+<dom-module name="politician-relation-graph">
 	<template>
 		<iron-ajax auto url="{{url}}" handle-as="json" last-response="{{graph}}" />
 		
@@ -10,11 +10,11 @@
 					type="number" value="{{period}}">
 	        </paper-input>
 		</div>
-		<d3-force-layout-graph graph="{{graph}}" id="clubGraph"></d3-force-layout-graph>
+		<d3-force-layout-graph graph="{{graph}}" id="politicianGraph" maxLinkWidth="20"></d3-force-layout-graph>
 	</template>
 	<script>
 		Polymer({
-			is: 'club-relation-graph',
+			is: 'politician-relation-graph',
 			
 			properties: {
 				period: {
@@ -31,7 +31,7 @@
 			},
 			
 			computeUrl: function(period){
-				return 'club/graph/period/' + period + '.json';
+				return 'politician/graph/period/' + period + '.json';
 			}
 		});
 	</script>
