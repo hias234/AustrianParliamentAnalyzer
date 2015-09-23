@@ -37,14 +37,17 @@ public class PoliticianAttitudeService {
 		List<D3Node> nodes = getNodes(clubAttitudes, period);
 		List<D3Link> links = getLinks(clubAttitudes, nodes, period);
 		
-		return new D3Graph(nodes, links);
+		D3Graph graph = new D3Graph(nodes, links);
+		graph.removeLinks(0.1);
+		
+		return graph;
 	}
 
 	protected List<D3Link> getLinks(List<PoliticianAttitudeRelationByPeriod> politicianAttitudes, List<D3Node> nodes, Integer period) {
 		List<D3Link> links = new ArrayList<D3Link>();
 
 		for (PoliticianAttitudeRelationByPeriod politicianRelation : politicianAttitudes){
-			if (Math.abs(politicianRelation.getWeight()) > 3 && !politicianRelation.getPolitician1().equals(politicianRelation.getPolitician2())) {
+			if (!politicianRelation.getPolitician1().equals(politicianRelation.getPolitician2())) {
 				links.add(getLink(politicianRelation, nodes, period));
 			}
 		}

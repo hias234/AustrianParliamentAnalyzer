@@ -16,6 +16,12 @@ public class D3Graph {
 	public Double getMaxAbsWeight(){
 		return links.stream().mapToDouble(l -> Math.abs(l.getWeight())).max().getAsDouble();
 	}
+	
+	public void removeLinks(Double thresholdWeightPercentage){
+		final Double maxAbsWeight = getMaxAbsWeight();
+		
+		links.removeIf(l -> Math.abs(l.getWeight()) < maxAbsWeight * thresholdWeightPercentage);
+	}
 
 	public List<D3Node> getNodes() {
 		return nodes;
