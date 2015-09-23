@@ -37,6 +37,7 @@
 				
 				var width = document.getElementById(this.id).children[0].offsetWidth;
 				var height = document.getElementById(this.id).children[0].offsetHeight;
+				var radius = 6;
 				
 				console.log(width);
 				console.log(height);
@@ -87,7 +88,7 @@
 				});
 
 				var node = graphElement.selectAll("g.node").data(force.nodes()).enter().append("svg:g").attr("class", "node");
-				node.append("svg:circle").attr("r", 5).style("stroke", "#FFF").style("stroke-width", 3).style("fill", function(n){
+				node.append("svg:circle").attr("r", radius).style("stroke", "#FFF").style("stroke-width", 3).style("fill", function(n){
 					if (n.color){
 						return n.color;
 					}
@@ -117,7 +118,7 @@
 
 				var updateNode = function() {
 					this.attr("transform", function(d) {
-						return "translate(" + d.x + "," + d.y + ")";
+						return "translate(" + Math.max(radius, Math.min(width - radius, d.x)) + "," + Math.max(radius, Math.min(width - radius, d.y)) + ")";
 					});
 				}
 					
