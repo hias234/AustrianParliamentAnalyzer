@@ -2,13 +2,7 @@
 
 <dom-module name="d3-force-layout-graph">
 	<template>
-		<div>
-			<h1>asdf</h1>
-		</div>
-		<div>
-			<svg id="graph" width="100%" height="100%"></svg>
-		</div>
-		
+		<svg id="graph" width="960" height="500"></svg>
 	</template>
 	<script>
 		Polymer({
@@ -17,21 +11,120 @@
 			properties: {
 				graph: {
 					type: Object,
-					value: {
-						nodes: eval([{"label":"CSP"},{"label":"NWB"},{"label":"WdU"},{"label":"SdP"},{"label":"LBd"},{"label":"HB"},{"label":"LB"},{"label":"VO"},{"label":"KuL"},{"label":"L"},{"label":"NSDAP"},{"label":"BZÖ"},{"label":"F"},{"label":"F-BZÖ"},{"label":"FPÖ"},{"label":"GdP"},{"label":"GRÜNE"},{"label":"KPÖ"},{"label":"NEOS"},{"label":"NEOS-LIF"},{"label":"STRONACH"},{"label":"SPÖ"},{"label":"ÖVP"},{"label":"ohne Klubzugehörigkeit"},{"label":"ohne Fraktion"}]),
-						links: eval([{"source":21,"target":18,"weight":100},{"source":22,"target":21,"weight":1080},{"source":23,"target":19,"weight":15},{"source":18,"target":22,"weight":31},{"source":20,"target":16,"weight":67},{"source":19,"target":18,"weight":65},{"source":16,"target":23,"weight":35},{"source":21,"target":14,"weight":-870},{"source":22,"target":16,"weight":-239},{"source":16,"target":19,"weight":208},{"source":20,"target":21,"weight":-52},{"source":19,"target":14,"weight":79},{"source":14,"target":22,"weight":-284},{"source":16,"target":18,"weight":226},{"source":23,"target":14,"weight":47},{"source":19,"target":23,"weight":9},{"source":21,"target":23,"weight":-89},{"source":21,"target":19,"weight":89},{"source":16,"target":14,"weight":331},{"source":23,"target":18,"weight":16},{"source":18,"target":23,"weight":9},{"source":16,"target":22,"weight":-105},{"source":14,"target":18,"weight":128},{"source":22,"target":20,"weight":-202},{"source":18,"target":19,"weight":58},{"source":23,"target":22,"weight":-18},{"source":19,"target":22,"weight":31},{"source":14,"target":23,"weight":49},{"source":21,"target":22,"weight":1302},{"source":18,"target":14,"weight":80},{"source":14,"target":19,"weight":108},{"source":22,"target":19,"weight":21},{"source":23,"target":21,"weight":-22},{"source":18,"target":20,"weight":95},{"source":20,"target":23,"weight":12},{"source":20,"target":19,"weight":43},{"source":16,"target":21,"weight":-124},{"source":23,"target":16,"weight":28},{"source":22,"target":23,"weight":-92},{"source":20,"target":18,"weight":50},{"source":21,"target":16,"weight":-273},{"source":22,"target":14,"weight":-699},{"source":14,"target":20,"weight":306},{"source":19,"target":16,"weight":35},{"source":20,"target":14,"weight":124},{"source":22,"target":18,"weight":38},{"source":19,"target":21,"weight":-24},{"source":16,"target":20,"weight":217},{"source":20,"target":22,"weight":-77},{"source":18,"target":16,"weight":35},{"source":23,"target":20,"weight":24},{"source":18,"target":21,"weight":-24},{"source":21,"target":20,"weight":-275},{"source":19,"target":20,"weight":95},{"source":14,"target":16,"weight":235},{"source":14,"target":21,"weight":-265}])
-					}
+					value: eval({"nodes":[{"id":"ohne Klubzugehörigkeit","label":"ohne Klubzugehörigkeit"},{"id":"GRÜNE","label":"GRÜNE"},{"id":"SPÖ","label":"SPÖ"},{"id":"NEOS-LIF","label":"NEOS-LIF"},{"id":"FPÖ","label":"FPÖ"},{"id":"ÖVP","label":"ÖVP"},{"id":"STRONACH","label":"STRONACH"},{"id":"NEOS","label":"NEOS"}],"links":[{"source":2,"target":7,"weight":100},{"source":5,"target":2,"weight":1080},{"source":0,"target":3,"weight":15},{"source":7,"target":5,"weight":31},{"source":6,"target":1,"weight":67},{"source":3,"target":7,"weight":65},{"source":1,"target":0,"weight":35},{"source":2,"target":4,"weight":-870},{"source":5,"target":1,"weight":-239},{"source":1,"target":3,"weight":208},{"source":6,"target":2,"weight":-52},{"source":3,"target":4,"weight":79},{"source":4,"target":5,"weight":-284},{"source":1,"target":7,"weight":226},{"source":0,"target":4,"weight":47},{"source":3,"target":0,"weight":9},{"source":2,"target":0,"weight":-89},{"source":2,"target":3,"weight":89},{"source":1,"target":4,"weight":331},{"source":0,"target":7,"weight":16},{"source":3,"target":3,"weight":58},{"source":6,"target":6,"weight":53},{"source":7,"target":0,"weight":9},{"source":1,"target":5,"weight":-105},{"source":4,"target":7,"weight":128},{"source":5,"target":6,"weight":-202},{"source":7,"target":3,"weight":58},{"source":4,"target":4,"weight":460},{"source":0,"target":5,"weight":-18},{"source":3,"target":5,"weight":31},{"source":4,"target":0,"weight":49},{"source":7,"target":7,"weight":65},{"source":2,"target":5,"weight":1302},{"source":7,"target":4,"weight":80},{"source":4,"target":3,"weight":108},{"source":5,"target":3,"weight":21},{"source":1,"target":1,"weight":186},{"source":0,"target":2,"weight":-22},{"source":7,"target":6,"weight":95},{"source":6,"target":0,"weight":12},{"source":6,"target":3,"weight":43},{"source":1,"target":2,"weight":-124},{"source":0,"target":1,"weight":28},{"source":5,"target":0,"weight":-92},{"source":6,"target":7,"weight":50},{"source":2,"target":1,"weight":-273},{"source":5,"target":4,"weight":-699},{"source":4,"target":6,"weight":306},{"source":3,"target":1,"weight":35},{"source":6,"target":4,"weight":124},{"source":2,"target":2,"weight":1159},{"source":5,"target":7,"weight":38},{"source":3,"target":2,"weight":-24},{"source":1,"target":6,"weight":217},{"source":6,"target":5,"weight":-77},{"source":7,"target":1,"weight":35},{"source":0,"target":6,"weight":24},{"source":5,"target":5,"weight":779},{"source":7,"target":2,"weight":-24},{"source":2,"target":6,"weight":-275},{"source":3,"target":6,"weight":95},{"source":4,"target":1,"weight":235},{"source":4,"target":2,"weight":-265}]})
 				}
 			},
 			
-			ready: function(){
+			attached: function(){
 				this.createGraph();
 			}, 
 			
 			createGraph: function() {
-				var graphElement = this.$.graph;
+				var graphElement = d3.select('#graph');
 
+				var width = this.$.graph.offsetWidth;
+				var height = this.$.graph.offsetHeight;
 				
+				console.log(width);
+				console.log(height);
+				
+				var labelAnchors = [];
+				var labelAnchorLinks = [];
+				var nodes = this.graph.nodes;
+				var links = this.graph.links;
+
+				for(var i = 0; i < nodes.length; i++) {
+					labelAnchors.push({
+						node : nodes[i]
+					});
+					labelAnchors.push({
+						node : nodes[i]
+					});
+					console.log(nodes[i].label);
+				};
+				
+				for(var i = 0; i < nodes.length; i++) {
+					labelAnchorLinks.push({
+						source : i * 2,
+						target : i * 2 + 1,
+						weight : 1
+					});
+				};
+				
+				var force = d3.layout.force().size([width, height]).nodes(nodes).links(links).gravity(1).linkDistance(50).charge(-1000).linkStrength(function(x) {
+					return x.weight / 2000;
+				});
+				
+				force.start();
+
+				var force2 = d3.layout.force().nodes(labelAnchors).links(labelAnchorLinks).gravity(0).linkDistance(0).linkStrength(8).charge(-100).size([width, height]);
+				force2.start();
+				
+				var link = graphElement.selectAll("line.link").data(links).enter().append("svg:line").attr("class", "link").style("stroke", "#CCC");
+
+				var node = graphElement.selectAll("g.node").data(force.nodes()).enter().append("svg:g").attr("class", "node");
+				node.append("svg:circle").attr("r", 5).style("fill", "#555").style("stroke", "#FFF").style("stroke-width", 3);
+				node.call(force.drag);
+				
+				var anchorLink = graphElement.selectAll("line.anchorLink").data(labelAnchorLinks)//.enter().append("svg:line").attr("class", "anchorLink").style("stroke", "#999");
+
+				var anchorNode = graphElement.selectAll("g.anchorNode").data(force2.nodes()).enter().append("svg:g").attr("class", "anchorNode");
+				anchorNode.append("svg:circle").attr("r", 0).style("fill", "#FFF");
+					anchorNode.append("svg:text").text(function(d, i) {
+					return i % 2 == 0 ? "" : d.node.label
+				}).style("fill", "#555").style("font-family", "Arial").style("font-size", 12);
+					
+				var updateLink = function() {
+					this.attr("x1", function(d) {
+						return d.source.x;
+					}).attr("y1", function(d) {
+						return d.source.y;
+					}).attr("x2", function(d) {
+						return d.target.x;
+					}).attr("y2", function(d) {
+						return d.target.y;
+					});
+				}
+
+				var updateNode = function() {
+					this.attr("transform", function(d) {
+						return "translate(" + d.x + "," + d.y + ")";
+					});
+				}
+					
+				force.on("tick", function() {
+
+					force2.start();
+
+					node.call(updateNode);
+
+					anchorNode.each(function(d, i) {
+						if(i % 2 == 0) {
+							d.x = d.node.x;
+							d.y = d.node.y;
+						} else {
+							var b = this.childNodes[1].getBBox();
+
+							var diffX = d.x - d.node.x;
+							var diffY = d.y - d.node.y;
+
+							var dist = Math.sqrt(diffX * diffX + diffY * diffY);
+
+							var shiftX = b.width * (diffX - dist) / (dist * 2);
+							shiftX = Math.max(-b.width, Math.min(0, shiftX));
+							var shiftY = 5;
+							this.childNodes[1].setAttribute("transform", "translate(" + shiftX + "," + shiftY + ")");
+						}
+					});
+
+
+					anchorNode.call(updateNode);
+
+					link.call(updateLink);
+					anchorLink.call(updateLink);
+
+				});
+
 			}
 		});
 	</script>
