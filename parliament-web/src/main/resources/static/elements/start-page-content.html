@@ -55,6 +55,11 @@
 		    	@apply(--layout-horizontal);
 		    	@apply(--center);
 		    }
+		    
+		    .inherit-colors {
+				color: inherit;
+				background-color: inherit;
+			}
 		</style>
 		
 		<iron-ajax auto url="/period/stats/latest.json" last-response="{{latestPeriodStats}}" />
@@ -95,7 +100,7 @@
 						activity in the parliament, and politicians with similar or completely different attitudes.
 					</div>
 					<div class="card-actions">
-						<a href="/politician-analysis.html">
+						<a href="/politician-analysis.html" class="inherit-colors">
 							<paper-button>Go to Politician Analysis</paper-button>
 						</a>
 					</div>
@@ -113,7 +118,7 @@
 						<img src="/img/club-network.png" style="width: 70%"/>
 					</div>
 					<div class="card-actions">
-						<a href="/club-network-analysis.html">
+						<a href="/club-network-analysis.html" class="inherit-colors">
 							<paper-button>Go To Club Network Analysis</paper-button>
 						</a>
 					</div>
@@ -126,7 +131,7 @@
 						course you can see to which clubs they belong.
 					</div>
 					<div class="card-actions">
-						<a href="/politician-network-analysis.html">
+						<a href="/politician-network-analysis.html" class="inherit-colors">
 							<paper-button>Go To Politician Network Analysis</paper-button>
 						</a>
 					</div>
