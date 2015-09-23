@@ -4,9 +4,9 @@ public class D3Link {
 
 	private Integer source;
 	private Integer target;
-	private Integer weight;
+	private Double weight;
 
-	public D3Link(Integer source, Integer target, Integer weight) {
+	public D3Link(Integer source, Integer target, Double weight) {
 		super();
 		this.source = source;
 		this.target = target;
@@ -29,11 +29,11 @@ public class D3Link {
 		this.target = target;
 	}
 
-	public Integer getWeight() {
+	public Double getWeight() {
 		return weight;
 	}
 
-	public void setWeight(Integer weight) {
+	public void setWeight(Double weight) {
 		this.weight = weight;
 	}
 

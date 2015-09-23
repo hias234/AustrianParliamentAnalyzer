@@ -37,8 +37,13 @@ public class ClubAttitudeService {
 
 	protected List<D3Link> getLinks(List<ClubAttitudeRelationByPeriod> clubAttitudes, List<D3Node> nodes) {
 		List<D3Link> links = new ArrayList<D3Link>();
+
+		Integer maxAbsWeight = clubAttitudes.stream().mapToInt(ca -> Math.abs(ca.getWeight())).max().getAsInt();
+		
 		for (ClubAttitudeRelationByPeriod clubRelation : clubAttitudes){
-			links.add(getLink(clubRelation, nodes));
+			if (!clubRelation.getClub1().equals(clubRelation.getClub2())){
+				links.add(getLink(clubRelation, nodes, maxAbsWeight));
+			}
 		}
 		return links;
 	}
@@ -56,10 +61,10 @@ public class ClubAttitudeService {
 		return new D3Node(club.getShortName(), club.getShortName());
 	}
 	
-	protected D3Link getLink(ClubAttitudeRelationByPeriod clubRelation, List<D3Node> nodes){
+	protected D3Link getLink(ClubAttitudeRelationByPeriod clubRelation, List<D3Node> nodes, Integer maxAbsWeight){
 		Integer sourceIndex = getNodeIndex(clubRelation.getClub1(), nodes);
 		Integer targetIndex = getNodeIndex(clubRelation.getClub2(), nodes);
-		Integer weight = clubRelation.getWeight();
+		Double weight = clubRelation.getWeight() / Double.valueOf(maxAbsWeight);
 		
 		return new D3Link(sourceIndex, targetIndex, weight);
 	}
