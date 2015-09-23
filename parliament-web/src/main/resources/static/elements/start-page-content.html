@@ -12,13 +12,21 @@
 		<style>
 			.startPageCard {
 				height: auto;
-				margin-bottom: 10px;
+				margin-bottom: 20px;
 			}
 			
 			.cardColumn {
-				margin-left: 10px;
+				margin-left: 20px;
 				float: left;
 				width: 45%;
+			}
+			
+			.section-title {
+				margin-top: 30px;
+				margin-bottom: 20px;
+				color: #78909C;
+			    font-size: 24px;
+			    font-weight: 300;
 			}
 			
 			paper-card::shadow paper-material {
@@ -27,6 +35,7 @@
 		</style>
 		<div width="100%">
 			<div class="cardColumn">
+				<div class="section-title">General Analysis</div>
 				<paper-card class="startPageCard" heading="Politician Analysis">
 					<div class="card-content">
 						Here you can see statistics for politicians of the Austrian Parliament like absences in sessions, 
@@ -38,6 +47,7 @@
 				</paper-card>
 			</div>
 			<div class="cardColumn">
+				<div class="section-title">Network Analysis</div>
 				<paper-card class="startPageCard" heading="Parliament Club Network Analysis">
 					<div class="card-content">
 						The speeches of politicians to all topics were analyzed and the relations of
