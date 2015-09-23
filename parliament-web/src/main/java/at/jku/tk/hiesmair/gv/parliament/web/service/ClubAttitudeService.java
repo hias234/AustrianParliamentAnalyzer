@@ -62,7 +62,7 @@ public class ClubAttitudeService {
 	}
 	
 	protected D3Node getNode(ParliamentClub club) {
-		return new D3Node(club.getShortName(), club.getShortName());
+		return new D3Node(club.getShortName(), club.getShortName(), club.getColor());
 	}
 	
 	protected D3Link getLink(ClubAttitudeRelationByPeriod clubRelation, List<D3Node> nodes, Integer maxAbsWeight){

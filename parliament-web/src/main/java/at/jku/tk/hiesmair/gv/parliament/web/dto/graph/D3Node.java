@@ -4,11 +4,19 @@ public class D3Node {
 
 	private String id;
 	private String label;
+	private String color;
 
 	public D3Node(String id, String label) {
 		super();
 		this.id = id;
 		this.label = label;
+	}
+
+	public D3Node(String id, String label, String color) {
+		super();
+		this.id = id;
+		this.label = label;
+		this.color = color;
 	}
 
 	public String getId() {
@@ -25,6 +33,14 @@ public class D3Node {
 
 	public void setLabel(String label) {
 		this.label = label;
+	}
+
+	public String getColor() {
+		return color;
+	}
+
+	public void setColor(String color) {
+		this.color = color;
 	}
 
 	@Override

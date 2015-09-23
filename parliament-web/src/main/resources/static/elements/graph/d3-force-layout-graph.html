@@ -77,7 +77,12 @@
 				var link = graphElement.selectAll("line.link").data(links).enter().append("svg:line").attr("class", "link").style("stroke", "#CCC");
 
 				var node = graphElement.selectAll("g.node").data(force.nodes()).enter().append("svg:g").attr("class", "node");
-				node.append("svg:circle").attr("r", 5).style("fill", "#555").style("stroke", "#FFF").style("stroke-width", 3);
+				node.append("svg:circle").attr("r", 5).style("stroke", "#FFF").style("stroke-width", 3).style("fill", function(n){
+					if (n.color){
+						return n.color;
+					}
+					return '#555555';
+				});
 				node.call(force.drag);
 				
 				var anchorLink = graphElement.selectAll("line.anchorLink").data(labelAnchorLinks)//.enter().append("svg:line").attr("class", "anchorLink").style("stroke", "#999");
