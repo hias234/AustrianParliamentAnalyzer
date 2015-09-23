@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import at.jku.tk.hiesmair.gv.parliament.web.dto.LegislativePeriodStatisticDataDTO;
 import at.jku.tk.hiesmair.gv.parliament.web.service.LegislativePeriodService;
 
 @RestController
@@ -25,4 +26,11 @@ public class LegislativePeriodController {
 				.collect(Collectors.toList());
 	}
 
+	@RequestMapping(value = "stats/latest", method = RequestMethod.GET)
+	public LegislativePeriodStatisticDataDTO getStatDataOfLatestPeriod() {
+		Integer latestPeriod = periodService.getLatestPeriod();
+		Double absencePercentage = periodService.getAbsencePercentage(latestPeriod);
+		
+		return new LegislativePeriodStatisticDataDTO(latestPeriod, absencePercentage);
+	}
 }

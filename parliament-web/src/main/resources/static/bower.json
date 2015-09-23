@@ -34,6 +34,7 @@
     "paper-toast": "PolymerElements/paper-toast#^1.0.0",
     "paper-toolbar": "PolymerElements/paper-toolbar#1.0.0",
     "paper-tooltip": "PolymerElements/paper-tooltip#^1.0.0",
-    "polymer": "Polymer/polymer#1.1.0"
+    "polymer": "Polymer/polymer#1.1.0",
+    "progress-bubble": "~1.1.0"
   }
 }

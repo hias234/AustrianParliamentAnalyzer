@@ -6,13 +6,17 @@
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../bower_components/paper-styles/color.html">
+<link rel="import" href="../bower_components/progress-bubble/progress-bubble.html">
+
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 
 <dom-module name="start-page-content">
 	<template>
-		<style>
+		<style is="custom-style">
 			.startPageCard {
 				height: auto;
 				margin-bottom: 20px;
+				width: 100%;
 			}
 			
 			.cardColumn {
@@ -32,10 +36,43 @@
 			paper-card::shadow paper-material {
 				height: auto;
 			}
+			
+			progress-bubble {
+		        --progress-bubble-stroke-color: rgba(255, 0, 0, 0.8);
+		        --progress-bubble-bg-stroke-color: rgba(193, 193, 193, 0.2);
+		        --progress-bubble-background-color: rgba(0, 0, 0, 1);
+		        --progress-bubble-reflection-display: none;
+		    }
 		</style>
+		
+		<iron-ajax auto url="/period/stats/latest.json" last-response="{{latestPeriodStats}}" />
+		
 		<div width="100%">
 			<div class="cardColumn">
 				<div class="section-title">General Analysis</div>
+				<paper-card class="startPageCard" heading="Legislative Period Analysis">
+					<div class="card-content">
+						Here you can find general statstics of the different legislative periods.
+						<br/><br/>
+						Data from the <b><span>{{latestPeriodStats.period}}</span>. Period</b>:
+						<br/>
+						<div>
+							<div style="text-align: center; width: 120px;">
+								<progress-bubble value="{{latestPeriodStats.absencePercentage}}" max="1">
+								    <strong><span>{{latestPeriodAbsencePercentage}}</span>%</strong>
+								</progress-bubble>
+								Absence-Percentage
+							</div>
+							<div style="width: 100%;">
+							</div>
+						</div>
+							
+						
+					</div>
+					<div class="card-actions">
+						<paper-button>Go to Period Analysis</paper-button>
+					</div>
+				</paper-card>
 				<paper-card class="startPageCard" heading="Politician Analysis">
 					<div class="card-content">
 						Here you can see statistics for politicians of the Austrian Parliament like absences in sessions, 
@@ -84,9 +121,16 @@
 			is: 'start-page-content',
 	
 			properties: {
-				
+				latestPeriodStats: Object,
+				latestPeriodAbsencePercentage: {
+					type: String,
+					computed: 'computedLatestPeriodAbsencePercentage(latestPeriodStats)'
+				}
 			},
 		
+			computedLatestPeriodAbsencePercentage: function(latestPeriodStats) {
+				return (latestPeriodStats.absencePercentage * 100).toFixed(2);
+			}
 		});
 	</script>
 </dom-module>

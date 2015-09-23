@@ -1,7 +1,5 @@
 package at.jku.tk.hiesmair.gv.parliament.web.service;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 import org.springframework.stereotype.Service;
@@ -17,5 +15,16 @@ public class LegislativePeriodService {
 	
 	public Iterable<LegislativePeriod> findAll(){
 		return periodRep.findAll();
+	}
+	
+	public Double getAbsencePercentage(Integer period){
+		Long presences = periodRep.getSessionPresenceCountOfPeriod(period);
+		Long absences = periodRep.getSessionAbsenceCountOfPeriod(period);
+		
+		return Double.valueOf(absences) / (presences + absences);
+	}
+	
+	public int getLatestPeriod(){
+		return periodRep.getLatestPeriod();
 	}
 }
