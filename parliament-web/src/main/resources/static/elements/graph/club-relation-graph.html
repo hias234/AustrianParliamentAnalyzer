@@ -1,0 +1,32 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module name="club-relation-graph">
+	<template>
+		<iron-ajax auto url="{{url}}" handle-as="json" last-response="{{graph}}" />
+	
+		<d3-force-layout-graph graph="{{graph}}"></d3-force-layout-graph>
+	</template>
+	<script>
+		Polymer({
+			is: 'club-relation-graph',
+			
+			properties: {
+				period: {
+					type: Number,
+					value: 25
+				},
+				graph: {
+					type: Object
+				},
+				url: {
+					type: String,
+					computed: 'computeUrl(period)'
+				}
+			},
+			
+			computeUrl: function(period){
+				return 'club/graph/period/' + period + '.json';
+			}
+		});
+	</script>
+</dom-module>
