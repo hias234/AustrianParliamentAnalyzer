@@ -1,19 +1,27 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+
 <dom-module name="politician-card">
 	<template>
 		<style>
-			.politician-name {
-				padding-top: 16px;
-				font-size: 22px;
-				font-weight: bold;
+			paper-card::shadow paper-material {
+				height: auto;
+			}
+			
+			.politician-card {
+				width: 360px;
+				margin-bottom: 20px;
+				margin-left: 10px;
+				margin-right: 10px;
+			}
+			
+			.politician-card-content {
+				margin: 0px;
 			}
 		</style>
-		<paper-card>
-			<div>
-				<br/>
-				<span class="politician-name">{{fullPoliticianName}}</span>
-				<br/>
+		<paper-card heading="{{fullPoliticianName}}">
+			<div class="card-content politician-card-content">
 				<span>{{clubs}}</span>
 			</div>
 		</paper-card>
