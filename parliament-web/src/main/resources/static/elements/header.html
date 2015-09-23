@@ -58,28 +58,12 @@
 				<paper-toolbar>
 					<div class="title">Austrian Parliament Analyzer</div>
 				</paper-toolbar>
-				<paper-tabs selected="{{selected}}" noink>
-					<paper-tab>National Council Members</paper-tab>
-					<paper-tab>Club-Relations</paper-tab>
-					<paper-tab>Politician-Relations</paper-tab>
-				</paper-tabs>
 			</div>
 		</div>
-		
-		<iron-pages selected="{{selected}}">
-			<content></content>
-		</iron-pages>
 	</template>
 	<script>
 		Polymer({
-			is: 'parliament-header',
-
-			properties: {
-				selected: {
-					type: Number,
-					value: 2
-				}
-			}
+			is: 'parliament-header'
 		});
 	</script>
 </dom-module>
