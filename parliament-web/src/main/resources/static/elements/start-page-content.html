@@ -1,0 +1,64 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/paper-styles/color.html">
+
+<dom-module name="start-page-content">
+	<template>
+		<style>
+			.startPageCard {
+				height: auto;
+				margin-bottom: 10px;
+			}
+			
+			.cardColumn {
+				margin-left: 10px;
+				float: left;
+				width: 45%;
+			}
+			
+			paper-card::shadow paper-material {
+				height: auto;
+			}
+		</style>
+		<div width="100%">
+			<div class="cardColumn">
+				<paper-card class="startPageCard" heading="Politician Analysis">
+					<div class="card-content">
+						Here you can see statistics for politicians of the Austrian Parliament like absences in sessions, 
+						activity in the parliament, and politicians with similar or completely different attitudes.
+					</div>
+					<div class="card-actions">
+						<paper-button>Go to Politician Analysis</paper-button>
+					</div>
+				</paper-card>
+			</div>
+			<div class="cardColumn">
+				<paper-card class="startPageCard" heading="Parliament Club Network Analysis">
+					<div class="card-content">
+						The speeches of politicians to all topics were analyzed and the relations of
+						parliament clubs were computed. These relations are shown in a network graph
+						and you can see per period which clubs have the same attitues.
+					</div>
+					<div class="card-actions">
+						<paper-button>Go To Club Network Analysis</paper-button>
+					</div>
+				</paper-card>
+			</div>
+		</div>
+	</template>
+	<script>
+		Polymer({
+			is: 'start-page-content',
+	
+			properties: {
+				
+			},
+		
+		});
+	</script>
+</dom-module>
