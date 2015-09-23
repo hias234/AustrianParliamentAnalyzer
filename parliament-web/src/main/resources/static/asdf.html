@@ -3,9 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Force based label placement</title>
-		<script type="text/javascript" src="http://mbostock.github.com/d3/d3.js?2.6.0"></script>
-		<script type="text/javascript" src="http://mbostock.github.com/d3/d3.layout.js?2.6.0"></script>
-		<script type="text/javascript" src="http://mbostock.github.com/d3/d3.geom.js?2.6.0"></script>
+		<script type="text/javascript" src="../bower_components/d3/d3.js"></script>
 	</head>
 	<body>
 <script type="text/javascript" charset="utf-8">
@@ -37,7 +35,7 @@
 				});
 			};
 
-			var force = d3.layout.force().size([w, h]).nodes(nodes).links(links).gravity(1).linkDistance(50).charge(-700).linkStrength(function(x) {
+			var force = d3.layout.force().size([w, h]).nodes(nodes).links(links).gravity(1).linkDistance(50).charge(-1000).linkStrength(function(x) {
 				return x.weight / 50000;
 			});
 
