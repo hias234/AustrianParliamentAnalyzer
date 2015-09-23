@@ -1,7 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="d3-force-layout-graph.html">
-<link rel="import" href="bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 
 <dom-module name="politician-relation-graph">
 	<template>
@@ -9,7 +10,7 @@
 		
 		<div>
 			<paper-input class="short" style="width: 300px"
-					label="Show Club-graph for period" 
+					label="Show Politician-graph for period" 
 					type="number" value="{{period}}">
 	        </paper-input>
 		</div>
