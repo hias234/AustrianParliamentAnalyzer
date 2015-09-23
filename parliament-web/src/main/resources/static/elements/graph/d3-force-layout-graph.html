@@ -1,8 +1,8 @@
-<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <dom-module name="d3-force-layout-graph">
 	<template>
-		<svg id="graph" width="960" height="500"></svg>
+		<div id="graph" style="width: 100%; height: 600px;"></div>
 	</template>
 	<script>
 		Polymer({
@@ -11,17 +11,18 @@
 			properties: {
 				graph: {
 					type: Object,
-					value: eval({"nodes":[{"id":"ohne Klubzugehörigkeit","label":"ohne Klubzugehörigkeit"},{"id":"GRÜNE","label":"GRÜNE"},{"id":"SPÖ","label":"SPÖ"},{"id":"NEOS-LIF","label":"NEOS-LIF"},{"id":"FPÖ","label":"FPÖ"},{"id":"ÖVP","label":"ÖVP"},{"id":"STRONACH","label":"STRONACH"},{"id":"NEOS","label":"NEOS"}],"links":[{"source":2,"target":7,"weight":0.07680491551459294},{"source":5,"target":2,"weight":0.8294930875576036},{"source":0,"target":3,"weight":0.01152073732718894},{"source":7,"target":5,"weight":0.023809523809523808},{"source":6,"target":1,"weight":0.05145929339477726},{"source":3,"target":7,"weight":0.04992319508448541},{"source":1,"target":0,"weight":0.026881720430107527},{"source":2,"target":4,"weight":-0.6682027649769585},{"source":5,"target":1,"weight":-0.1835637480798771},{"source":1,"target":3,"weight":0.1597542242703533},{"source":6,"target":2,"weight":-0.039938556067588324},{"source":3,"target":4,"weight":0.060675883256528416},{"source":4,"target":5,"weight":-0.21812596006144394},{"source":1,"target":7,"weight":0.17357910906298002},{"source":0,"target":4,"weight":0.03609831029185868},{"source":3,"target":0,"weight":0.0069124423963133645},{"source":2,"target":0,"weight":-0.06835637480798772},{"source":2,"target":3,"weight":0.06835637480798772},{"source":1,"target":4,"weight":0.2542242703533026},{"source":0,"target":7,"weight":0.01228878648233487},{"source":7,"target":0,"weight":0.0069124423963133645},{"source":1,"target":5,"weight":-0.08064516129032258},{"source":4,"target":7,"weight":0.09831029185867896},{"source":5,"target":6,"weight":-0.15514592933947774},{"source":7,"target":3,"weight":0.0445468509984639},{"source":0,"target":5,"weight":-0.013824884792626729},{"source":3,"target":5,"weight":0.023809523809523808},{"source":4,"target":0,"weight":0.03763440860215054},{"source":2,"target":5,"weight":1.0},{"source":7,"target":4,"weight":0.06144393241167435},{"source":4,"target":3,"weight":0.08294930875576037},{"source":5,"target":3,"weight":0.016129032258064516},{"source":0,"target":2,"weight":-0.016897081413210446},{"source":7,"target":6,"weight":0.07296466973886329},{"source":6,"target":0,"weight":0.009216589861751152},{"source":6,"target":3,"weight":0.03302611367127496},{"source":1,"target":2,"weight":-0.09523809523809523},{"source":0,"target":1,"weight":0.021505376344086023},{"source":5,"target":0,"weight":-0.0706605222734255},{"source":6,"target":7,"weight":0.03840245775729647},{"source":2,"target":1,"weight":-0.20967741935483872},{"source":5,"target":4,"weight":-0.5368663594470046},{"source":4,"target":6,"weight":0.2350230414746544},{"source":3,"target":1,"weight":0.026881720430107527},{"source":6,"target":4,"weight":0.09523809523809523},{"source":5,"target":7,"weight":0.029185867895545316},{"source":3,"target":2,"weight":-0.018433179723502304},{"source":1,"target":6,"weight":0.16666666666666666},{"source":6,"target":5,"weight":-0.05913978494623656},{"source":7,"target":1,"weight":0.026881720430107527},{"source":0,"target":6,"weight":0.018433179723502304},{"source":7,"target":2,"weight":-0.018433179723502304},{"source":2,"target":6,"weight":-0.21121351766513058},{"source":3,"target":6,"weight":0.07296466973886329},{"source":4,"target":1,"weight":0.18049155145929338},{"source":4,"target":2,"weight":-0.20353302611367127}]})
+					observer: '_createGraph'
 				}
 			},
 			
-			attached: function(){
-				this.createGraph();
-			}, 
-			
-			createGraph: function() {
-				var graphElement = d3.select('#graph');
-
+			_createGraph: function() {
+				console.log('createGraph');
+				
+				var graphContainer = d3.select('#graph');
+				this.$.graph.innerHTML = '';
+				
+				var graphElement = graphContainer.append("svg:svg").attr("width", "100%").attr("height", "100%")
+				
 				var width = this.$.graph.offsetWidth;
 				var height = this.$.graph.offsetHeight;
 				
@@ -40,7 +41,6 @@
 					labelAnchors.push({
 						node : nodes[i]
 					});
-					console.log(nodes[i].label);
 				};
 				
 				for(var i = 0; i < nodes.length; i++) {
@@ -52,7 +52,7 @@
 				};
 				
 				var force = d3.layout.force().size([width, height]).nodes(nodes).links(links).gravity(1).linkDistance(50).charge(-3000).linkStrength(function(x) {
-					return x.weight / 1.5;
+					return x.weight / 1.3;
 				});
 				
 				force.start();
