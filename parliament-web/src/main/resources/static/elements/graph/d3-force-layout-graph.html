@@ -22,10 +22,6 @@
 				id: {
 					type: String
 				},
-				maxLinkWidth: {
-					type: Number,
-					value: 500
-				},
 				charge: {
 					type: Number,
 					value: -3000
@@ -66,7 +62,7 @@
 					});
 				};
 				
-				var maxLinkWidth = this.maxLinkWidth
+				var maxLinkWidth = height * 0.9;
 				var graph = this.graph;
 				
 				var force = d3.layout.force().size([width, height]).nodes(nodes).links(links).gravity(0.1).charge(this.charge).linkDistance(function(x) {
