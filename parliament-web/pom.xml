@@ -56,13 +56,6 @@
 		<!-- <dependency> <groupId>at.jku.tk.hiesmair.gv</groupId> <artifactId>parliament-sentiment-analysis</artifactId> 
 			<version>0.0.1-SNAPSHOT</version> </dependency> -->
 
-		<!-- gephi graph library -->
-		<dependency>
-			<groupId>org.gephi</groupId>
-			<artifactId>gephi-toolkit</artifactId>
-			<version>0.9-SNAPSHOT</version>
-		</dependency>
-
 		<!-- test -->
 		<dependency>
 			<groupId>junit</groupId>
