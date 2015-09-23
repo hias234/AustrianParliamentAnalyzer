@@ -78,7 +78,17 @@
 				var force2 = d3.layout.force().nodes(labelAnchors).links(labelAnchorLinks).gravity(0).linkDistance(0).linkStrength(8).charge(-100).size([width, height]);
 				force2.start();
 				
-				var link = graphElement.selectAll("line.link").data(links).enter().append("svg:line").attr("class", "link").style("stroke", "#CCC");
+				var link = graphElement.selectAll("line.link").data(links).enter().append("svg:line").attr("class", "link").style("stroke", function(l){
+					if (l.color){
+						return l.color;
+					}
+					return '#CCCCCC';
+				}).style('opacity', function(l){
+					if (l.weight < 0){
+						return 0.01;
+					}
+					return 0.5;
+				});
 
 				var node = graphElement.selectAll("g.node").data(force.nodes()).enter().append("svg:g").attr("class", "node");
 				node.append("svg:circle").attr("r", 5).style("stroke", "#FFF").style("stroke-width", 3).style("fill", function(n){

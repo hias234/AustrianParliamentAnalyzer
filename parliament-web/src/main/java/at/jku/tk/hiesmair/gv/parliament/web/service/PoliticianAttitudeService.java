@@ -61,21 +61,33 @@ public class PoliticianAttitudeService {
 	}
 	
 	protected D3Node getNode(Politician politician, Integer period) {
+		String color = getNodeColor(politician, period);
+		
+		return new D3Node(politician.getId(), politician.getSurName(), color);
+	}
+
+	protected String getNodeColor(Politician politician, Integer period) {
 		List<NationalCouncilMember> ncMandates = politician.getNationalCouncilMemberMandates(period);
 		String color = null;
 		if (!ncMandates.isEmpty()){
 			color = ncMandates.get(0).getClub().getColor();
 		}
-		
-		return new D3Node(politician.getId(), politician.getSurName(), color);
+		return color;
 	}
 	
-	protected D3Link getLink(PoliticianAttitudeRelationByPeriod clubRelation, List<D3Node> nodes, Integer period){
-		Integer sourceIndex = getNodeIndex(clubRelation.getPolitician1(), nodes, period);
-		Integer targetIndex = getNodeIndex(clubRelation.getPolitician2(), nodes, period);
-		Double weight = Double.valueOf(clubRelation.getWeight());
+	protected D3Link getLink(PoliticianAttitudeRelationByPeriod politicianRelation, List<D3Node> nodes, Integer period){
+		Integer sourceIndex = getNodeIndex(politicianRelation.getPolitician1(), nodes, period);
+		Integer targetIndex = getNodeIndex(politicianRelation.getPolitician2(), nodes, period);
+		Double weight = Double.valueOf(politicianRelation.getWeight());
 		
-		return new D3Link(sourceIndex, targetIndex, weight);
+		String color = null;
+		String color1 = getNodeColor(politicianRelation.getPolitician1(), period);
+		String color2 = getNodeColor(politicianRelation.getPolitician2(), period);
+		if (color1 != null && color1.equals(color2)){
+			color = color1;
+		}
+		
+		return new D3Link(sourceIndex, targetIndex, weight, color);
 	}
 	
 	protected Integer getNodeIndex(Politician politician, List<D3Node> nodes, Integer period) {
