@@ -26,8 +26,12 @@ public class ClubAttitudeService {
 		return politicianRelationRep.getClubAttitudesByPeriods();
 	}
 	
+	public List<ClubAttitudeRelationByPeriod> getClubAttitudes(Integer period){
+		return politicianRelationRep.getClubAttitudesByPeriod(period);
+	}
+	
 	public D3Graph getClubAttitudeGraph(Integer period){
-		List<ClubAttitudeRelationByPeriod> clubAttitudes = getClubAttitudes();
+		List<ClubAttitudeRelationByPeriod> clubAttitudes = getClubAttitudes(period);
 		
 		List<D3Node> nodes = getNodes(clubAttitudes);
 		List<D3Link> links = getLinks(clubAttitudes, nodes);

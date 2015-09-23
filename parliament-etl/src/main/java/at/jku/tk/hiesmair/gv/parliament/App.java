@@ -54,14 +54,14 @@ public class App implements CommandLineRunner {
 	
 	@Override
 	public void run(String... args) throws Exception {
-//		periodJob.start(Arrays.asList(25));
+//		periodJob.start(Arrays.asList(20,21,22,23,24,25));
 
 //		databaseLoader.updatePoliticianAttitudeRelations();
 		
-		List<PoliticianAttitudeRelationByPeriod> result = paRep.getPoliticianAttitudesByPeriods();
+		List<PoliticianAttitudeRelationByPeriod> result = paRep.getPoliticianAttitudesByPeriod(24);
 		System.out.println(result.size());
 		
-		List<ClubAttitudeRelationByPeriod> clubResult = paRep.getClubAttitudesByPeriods();
+		List<ClubAttitudeRelationByPeriod> clubResult = paRep.getClubAttitudesByPeriod(24);
 		System.out.println(clubResult.size());
 		
 		System.out.println(politicianRep.countSessionPresencesOfPolitician("http://www.parlament.gv.at/WWER/PAD_36450/index.shtml"));

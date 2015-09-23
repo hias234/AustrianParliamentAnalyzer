@@ -3,7 +3,13 @@
 <dom-module name="club-relation-graph">
 	<template>
 		<iron-ajax auto url="{{url}}" handle-as="json" last-response="{{graph}}" />
-	
+		
+		<div>
+			<paper-input class="short" style="width: 300px"
+					label="Show Club-graph for period" 
+					type="number" value="{{period}}">
+	        </paper-input>
+		</div>
 		<d3-force-layout-graph graph="{{graph}}"></d3-force-layout-graph>
 	</template>
 	<script>
