@@ -4,13 +4,14 @@
 	<template>
 		<style>
 			.title {
+				margin-top: 30px;
 				font-family: 'Roboto', 'Noto', sans-serif;
 			    -webkit-font-smoothing: antialiased;
 			    text-rendering: optimizeLegibility;
 			    white-space: nowrap;
 			    overflow: hidden;
 			    text-overflow: ellipsis;
-			    font-size: 20px;
+			    font-size: 28px;
 			    font-weight: 500;
 			    line-height: 28px;
 			    -ms-flex: 1 1 0.000000001px;
@@ -18,6 +19,12 @@
 			    flex: 1;
 			    -webkit-flex-basis: 0.000000001px;
 			    flex-basis: 0.000000001px;
+			    width: 100%;
+			}
+			
+			.subTitle {
+				margin-top: 10px;
+			    width: 100%;
 			}
 
 			paper-tabs, core-toolbar {
@@ -28,6 +35,7 @@
 		    paper-toolbar {
 		    	background: #9C27B0;
 		    	color: #ffffff;
+		    	height: 96px;
 		    }
 		    
 		    core-toolbar paper-tabs {
@@ -56,14 +64,22 @@
 		<div class="primary-color" style="box-shadow: 0px 3px 2px rgba(0, 0, 0, 0.2);">
 			<div class="container">
 				<paper-toolbar>
-					<div class="title">Austrian Parliament Analyzer</div>
+					<div style="width: 100%">
+						<div class="title"><span>{{headerTitle}}</span></div>
+						<div class="subTitle"><span>{{headerSubTitle}}</span></div>
+					</div>
 				</paper-toolbar>
 			</div>
 		</div>
 	</template>
 	<script>
 		Polymer({
-			is: 'parliament-header'
+			is: 'parliament-header',
+			
+			properties: {
+				headerTitle: String,
+				headerSubTitle: String
+			}
 		});
 	</script>
 </dom-module>
