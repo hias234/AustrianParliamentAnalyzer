@@ -6,11 +6,15 @@ public class D3Graph {
 
 	private List<D3Node> nodes;
 	private List<D3Link> links;
-
+	
 	public D3Graph(List<D3Node> nodes, List<D3Link> links) {
 		super();
 		this.nodes = nodes;
 		this.links = links;
+	}
+	
+	public Double getMaxAbsWeight(){
+		return links.stream().mapToDouble(l -> Math.abs(l.getWeight())).max().getAsDouble();
 	}
 
 	public List<D3Node> getNodes() {

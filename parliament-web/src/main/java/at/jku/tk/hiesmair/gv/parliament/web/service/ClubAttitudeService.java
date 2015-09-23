@@ -68,7 +68,9 @@ public class ClubAttitudeService {
 	protected D3Link getLink(ClubAttitudeRelationByPeriod clubRelation, List<D3Node> nodes, Integer maxAbsWeight){
 		Integer sourceIndex = getNodeIndex(clubRelation.getClub1(), nodes);
 		Integer targetIndex = getNodeIndex(clubRelation.getClub2(), nodes);
-		Double weight = clubRelation.getWeight() / Double.valueOf(maxAbsWeight);
+		
+//		Double weight = 1.0 - (clubRelation.getWeight() + maxAbsWeight) / Double.valueOf(maxAbsWeight * 2);
+		Double weight = Double.valueOf(clubRelation.getWeight());
 		
 		return new D3Link(sourceIndex, targetIndex, weight);
 	}

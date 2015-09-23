@@ -50,8 +50,11 @@
 					});
 				};
 				
-				var force = d3.layout.force().size([width, height]).nodes(nodes).links(links).gravity(1).charge(-3000).linkStrength(function(x) {
-					return x.weight / 3;
+				var maxLinkWidth = width / 2;
+				var graph = this.graph;
+				
+				var force = d3.layout.force().size([width, height]).nodes(nodes).links(links).gravity(0.1).charge(-3000).linkDistance(function(x) {
+					return maxLinkWidth - (maxLinkWidth * ((x.weight + graph.maxAbsWeight) / (graph.maxAbsWeight * 2)));
 				});
 				
 				force.start();
