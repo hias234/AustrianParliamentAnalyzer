@@ -46,13 +46,12 @@
 				for(var i = 0; i < nodes.length; i++) {
 					labelAnchorLinks.push({
 						source : i * 2,
-						target : i * 2 + 1,
-						weight : 1
+						target : i * 2 + 1
 					});
 				};
 				
 				var force = d3.layout.force().size([width, height]).nodes(nodes).links(links).gravity(1).charge(-3000).linkStrength(function(x) {
-					return x.weight / 2;
+					return x.weight / 3;
 				});
 				
 				force.start();
