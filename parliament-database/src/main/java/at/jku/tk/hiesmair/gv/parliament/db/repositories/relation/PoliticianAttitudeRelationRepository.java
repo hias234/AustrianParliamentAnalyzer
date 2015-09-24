@@ -21,6 +21,15 @@ public interface PoliticianAttitudeRelationRepository extends CrudRepository<Pol
 			+ "GROUP BY par.politician1, par.politician2, par.discussion.session.period")
 	public List<PoliticianAttitudeRelationByPeriod> getPoliticianAttitudesByPeriod(@Param("period") Integer period);
 
+	@Query("SELECT new PoliticianAttitudeRelationByPeriod(par.politician1, par.politician2, par.discussion.session.period, SUM(par.weight)) "
+			+ "FROM PoliticianAttitudeRelation par "
+			+ "INNER JOIN par.discussion d "
+			+ "WHERE par.discussion.session.period.period = :period "
+			+ "AND LOWER(d.topic) LIKE CONCAT('%', LOWER(:topic), '%') "
+			+ "GROUP BY par.politician1, par.politician2, par.discussion.session.period")
+	public List<PoliticianAttitudeRelationByPeriod> getPoliticianAttitudesByPeriodAndDiscussionTopic(
+			@Param("period") Integer period, @Param("topic") String topic);
+
 	@Query("SELECT new ClubAttitudeRelationByPeriod(ncm1.club, ncm2.club, par.discussion.session.period, SUM(par.weight)) FROM PoliticianAttitudeRelation par "
 			+ " INNER JOIN TREAT(par.politician1.mandates as NationalCouncilMember) ncm1 "
 			+ " INNER JOIN TREAT(par.politician2.mandates as NationalCouncilMember) ncm2 "
@@ -28,7 +37,7 @@ public interface PoliticianAttitudeRelationRepository extends CrudRepository<Pol
 			+ " WHERE periods1.period = par.discussion.session.period.period AND periods2.period = par.discussion.session.period.period "
 			+ "GROUP BY ncm1.club, ncm2.club, par.discussion.session.period")
 	public List<ClubAttitudeRelationByPeriod> getClubAttitudesByPeriods();
-	
+
 	@Query("SELECT new ClubAttitudeRelationByPeriod(ncm1.club, ncm2.club, par.discussion.session.period, SUM(par.weight)) FROM PoliticianAttitudeRelation par "
 			+ " INNER JOIN TREAT(par.politician1.mandates as NationalCouncilMember) ncm1 "
 			+ " INNER JOIN TREAT(par.politician2.mandates as NationalCouncilMember) ncm2 "

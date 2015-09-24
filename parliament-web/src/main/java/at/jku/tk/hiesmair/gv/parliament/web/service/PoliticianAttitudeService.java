@@ -22,31 +22,48 @@ public class PoliticianAttitudeService {
 
 	@Inject
 	private PoliticianAttitudeRelationRepository politicianRelationRep;
-	
-	public List<PoliticianAttitudeRelationByPeriod> getPoliticianAttitudes(){
+
+	public List<PoliticianAttitudeRelationByPeriod> getPoliticianAttitudes() {
 		return politicianRelationRep.getPoliticianAttitudesByPeriods();
 	}
-	
-	public List<PoliticianAttitudeRelationByPeriod> getPoliticianAttitudes(Integer period){
+
+	public List<PoliticianAttitudeRelationByPeriod> getPoliticianAttitudesByPeriod(Integer period) {
 		return politicianRelationRep.getPoliticianAttitudesByPeriod(period);
 	}
-	
-	public D3Graph getPoliticianAttitudeGraph(Integer period){
-		List<PoliticianAttitudeRelationByPeriod> clubAttitudes = getPoliticianAttitudes(period);
-		
+
+	public List<PoliticianAttitudeRelationByPeriod> getPoliticianAttitudesByPeriodAndDiscussionTopic(Integer period,
+			String discussionTopic) {
+		return politicianRelationRep.getPoliticianAttitudesByPeriodAndDiscussionTopic(period, discussionTopic);
+	}
+
+	public D3Graph getPoliticianAttitudeGraph(Integer period, String discussionTopic) {
+		List<PoliticianAttitudeRelationByPeriod> clubAttitudes = getPoliticianAttitudesByPeriodAndDiscussionTopic(
+				period, discussionTopic);
+
+		return getPoliticianAttitudeGraph(period, clubAttitudes);
+	}
+
+	public D3Graph getPoliticianAttitudeGraph(Integer period) {
+		List<PoliticianAttitudeRelationByPeriod> clubAttitudes = getPoliticianAttitudesByPeriod(period);
+
+		return getPoliticianAttitudeGraph(period, clubAttitudes);
+	}
+
+	protected D3Graph getPoliticianAttitudeGraph(Integer period, List<PoliticianAttitudeRelationByPeriod> clubAttitudes) {
 		List<D3Node> nodes = getNodes(clubAttitudes, period);
 		List<D3Link> links = getLinks(clubAttitudes, nodes, period);
-		
+
 		D3Graph graph = new D3Graph(nodes, links);
 		graph.removeLinks(0.1);
-		
+
 		return graph;
 	}
 
-	protected List<D3Link> getLinks(List<PoliticianAttitudeRelationByPeriod> politicianAttitudes, List<D3Node> nodes, Integer period) {
+	protected List<D3Link> getLinks(List<PoliticianAttitudeRelationByPeriod> politicianAttitudes, List<D3Node> nodes,
+			Integer period) {
 		List<D3Link> links = new ArrayList<D3Link>();
 
-		for (PoliticianAttitudeRelationByPeriod politicianRelation : politicianAttitudes){
+		for (PoliticianAttitudeRelationByPeriod politicianRelation : politicianAttitudes) {
 			if (!politicianRelation.getPolitician1().equals(politicianRelation.getPolitician2())) {
 				links.add(getLink(politicianRelation, nodes, period));
 			}
@@ -56,43 +73,43 @@ public class PoliticianAttitudeService {
 
 	protected List<D3Node> getNodes(List<PoliticianAttitudeRelationByPeriod> politicianAttitudes, Integer period) {
 		Set<D3Node> nodes = new HashSet<D3Node>();
-		for (PoliticianAttitudeRelationByPeriod politicianAttitude : politicianAttitudes){
+		for (PoliticianAttitudeRelationByPeriod politicianAttitude : politicianAttitudes) {
 			nodes.add(getNode(politicianAttitude.getPolitician1(), period));
 			nodes.add(getNode(politicianAttitude.getPolitician2(), period));
 		}
 		return new ArrayList<D3Node>(nodes);
 	}
-	
+
 	protected D3Node getNode(Politician politician, Integer period) {
 		String color = getNodeColor(politician, period);
-		
+
 		return new D3Node(politician.getId(), politician.getSurName(), color);
 	}
 
 	protected String getNodeColor(Politician politician, Integer period) {
 		List<NationalCouncilMember> ncMandates = politician.getNationalCouncilMemberMandates(period);
 		String color = null;
-		if (!ncMandates.isEmpty()){
+		if (!ncMandates.isEmpty()) {
 			color = ncMandates.get(0).getClub().getColor();
 		}
 		return color;
 	}
-	
-	protected D3Link getLink(PoliticianAttitudeRelationByPeriod politicianRelation, List<D3Node> nodes, Integer period){
+
+	protected D3Link getLink(PoliticianAttitudeRelationByPeriod politicianRelation, List<D3Node> nodes, Integer period) {
 		Integer sourceIndex = getNodeIndex(politicianRelation.getPolitician1(), nodes, period);
 		Integer targetIndex = getNodeIndex(politicianRelation.getPolitician2(), nodes, period);
 		Double weight = Double.valueOf(politicianRelation.getWeight());
-		
+
 		String color = null;
 		String color1 = getNodeColor(politicianRelation.getPolitician1(), period);
 		String color2 = getNodeColor(politicianRelation.getPolitician2(), period);
-		if (color1 != null && color1.equals(color2)){
+		if (color1 != null && color1.equals(color2)) {
 			color = color1;
 		}
-		
+
 		return new D3Link(sourceIndex, targetIndex, weight, color);
 	}
-	
+
 	protected Integer getNodeIndex(Politician politician, List<D3Node> nodes, Integer period) {
 		return nodes.indexOf(getNode(politician, period));
 	}
