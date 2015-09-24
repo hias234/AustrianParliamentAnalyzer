@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,6 +20,7 @@ import javax.persistence.Table;
 import org.apache.commons.lang.time.DateUtils;
 
 import at.jku.tk.hiesmair.gv.parliament.db.DBConstants;
+import at.jku.tk.hiesmair.gv.parliament.entities.club.ParliamentClub;
 import at.jku.tk.hiesmair.gv.parliament.entities.mandate.NationalCouncilMember;
 import at.jku.tk.hiesmair.gv.parliament.entities.session.Session;
 import at.jku.tk.hiesmair.gv.parliament.util.ParliamentDateUtils;
@@ -77,6 +79,12 @@ public class LegislativePeriod implements Serializable {
 				.stream()
 				.filter(ncm -> ParliamentDateUtils.isDateBetween(DateUtils.truncate(date, Calendar.DATE),
 						ncm.getValidFrom(), ncm.getValidUntil())).collect(Collectors.toSet());
+	}
+
+	public Map<ParliamentClub, Long> getMandateCountByClubAtDate(Date date) {
+		Set<NationalCouncilMember> ncms = getNationalCouncilMembersAt(date);
+
+		return ncms.stream().collect(Collectors.groupingBy(ncm -> ncm.getClub(), Collectors.counting()));
 	}
 
 	@Override

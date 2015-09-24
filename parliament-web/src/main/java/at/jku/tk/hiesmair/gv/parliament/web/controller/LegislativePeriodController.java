@@ -2,7 +2,6 @@ package at.jku.tk.hiesmair.gv.parliament.web.controller;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import at.jku.tk.hiesmair.gv.parliament.entities.LegislativePeriod;
-import at.jku.tk.hiesmair.gv.parliament.entities.mandate.NationalCouncilMember;
+import at.jku.tk.hiesmair.gv.parliament.entities.club.ParliamentClub;
 import at.jku.tk.hiesmair.gv.parliament.entities.session.Session;
 import at.jku.tk.hiesmair.gv.parliament.web.dto.ClubMandateCountDTO;
 import at.jku.tk.hiesmair.gv.parliament.web.dto.LegislativePeriodStatisticDataDTO;
@@ -49,14 +48,15 @@ public class LegislativePeriodController {
 
 		if (sessionCount > 0) {
 			Session firstSession = latestPeriod.getSessions().get(0);
-			Set<NationalCouncilMember> ncms = latestPeriod.getNationalCouncilMembersAt(firstSession.getStartDate());
 
-			Map<ParliamentClubDTO, Long> mandateCount = ncms.stream().collect(
-					Collectors.groupingBy(ncm -> ParliamentClubDTO.fromParliamentClub(ncm.getClub(), modelMapper),
-							Collectors.counting()));
+			Map<ParliamentClub, Long> mandateCount = latestPeriod.getMandateCountByClubAtDate(firstSession
+					.getStartDate());
 
-			List<ClubMandateCountDTO> clubMandateCounts = mandateCount.entrySet().stream()
-					.map(entry -> new ClubMandateCountDTO(entry.getKey(), entry.getValue().intValue()))
+			List<ClubMandateCountDTO> clubMandateCounts = mandateCount
+					.entrySet()
+					.stream()
+					.map(entry -> new ClubMandateCountDTO(ParliamentClubDTO.fromParliamentClub(entry.getKey(),
+							modelMapper), entry.getValue().intValue()))
 					.sorted((cmc1, cmc2) -> -cmc1.getMandateCount().compareTo(cmc2.getMandateCount()))
 					.collect(Collectors.toList());
 

@@ -52,7 +52,7 @@
 				  .sort(null);
 				
 				var innerGraphElement = graphElement.append('g')
-				  .attr('transform', 'translate(' + (width / 2) +  ',' + (height / 2) + ')').style('background-color', 'black');
+				  .attr('transform', 'translate(' + (width / 2) +  ',' + (height / 2) + ')');
 				
 				var path = innerGraphElement.selectAll('path')
 				  .data(pie(this.ncmCount))
