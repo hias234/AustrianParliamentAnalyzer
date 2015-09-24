@@ -1,6 +1,7 @@
 package at.jku.tk.hiesmair.gv.parliament.web.controller;
 
 import javax.inject.Inject;
+import javax.ws.rs.QueryParam;
 
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +19,10 @@ public class PoliticianAttitudeController {
 	private PoliticianAttitudeService politicianAttitudeService;
 	
 	@RequestMapping(value = "period/{period}", method = RequestMethod.GET)
-	public D3Graph getClubAttitudeGraph(@PathVariable("period") Integer period){
+	public D3Graph getClubAttitudeGraph(@PathVariable("period") Integer period, @QueryParam("topic") String discussionTopic){
+		if (discussionTopic != null && !discussionTopic.isEmpty()){
+			return politicianAttitudeService.getPoliticianAttitudeGraph(period, discussionTopic);
+		}
 		return politicianAttitudeService.getPoliticianAttitudeGraph(period);
 	}
 	

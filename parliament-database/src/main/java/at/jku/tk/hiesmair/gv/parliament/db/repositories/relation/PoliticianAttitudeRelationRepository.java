@@ -23,9 +23,8 @@ public interface PoliticianAttitudeRelationRepository extends CrudRepository<Pol
 
 	@Query("SELECT new PoliticianAttitudeRelationByPeriod(par.politician1, par.politician2, par.discussion.session.period, SUM(par.weight)) "
 			+ "FROM PoliticianAttitudeRelation par "
-			+ "INNER JOIN par.discussion d "
 			+ "WHERE par.discussion.session.period.period = :period "
-			+ "AND LOWER(d.topic) LIKE CONCAT('%', LOWER(:topic), '%') "
+			+ "AND LOWER(par.discussion.topic) LIKE CONCAT('%', LOWER(:topic), '%') "
 			+ "GROUP BY par.politician1, par.politician2, par.discussion.session.period")
 	public List<PoliticianAttitudeRelationByPeriod> getPoliticianAttitudesByPeriodAndDiscussionTopic(
 			@Param("period") Integer period, @Param("topic") String topic);

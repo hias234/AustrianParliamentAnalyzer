@@ -13,6 +13,8 @@
 					label="Show Politician-graph for period" 
 					type="number" value="{{period}}">
 	        </paper-input>
+	        <paper-input style="width: 300px" label="Filter by Discussion Topic (optional)" value="{{discussionTopic}}">
+	        </paper-input>
 		</div>
 		<d3-force-layout-graph graph="{{graph}}" id="politicianGraph" charge="-100"></d3-force-layout-graph>
 	</template>
@@ -25,17 +27,26 @@
 					type: Number,
 					value: 25
 				},
+				discussionTopic: {
+					type: String
+				},
 				graph: {
 					type: Object
 				},
 				url: {
 					type: String,
-					computed: 'computeUrl(period)'
+					computed: 'computeUrl(period, discussionTopic)'
 				}
 			},
 			
-			computeUrl: function(period){
-				return 'politician/graph/period/' + period + '.json';
+			computeUrl: function(period, discussionTopic){
+				var url = 'politician/graph/period/' + period + '.json';
+				
+				if (discussionTopic){
+					url += '?topic=' + encodeURIComponent(discussionTopic);
+				}
+				
+				return url;
 			}
 		});
 	</script>
