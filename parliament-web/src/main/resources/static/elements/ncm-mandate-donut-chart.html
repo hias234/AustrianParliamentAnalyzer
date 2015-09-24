@@ -2,7 +2,10 @@
 
 <dom-module name="ncm-mandate-donut-chart">
 	<template>
-		<div id="{{idInner}}"></div>
+		<style>
+			
+		</style>
+		<div id="{{idInner}}" style="position: relative;"></div>
 	</template>
 	<script>
 		Polymer({
@@ -21,6 +24,7 @@
 			
 			_ncmCountChanged: function(){
 				console.log('createMandateDonutChart');
+				var ncmCount = this.ncmCount;
 				
 				document.getElementById(this.idInner).innerHTML = '';
 				
@@ -34,21 +38,21 @@
 				console.log(height);
 				
 				var radius = Math.min(width, height) / 2;
-				var innerRadius = radius * 0.9;
+				var innerRadius = radius * 0.7;
 				
 				var arc = d3.svg.arc()
 			    	.outerRadius(radius)
 			    	.innerRadius(innerRadius);
 				
 				var color = d3.scale.ordinal()
-				  .range(['#A60F2B', '#648C85', '#B3F2C9', '#528C18', '#C3F25C']); 
+				  .range(['#A60F2B', '#648C85', '#B3F2C9', '#528C18', '#C3F25C', '#44444']); 
 				
 				var pie = d3.layout.pie()
 				  .value(function(d) { return d.mandateCount; })
 				  .sort(null);
 				
 				var innerGraphElement = graphElement.append('g')
-				  .attr('transform', 'translate(' + (width / 2) +  ',' + (height / 2) + ')');
+				  .attr('transform', 'translate(' + (width / 2) +  ',' + (height / 2) + ')').style('background-color', 'black');
 				
 				var path = innerGraphElement.selectAll('path')
 				  .data(pie(this.ncmCount))
@@ -61,6 +65,34 @@
 					  }
 				      return '#555555';
 				  });
+				
+				var tooltip = d3.select('body')          
+				  .append('div')                             
+				  .attr('class', 'tooltip');                 
+
+				tooltip.append('div')                        
+				  .attr('class', 'label');              
+
+				tooltip.append('div')                        
+				  .attr('class', 'count');                   
+
+				tooltip.append('div')                        
+				  .attr('class', 'percent');  
+				
+				path.on('mouseover', function(d) {
+					  tooltip.select('.label').html(d.data.club.shortName);
+					  tooltip.select('.count').html(d.data.mandateCount);
+					  tooltip.style('display', 'block');
+					});
+				
+				path.on('mouseout', function() {
+					  tooltip.style('display', 'none');
+					});
+				
+				path.on('mousemove', function(d) {
+				  tooltip.style('top', (d3.event.pageY + 10) + 'px')
+				    .style('left', (d3.event.pageX + 10) + 'px');
+				});
 			}
 		});
 	</script>
