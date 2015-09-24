@@ -6,11 +6,10 @@
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../bower_components/paper-styles/color.html">
-<link rel="import" href="../bower_components/progress-bubble/progress-bubble.html">
 
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 
-<link rel="import" href="ncm-mandate-donut-chart.html">
+<link rel="import" href="period-summary-stats.html">
 
 <dom-module name="start-page-content">
 	<template>
@@ -38,25 +37,6 @@
 			paper-card::shadow paper-material {
 				height: auto;
 			}
-			
-			.absencePercentage {
-		        --progress-bubble-stroke-color: rgba(255, 0, 0, 0.8);
-		        --progress-bubble-bg-stroke-color: rgba(193, 193, 193, 0.2);
-		        --progress-bubble-background-color: rgba(0, 0, 0, 1);
-		        --progress-bubble-reflection-display: none;
-		    }
-		    
-		    .sessionCount {
-		        --progress-bubble-stroke-color: rgba(193, 193, 193, 0.2);
-		        --progress-bubble-bg-stroke-color: rgba(193, 193, 193, 0.2);
-		        --progress-bubble-background-color: rgba(0, 0, 0, 1);
-		        --progress-bubble-reflection-display: none;
-		    }
-		    
-		    .periodStats {
-		    	@apply(--layout-horizontal);
-		    	@apply(--center);
-		    }
 		    
 		    .inherit-colors {
 				color: inherit;
@@ -75,29 +55,8 @@
 						<br/><br/>
 						Data from the <b><span>{{latestPeriodStats.period}}</span>. Period</b>:
 						<br/>
-						<div class="periodStats">
-							<div style="text-align: center; width: 120px;">
-								<progress-bubble class="absencePercentage" value="{{latestPeriodStats.absencePercentage}}" max="1">
-								    <strong><span>{{latestPeriodAbsencePercentage}}</span>%</strong>
-								</progress-bubble>
-								Absence-Percentage
-							</div>
-							<div style="width: 120px; text-align: center;">
-								<progress-bubble class="sessionCount" value="{{latestPeriodStats.absencePercentage}}" max="{{latestPeriodStats.absencePercentage}}">
-								    <strong><span>{{latestPeriodStats.sessionCount}}</span></strong>
-								</progress-bubble>
-								Sessions
-							</div>
-							<div style="width: 120px; text-align: center;">
-								<div style="width: 100px; height: 100px; margin: 10px;">
-									<ncm-mandate-donut-chart id-inner="latestPeriodMandates" ncm-count="{{latestPeriodStats.nationalCouncilMemberCount}}">
-									</ncm-mandate-donut-chart>
-								</div>
-								Mandates
-							</div>
-						</div>
-							
 						
+						<period-summary-stats period-stats="{{latestPeriodStats}}"></period-summary-stats>
 					</div>
 					<div class="card-actions">
 						<a href="/period-analysis.html" class="inherit-colors">
@@ -155,15 +114,7 @@
 			is: 'start-page-content',
 	
 			properties: {
-				latestPeriodStats: Object,
-				latestPeriodAbsencePercentage: {
-					type: String,
-					computed: 'computedLatestPeriodAbsencePercentage(latestPeriodStats)'
-				}
-			},
-		
-			computedLatestPeriodAbsencePercentage: function(latestPeriodStats) {
-				return (latestPeriodStats.absencePercentage * 100).toFixed(2);
+				latestPeriodStats: Object
 			}
 		});
 	</script>

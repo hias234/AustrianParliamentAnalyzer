@@ -1,0 +1,28 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/paper-styles/color.html">
+<link rel="import" href="period-card.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+
+<dom-module name="period-cards">
+	<template>
+		<iron-ajax auto url="/period/stats/list.json" last-response="{{periods}}" />
+	
+		<template is="dom-repeat" items="{{periods}}">
+			<period-card period-stats="{{item}}"></period-card>
+		</template>
+	</template>
+	<script>
+		Polymer({
+			is: 'period-cards',
+	
+			properties: {
+				periods: {
+					type: Object
+				}
+			}
+		
+		});
+	</script>
+</dom-module>

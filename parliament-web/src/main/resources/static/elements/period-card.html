@@ -1,0 +1,50 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="period-summary-stats.html">
+
+<dom-module name="period-card">
+	<template>
+		<style>
+			paper-card::shadow paper-material {
+				height: auto;
+			}
+			
+			.period-card {
+				width: 360px;
+				margin-bottom: 20px;
+				margin-left: 10px;
+				margin-right: 10px;
+			}
+			
+			.period-card-content {
+				margin: 0px;
+			}
+		</style>
+		<paper-card heading="{{cardHeading}}">
+			<div class="card-content period-card-content">
+				<period-summary-stats period-stats={{periodStats}}></period-summary-stats>
+			</div>
+		</paper-card>
+	</template>
+	<script>
+		Polymer({
+			is: 'period-card',
+
+			properties: {
+				periodStats: {
+					type: Object
+				},
+				cardHeading: {
+					type: String,
+					computed: 'computeCardHeading(periodStats)'
+				}
+			},
+		
+			computeCardHeading: function(periodStats) {
+				return 'Period ' + periodStats.period;
+			}
+		
+		});
+	</script>
+</dom-module>

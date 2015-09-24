@@ -18,11 +18,23 @@
 				},
 				idInner: {
 					type: String,
-					value: 'defaultInnerIdMandateDonutChart'
+					observer: '_ncmCountChanged'
 				}
 			},
 			
+			attached: function() {
+				this._ncmCountChanged();
+			},
+			
 			_ncmCountChanged: function(){
+				// check if both are set
+				console.log(this.ncmCount + ' ' + this.idInner);
+				if (!this.ncmCount || !this.idInner){
+					return;
+				}
+				if (document.getElementById(this.idInner) == null){
+					return;
+				}
 				console.log('createMandateDonutChart');
 				var ncmCount = this.ncmCount;
 				

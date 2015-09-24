@@ -14,6 +14,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 
@@ -36,6 +37,7 @@ public class LegislativePeriod implements Serializable {
 	private Integer period;
 
 	@OneToMany(mappedBy = "period")
+	@OrderBy("session_nr ASC")
 	private List<Session> sessions = new ArrayList<Session>();
 
 	@ManyToMany(mappedBy = "periods")

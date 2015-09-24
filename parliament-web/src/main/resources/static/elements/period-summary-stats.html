@@ -1,0 +1,80 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<link rel="import" href="ncm-mandate-donut-chart.html">
+<link rel="import" href="../bower_components/progress-bubble/progress-bubble.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/paper-styles/color.html">
+
+<dom-module name="period-summary-stats">
+	<template>
+		<style>
+			.absencePercentage {
+		        --progress-bubble-stroke-color: rgba(255, 0, 0, 0.8);
+		        --progress-bubble-bg-stroke-color: rgba(193, 193, 193, 0.2);
+		        --progress-bubble-background-color: rgba(0, 0, 0, 1);
+		        --progress-bubble-reflection-display: none;
+		    }
+		    
+		    .sessionCount {
+		        --progress-bubble-stroke-color: rgba(193, 193, 193, 0.2);
+		        --progress-bubble-bg-stroke-color: rgba(193, 193, 193, 0.2);
+		        --progress-bubble-background-color: rgba(0, 0, 0, 1);
+		        --progress-bubble-reflection-display: none;
+		    }
+		    
+		    .periodStats {
+		    	@apply(--layout-horizontal);
+		    	@apply(--center);
+		    }
+		</style>
+		<div class="periodStats">
+			<div style="text-align: center; width: 120px;">
+				<progress-bubble class="absencePercentage" value="{{periodStats.absencePercentage}}" max="1">
+				    <strong><span>{{periodAbsencePercentage}}</span>%</strong>
+				</progress-bubble>
+				Absence-Percentage
+			</div>
+			<div style="width: 120px; text-align: center;">
+				<progress-bubble class="sessionCount" value="{{periodStats.absencePercentage}}" max="{{periodStats.absencePercentage}}">
+				    <strong><span>{{periodStats.sessionCount}}</span></strong>
+				</progress-bubble>
+				Sessions
+			</div>
+			<div style="width: 120px; text-align: center;">
+				<div style="width: 100px; height: 100px; margin: 10px;">
+					<ncm-mandate-donut-chart id-inner="{{mandatesChartId}}" ncm-count="{{periodStats.nationalCouncilMemberCount}}">
+					</ncm-mandate-donut-chart>
+				</div>
+				Mandates
+			</div>
+		</div>
+	</template>
+	<script>
+		Polymer({
+			is: 'period-summary-stats',
+
+			properties: {
+				periodStats: {
+					type: Object
+				},
+				periodAbsencePercentage: {
+					type: String,
+					computed: 'computePeriodAbsencePercentage(periodStats)'
+				},
+				mandatesChartId: {
+					type: String,
+					computed: 'computeMandatesChartId(periodStats)'
+				}
+			},
+			
+			computePeriodAbsencePercentage: function(periodStats){
+				return (periodStats.absencePercentage * 100).toFixed(1);
+			},
+		
+			computeMandatesChartId: function(periodStats) {
+				console.log('mandatesChart' + periodStats.period);
+				return 'mandatesChart' + periodStats.period;
+			}
+		});
+	</script>
+</dom-module>

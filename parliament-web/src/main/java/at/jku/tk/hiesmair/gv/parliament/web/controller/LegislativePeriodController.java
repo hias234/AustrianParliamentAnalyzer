@@ -1,7 +1,9 @@
 package at.jku.tk.hiesmair.gv.parliament.web.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -36,20 +38,31 @@ public class LegislativePeriodController {
 				.collect(Collectors.toList());
 	}
 
-	@RequestMapping(value = "stats/latest", method = RequestMethod.GET)
-	public LegislativePeriodStatisticDataDTO getStatDataOfLatestPeriod() {
-		LegislativePeriod latestPeriod = periodService.findOne(periodService.getLatestPeriod());
+	@RequestMapping(value = "stats/list", method = RequestMethod.GET)
+	public List<LegislativePeriodStatisticDataDTO> getStatList() {
+		List<LegislativePeriodStatisticDataDTO> listWithData = new ArrayList<LegislativePeriodStatisticDataDTO>();
 
-		Double absencePercentage = periodService.getAbsencePercentage(latestPeriod.getPeriod());
-		Integer sessionCount = latestPeriod.getSessions().size();
+		for (int i = 20; i <= 25; i++) {
+			listWithData.add(getStatData(i));
+		}
 
-		LegislativePeriodStatisticDataDTO statData = new LegislativePeriodStatisticDataDTO(latestPeriod.getPeriod(),
-				absencePercentage, sessionCount);
+		return listWithData;
+	}
 
-		if (sessionCount > 0) {
-			Session firstSession = latestPeriod.getSessions().get(0);
+	protected LegislativePeriodStatisticDataDTO getStatData(Integer period) {
+		LegislativePeriod legislativePeriod = periodService.findOne(period);
 
-			Map<ParliamentClub, Long> mandateCount = latestPeriod.getMandateCountByClubAtDate(firstSession
+		Double absencePercentage = periodService.getAbsencePercentage(legislativePeriod.getPeriod());
+		Integer sessionCount = legislativePeriod.getSessions().size();
+
+		LegislativePeriodStatisticDataDTO statData = new LegislativePeriodStatisticDataDTO(
+				legislativePeriod.getPeriod(), absencePercentage, sessionCount);
+
+		Optional<Session> firstSession = legislativePeriod.getSessions().stream()
+				.filter(lp -> lp.getSessionNr().equals(1)).findFirst();
+
+		if (firstSession.isPresent()) {
+			Map<ParliamentClub, Long> mandateCount = legislativePeriod.getMandateCountByClubAtDate(firstSession.get()
 					.getStartDate());
 
 			List<ClubMandateCountDTO> clubMandateCounts = mandateCount
@@ -64,5 +77,12 @@ public class LegislativePeriodController {
 		}
 
 		return statData;
+	}
+
+	@RequestMapping(value = "stats/latest", method = RequestMethod.GET)
+	public LegislativePeriodStatisticDataDTO getStatDataOfLatestPeriod() {
+		Integer latestPeriod = periodService.getLatestPeriod();
+
+		return getStatData(latestPeriod);
 	}
 }
