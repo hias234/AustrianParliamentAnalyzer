@@ -1,13 +1,13 @@
 package at.jku.tk.hiesmair.gv.parliament.web.dto;
 
-import java.util.Map;
+import java.util.List;
 
 public class LegislativePeriodStatisticDataDTO {
 
 	private Integer period;
 	private Double absencePercentage;
 	private Integer sessionCount;
-	private Map<ParliamentClubDTO, Long> nationalCouncilMemberCount;
+	private List<ClubMandateCountDTO> nationalCouncilMemberCount;
 
 	public LegislativePeriodStatisticDataDTO() {
 		super();
@@ -50,11 +50,11 @@ public class LegislativePeriodStatisticDataDTO {
 		this.sessionCount = sessionCount;
 	}
 
-	public Map<ParliamentClubDTO, Long> getNationalCouncilMemberCount() {
+	public List<ClubMandateCountDTO> getNationalCouncilMemberCount() {
 		return nationalCouncilMemberCount;
 	}
 
-	public void setNationalCouncilMemberCount(Map<ParliamentClubDTO, Long> nationalCouncilMemberCount) {
+	public void setNationalCouncilMemberCount(List<ClubMandateCountDTO> nationalCouncilMemberCount) {
 		this.nationalCouncilMemberCount = nationalCouncilMemberCount;
 	}
 

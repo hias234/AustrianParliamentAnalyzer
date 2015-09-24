@@ -1,0 +1,67 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module name="ncm-mandate-donut-chart">
+	<template>
+		<div id="{{idInner}}"></div>
+	</template>
+	<script>
+		Polymer({
+			is: 'ncm-mandate-donut-chart', 
+			
+			properties: {
+				ncmCount: {
+					type: Object,
+					observer: '_ncmCountChanged'
+				},
+				idInner: {
+					type: String,
+					value: 'defaultInnerIdMandateDonutChart'
+				}
+			},
+			
+			_ncmCountChanged: function(){
+				console.log('createMandateDonutChart');
+				
+				document.getElementById(this.idInner).innerHTML = '';
+				
+				var graphContainer = d3.select('#' + this.idInner);
+				var graphElement = graphContainer.append('svg:svg').attr('width', '100%').attr('height', '100%');
+
+				var width = document.getElementById(this.idInner).children[0].offsetWidth;
+				var height = document.getElementById(this.idInner).children[0].offsetHeight;
+				
+				console.log(width);
+				console.log(height);
+				
+				var radius = Math.min(width, height) / 2;
+				var innerRadius = radius * 0.9;
+				
+				var arc = d3.svg.arc()
+			    	.outerRadius(radius)
+			    	.innerRadius(innerRadius);
+				
+				var color = d3.scale.ordinal()
+				  .range(['#A60F2B', '#648C85', '#B3F2C9', '#528C18', '#C3F25C']); 
+				
+				var pie = d3.layout.pie()
+				  .value(function(d) { return d.mandateCount; })
+				  .sort(null);
+				
+				var innerGraphElement = graphElement.append('g')
+				  .attr('transform', 'translate(' + (width / 2) +  ',' + (height / 2) + ')');
+				
+				var path = innerGraphElement.selectAll('path')
+				  .data(pie(this.ncmCount))
+				  .enter()
+				  .append('path')
+				  .attr('d', arc)
+				  .attr('fill', function(d, i) { 
+					  if (d.data.club.color){
+						  return d.data.club.color;
+					  }
+				      return '#555555';
+				  });
+			}
+		});
+	</script>
+</dom-module>

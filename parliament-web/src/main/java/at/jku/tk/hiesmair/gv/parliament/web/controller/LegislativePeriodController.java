@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import at.jku.tk.hiesmair.gv.parliament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parliament.entities.mandate.NationalCouncilMember;
 import at.jku.tk.hiesmair.gv.parliament.entities.session.Session;
+import at.jku.tk.hiesmair.gv.parliament.web.dto.ClubMandateCountDTO;
 import at.jku.tk.hiesmair.gv.parliament.web.dto.LegislativePeriodStatisticDataDTO;
 import at.jku.tk.hiesmair.gv.parliament.web.dto.ParliamentClubDTO;
 import at.jku.tk.hiesmair.gv.parliament.web.service.LegislativePeriodService;
@@ -53,8 +54,13 @@ public class LegislativePeriodController {
 			Map<ParliamentClubDTO, Long> mandateCount = ncms.stream().collect(
 					Collectors.groupingBy(ncm -> ParliamentClubDTO.fromParliamentClub(ncm.getClub(), modelMapper),
 							Collectors.counting()));
-			
-			statData.setNationalCouncilMemberCount(mandateCount);
+
+			List<ClubMandateCountDTO> clubMandateCounts = mandateCount.entrySet().stream()
+					.map(entry -> new ClubMandateCountDTO(entry.getKey(), entry.getValue().intValue()))
+					.sorted((cmc1, cmc2) -> -cmc1.getMandateCount().compareTo(cmc2.getMandateCount()))
+					.collect(Collectors.toList());
+
+			statData.setNationalCouncilMemberCount(clubMandateCounts);
 		}
 
 		return statData;
