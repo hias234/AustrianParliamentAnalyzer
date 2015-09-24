@@ -42,7 +42,7 @@ public class LegislativePeriodController {
 	public List<LegislativePeriodStatisticDataDTO> getStatList() {
 		List<LegislativePeriodStatisticDataDTO> listWithData = new ArrayList<LegislativePeriodStatisticDataDTO>();
 
-		for (int i = 20; i <= 25; i++) {
+		for (int i = 25; i >= 20; i--) {
 			listWithData.add(getStatData(i));
 		}
 
