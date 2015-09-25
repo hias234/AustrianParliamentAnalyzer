@@ -3,6 +3,7 @@
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../bower_components/paper-styles/color.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
 <link rel="import" href="period-card.html">
 
 <dom-module name="period-analysis">
@@ -13,9 +14,18 @@
 				margin: 10px;
 			}
 			
+			paper-card::shadow paper-material {
+				height: auto;
+			}
+			
 			.period-analysis-container{
 				@apply(--layout-horizontal);
 				width: 100%;
+			}
+			
+			.periodcard {
+				width: 100%;
+				margin: 10px;
 			}
 		</style>
 		<iron-ajax auto url="{{periodStatsUrl}}" last-response="{{periodStats}}" />
@@ -24,6 +34,7 @@
 				<period-card class="periodcard" period-stats="{{periodStats}}" hide-more-details-button></period-card>
 			</div>
 			<div class="page-content-container-2-columns">
+				<paper-card class="periodcard" width="100%" heading="Most Absent Politicians"></paper-card>
 			</div>
 		</div>
 	</template>
