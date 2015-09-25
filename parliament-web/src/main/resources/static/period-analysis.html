@@ -17,7 +17,11 @@
 		
 		<script type="text/javascript">
 			document.addEventListener('WebComponentsReady', function() {
+		      	var queryStr = window.location.search;
+		      	queryStr = queryStr.replace('?period=', '');
+		      	var period = parseInt(queryStr);
 		      	
+		      	// TODO write periodelement
 		    });
 		</script>
 	</head>
