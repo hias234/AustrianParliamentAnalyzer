@@ -10,6 +10,7 @@ import java.util.stream.StreamSupport;
 import javax.inject.Inject;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,7 +50,8 @@ public class LegislativePeriodController {
 		return listWithData;
 	}
 
-	protected LegislativePeriodStatisticDataDTO getStatData(Integer period) {
+	@RequestMapping(value = "stats/{period}", method = RequestMethod.GET)
+	protected LegislativePeriodStatisticDataDTO getStatData(@PathVariable("period") Integer period) {
 		LegislativePeriod legislativePeriod = periodService.findOne(period);
 
 		Double absencePercentage = periodService.getAbsencePercentage(legislativePeriod.getPeriod());

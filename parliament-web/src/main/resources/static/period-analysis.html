@@ -9,9 +9,11 @@
 		<script type="text/javascript" src="bower_components/d3/d3.js"></script>
 		
 		<link rel="import" href="bower_components/font-roboto/roboto.html">
+		
+		<link rel="import" href="/bower_components/polymer/polymer.html">
 
 		<link rel="import" href="elements/header.html">
-		<link rel="import" href="elements/period-card.html">
+		<link rel="import" href="elements/period-analysis.html">
 
 		<link rel="stylesheet" type="text/css" href="css/base.css" />
 		
@@ -21,7 +23,11 @@
 		      	queryStr = queryStr.replace('?period=', '');
 		      	var period = parseInt(queryStr);
 		      	
-		      	// TODO write periodelement
+		      	var periodAnalysisElement = document.createElement('period-analysis');
+		      	periodAnalysisElement.period = period;
+		      	
+		      	var container = document.querySelector('#period-analysis-content');
+		      	container.appendChild(periodAnalysisElement);
 		    });
 		</script>
 	</head>
@@ -29,8 +35,7 @@
 		<parliament-header header-title="Austrian Parliament Analyzer - Legislative Period Analysis"
 							header-sub-title="Here you can see data of the Periods of the Austrian Parliament">
 		</parliament-header>
-		<div class="container page-content">
-			
+		<div id="period-analysis-content" class="container page-content">
 		</div>
 	</body>
 </html>

@@ -1,0 +1,45 @@
+<link rel="import" href="period-summary-stats.html">
+
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/paper-styles/color.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="period-card.html">
+
+<dom-module name="period-analysis">
+	<template>
+		<style>
+			
+		</style>
+		<div>
+			<iron-ajax auto url="{{periodStatsUrl}}" last-response="{{periodStats}}" />
+			<period-card period-stats="{{periodStats}}"></period-card>
+		</div>
+	</template>
+	<script>
+		Polymer({
+			is: 'period-analysis',
+
+			properties: {
+				periodStats: {
+					type: Object
+				},
+				period: {
+					type: Number
+				},
+				periodStatsUrl: {
+					type: String,
+					computed: 'computePeriodStatsUrl(period)'
+				}
+			},
+			
+			factoryImpl: function(period) {
+			    this.period = period;
+			},
+			
+			computePeriodStatsUrl: function(period){
+				return '/period/stats/' + period + '.json';
+			}
+		
+		});
+	</script>
+</dom-module>
