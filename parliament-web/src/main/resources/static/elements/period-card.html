@@ -1,6 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="period-summary-stats.html">
 
 <dom-module name="period-card">
@@ -10,20 +11,21 @@
 				height: auto;
 			}
 			
-			.period-card {
+			.periodcard {
 				width: 45%;
 				margin-bottom: 20px;
 				margin-left: 10px;
 				margin-right: 10px;
 			}
-			
-			.period-card-content {
-				margin: 0px;
-			}
 		</style>
-		<paper-card heading="{{cardHeading}}">
+		<paper-card heading="{{cardHeading}}" class="periodcard">
 			<div class="card-content period-card-content">
 				<period-summary-stats period-stats={{periodStats}}></period-summary-stats>
+			</div>
+			<div class="card-actions">
+				<a class="inherit-colors" href="{{morePageUrl}}">
+					<paper-button>More Details</paper-button>
+				</a>
 			</div>
 		</paper-card>
 	</template>
@@ -38,11 +40,19 @@
 				cardHeading: {
 					type: String,
 					computed: 'computeCardHeading(periodStats)'
+				},
+				morePageUrl: {
+					type: String,
+					computed: 'computeMorePageUrl(periodStats)'
 				}
 			},
 		
 			computeCardHeading: function(periodStats) {
-				return 'Period ' + periodStats.period;
+				return periodStats.period + '. Period ';
+			},
+			
+			computeMorePageUrl: function(periodStats) {
+				return '/period-analysis.html?period=' + periodStats.period;
 			}
 		
 		});

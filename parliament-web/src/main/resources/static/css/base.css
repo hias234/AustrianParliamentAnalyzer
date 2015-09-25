@@ -42,3 +42,8 @@ body {
 	width: 80px;
 	z-index: 10;
 }
+
+.inherit-colors {
+	color: inherit;
+	background-color: inherit;
+}
