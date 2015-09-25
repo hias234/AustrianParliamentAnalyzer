@@ -7,12 +7,24 @@
 
 <dom-module name="period-analysis">
 	<template>
-		<style>
+		<style is="custom-style">
+			period-card::shadow .periodcard {
+				width: 100%;
+				margin: 10px;
+			}
 			
+			.period-analysis-container{
+				@apply(--layout-horizontal);
+				width: 100%;
+			}
 		</style>
-		<div>
-			<iron-ajax auto url="{{periodStatsUrl}}" last-response="{{periodStats}}" />
-			<period-card period-stats="{{periodStats}}"></period-card>
+		<iron-ajax auto url="{{periodStatsUrl}}" last-response="{{periodStats}}" />
+		<div class="period-analysis-container">
+			<div class="page-content-container-2-columns">
+				<period-card class="periodcard" period-stats="{{periodStats}}" hide-more-details-button></period-card>
+			</div>
+			<div class="page-content-container-2-columns">
+			</div>
 		</div>
 	</template>
 	<script>

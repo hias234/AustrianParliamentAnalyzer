@@ -22,11 +22,13 @@
 			<div class="card-content period-card-content">
 				<period-summary-stats period-stats={{periodStats}}></period-summary-stats>
 			</div>
-			<div class="card-actions">
-				<a class="inherit-colors" href="{{morePageUrl}}">
-					<paper-button>More Details</paper-button>
-				</a>
-			</div>
+			<template is="dom-if" if="{{!hideMoreDetailsButton}}">
+				<div class="card-actions">
+					<a class="inherit-colors" href="{{morePageUrl}}">
+						<paper-button>More Details</paper-button>
+					</a>
+				</div>
+			</template>
 		</paper-card>
 	</template>
 	<script>
@@ -36,6 +38,10 @@
 			properties: {
 				periodStats: {
 					type: Object
+				},
+				hideMoreDetailsButton: {
+					type: Boolean,
+					value: false
 				},
 				cardHeading: {
 					type: String,
