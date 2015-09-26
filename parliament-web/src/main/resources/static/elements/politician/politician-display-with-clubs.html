@@ -8,20 +8,19 @@
 	<template>
 		<style is="custom-style">
 			.politician-display-container {
-				@apply(--layout-horizontal);
+				float: left;
+		    	@apply(--layout-center);
 			}
 			.club-container {
 				@apply(--layout-horizontal);
 			}
 		</style>
-		<div class="politician-display-container" style="{{style}}">
-			<span style="whitespace: nowrap;">{{politician.name.fullName}}</span>
-			<span>&nbsp;</span>
-			<div class="club-container">
+		<div style="{{style}}">
+			<span style="whitespace: nowrap;" class="politician-display-container">{{politician.name.fullName}}</span>
+			<span class="politician-display-container">&nbsp;</span>
 				<template is="dom-repeat" items="{{clubsOfPolitician}}">
-					<club-tag club="{{item}}"></club-tag>
+					<club-tag club="{{item}}" class="politician-display-container"></club-tag>
 				</template>
-			</div>
 		</div>
 	</template>
 	<script>

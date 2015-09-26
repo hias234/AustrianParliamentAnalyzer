@@ -14,11 +14,12 @@
 			.label-container {
 				width: 60%;
 				padding-right: 20px;
+		    	@apply(--center-justified);
 			}
 			
 			.value-container {
 		    	@apply(--layout-horizontal);
-		    	@apply(--center);
+		    	@apply(--layout-center);
 				width: 40%;
 			}
 			
@@ -31,13 +32,14 @@
 				padding-right: 5px;
 				padding-left: 5px;
 				white-space: nowrap;
+		    	@apply(--layout-center);
 			}
 			
 			#bar {
 				-webkit-border-radius: 2px 0 0 2px;
 				border-radius: 2px 0 0 2px;
 				min-width: 2px;
-		    	@apply(--center);
+		    	@apply(--layout-center);
 			}
 			
 			.bar-item {
@@ -47,11 +49,12 @@
 			}
 			
 			#value-span {
-		    	@apply(--center);
+		    	@apply(--layout-center);
 			}
 			
 			.value-placeholder {
 		    	@apply(--layout-horizontal);
+		    	@apply(--layout-center);
 			}
 		</style>
 		<div class="percent-chart-item-container">
