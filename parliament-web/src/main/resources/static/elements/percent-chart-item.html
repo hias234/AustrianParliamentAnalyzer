@@ -18,6 +18,7 @@
 			
 			.value-container {
 		    	@apply(--layout-horizontal);
+		    	@apply(--center);
 				width: 40%;
 			}
 			
@@ -27,8 +28,6 @@
 		    	@apply(--center);
 				-webkit-border-radius: 0 2px 2px 0;
 				border-radius: 0 2px 2px 0;
-				padding-bottom: 2px;
-				padding-top: 2px;
 				padding-right: 5px;
 				padding-left: 5px;
 				white-space: nowrap;
@@ -37,12 +36,18 @@
 			#bar {
 				-webkit-border-radius: 2px 0 0 2px;
 				border-radius: 2px 0 0 2px;
+				min-width: 2px;
+		    	@apply(--center);
 			}
 			
 			.bar-item {
-				padding-bottom: 2px;
-				padding-top: 2px;
+				padding-bottom: 3px;
+				padding-top: 3px;
 				height: 20px;
+			}
+			
+			#value-span {
+		    	@apply(--center);
 			}
 			
 			.value-placeholder {
@@ -59,7 +64,7 @@
 					<div id="bar" class="bar-item"></div>
 				</div>
 				<div id="value" class="bar-item">
-					<span>{{percentageLabel}}</span>
+					<span id="value-span">{{percentageLabel}}</span>
 				</div>
 			</div>
 		</div>
@@ -86,7 +91,6 @@
 	        
 	        showPercentageChart: function(value, max) {
 	        	var percentage = (value / max) * 100;
-	        	var invertedPercentage = 100 - percentage;
 	        	
 	        	// todo implement color map
 	        	var color;
@@ -99,6 +103,8 @@
 	        	else {
 	        		color = '#F44336';
 	        	}
+
+	        	var invertedPercentage = 100 - percentage;
 	        	
 	        	this.$.placeholder.setAttribute('style', 'width: ' + invertedPercentage + '%;');
 	        	this.$.bar.setAttribute('style', 'background-color: ' + color +'; width: ' + percentage + '%;');
