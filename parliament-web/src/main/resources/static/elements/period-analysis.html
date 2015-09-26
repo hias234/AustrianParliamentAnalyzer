@@ -5,7 +5,7 @@
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../bower_components/paper-card/paper-card.html">
 <link rel="import" href="period-card.html">
-<link rel="import" href="absence-item.html">
+<link rel="import" href="club-absence.html">
 
 <dom-module name="period-analysis">
 	<template>
@@ -43,11 +43,7 @@
 				<iron-ajax auto url="{{clubAbsenceUrl}}" last-response="{{clubAbsence}}" />
 				<paper-card class="periodcard" width="100%" heading="Club Absence">
 					<div class="card-content">
-						<template is="dom-repeat" items="{{clubAbsence}}">
-							<absence-item absence="{{item}}">
-								<span>{{item.club.shortName}}</span>
-							</absence-item>
-						</template>
+						<club-absence club-absence="{{clubAbsence}}"></club-absence>
 					</div>
 				</paper-card>
 				

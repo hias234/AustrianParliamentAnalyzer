@@ -1,0 +1,63 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<link rel="import"
+	href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/paper-styles/color.html">
+<link rel="import" href="percent-chart-item.html">
+
+<dom-module name="club-absence"> 
+	<template>
+		<style is="custom-style">
+			.absence-item-container { @apply (--layout-horizontal);
+				padding: 3px;
+			}
+			
+			.label-container {
+				width: 60%;
+				padding-right: 20px;
+			}
+			
+			.absence-container {
+				width: 40%;
+			}
+		</style>
+		<div class="">
+			<template is="dom-repeat" items="{{clubAbsence}}"> 
+				<percent-chart-item value="{{item.absencePercentage}}" max="{{computeMaxAbsence(clubAbsence)}}" 
+								percentage-label="{{getPercentageLabel(item)}}"> 
+					<span>{{item.club.shortName}}</span>
+				</percent-chart-item> 
+			</template>
+		</div>
+	</template>
+	<script>
+		Polymer({
+			is : 'club-absence',
+	
+			properties : {
+				clubAbsence: {
+					type: Array
+				},
+				maxAbsence: {
+					type: Number,
+					compute: 'computeMaxAbsence(clubAbsence)'
+				}
+			},
+	
+			computeMaxAbsence: function(clubAbsence) {
+				var max = 0;
+				for (var i = 0; i < clubAbsence.length; i++){
+					if (max < clubAbsence[i].absencePercentage){
+						max = clubAbsence[i].absencePercentage;
+					}
+				}
+				
+				return max;
+			},
+			
+			getPercentageLabel: function(item) {
+				return (item.absencePercentage * 100).toFixed(1) + ' %';
+			}
+		});
+	</script> 
+</dom-module>

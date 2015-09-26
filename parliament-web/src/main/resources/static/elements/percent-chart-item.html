@@ -1,0 +1,110 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/paper-styles/color.html">
+
+<dom-module name="percent-chart-item">
+	<template>
+		<style is="custom-style">
+			.percent-chart-item-container{
+		    	@apply(--layout-horizontal);
+		    	padding: 3px;
+			}
+			
+			.label-container {
+				width: 60%;
+				padding-right: 20px;
+			}
+			
+			.value-container {
+		    	@apply(--layout-horizontal);
+				width: 40%;
+			}
+			
+			#value {
+				color: white;
+				font-weight: 500;
+		    	@apply(--center);
+				-webkit-border-radius: 0 2px 2px 0;
+				border-radius: 0 2px 2px 0;
+				padding-bottom: 2px;
+				padding-top: 2px;
+				padding-right: 5px;
+				padding-left: 5px;
+				white-space: nowrap;
+			}
+			
+			#bar {
+				-webkit-border-radius: 2px 0 0 2px;
+				border-radius: 2px 0 0 2px;
+			}
+			
+			.bar-item {
+				padding-bottom: 2px;
+				padding-top: 2px;
+				height: 20px;
+			}
+			
+			.value-placeholder {
+		    	@apply(--layout-horizontal);
+			}
+		</style>
+		<div class="percent-chart-item-container">
+			<div class="label-container">
+				<content></content>
+			</div>
+			<div class="value-container">
+				<div class="value-placeholder" style="width: 100%">
+					<div id="placeholder"></div>
+					<div id="bar" class="bar-item"></div>
+				</div>
+				<div id="value" class="bar-item">
+					<span>{{percentageLabel}}</span>
+				</div>
+			</div>
+		</div>
+	</template>
+	<script>
+		Polymer({
+			is: 'percent-chart-item',
+	
+			properties: {
+				value: {
+					type: Number
+				},
+				max: {
+					type: Number
+				},
+				percentageLabel: {
+					type: String
+				}
+			},
+			
+			observers: [
+	            'showPercentageChart(value, max)'
+	        ],
+	        
+	        showPercentageChart: function(value, max) {
+	        	var percentage = (value / max) * 100;
+	        	var invertedPercentage = 100 - percentage;
+	        	
+	        	// todo implement color map
+	        	var color;
+	        	if (percentage < 50){
+	        		color = '#4CAF50';
+	        	}
+	        	else if (percentage < 80){
+	        		color = '#FF9800';
+	        	}
+	        	else {
+	        		color = '#F44336';
+	        	}
+	        	
+	        	this.$.placeholder.setAttribute('style', 'width: ' + invertedPercentage + '%;');
+	        	this.$.bar.setAttribute('style', 'background-color: ' + color +'; width: ' + percentage + '%;');
+	        	this.$.value.setAttribute('style', 'background-color: ' + color + ';');
+	        }
+			
+		});
+	</script>
+</dom-module>
