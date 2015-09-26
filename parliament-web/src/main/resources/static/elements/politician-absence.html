@@ -1,43 +1,42 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 
-<link rel="import"
-	href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../bower_components/paper-styles/color.html">
 <link rel="import" href="percent-chart-item.html">
 
-<dom-module name="club-absence"> 
+<dom-module name="politician-absence"> 
 	<template>
 		<style is="custom-style">
 			
 		</style>
 		<div class="">
-			<template is="dom-repeat" items="{{clubAbsence}}"> 
-				<percent-chart-item value="{{item.absencePercentage}}" max="{{computeMaxAbsence(clubAbsence)}}" 
+			<template is="dom-repeat" items="{{politicianAbsence}}"> 
+				<percent-chart-item value="{{item.absencePercentage}}" max="{{computeMaxAbsence(politicianAbsence)}}" 
 								percentage-label="{{getPercentageLabel(item)}}"> 
-					<span>{{item.club.shortName}}</span>
+					<span>{{item.politician.name.fullName}}</span>
 				</percent-chart-item> 
 			</template>
 		</div>
 	</template>
 	<script>
 		Polymer({
-			is : 'club-absence',
+			is : 'politician-absence',
 	
 			properties : {
-				clubAbsence: {
+				politicianAbsence: {
 					type: Array
 				},
 				maxAbsence: {
 					type: Number,
-					compute: 'computeMaxAbsence(clubAbsence)'
+					compute: 'computeMaxAbsence(politicianAbsence)'
 				}
 			},
 	
-			computeMaxAbsence: function(clubAbsence) {
+			computeMaxAbsence: function(politicianAbsence) {
 				var max = 0;
-				for (var i = 0; i < clubAbsence.length; i++){
-					if (max < clubAbsence[i].absencePercentage){
-						max = clubAbsence[i].absencePercentage;
+				for (var i = 0; i < politicianAbsence.length; i++){
+					if (max < politicianAbsence[i].absencePercentage){
+						max = politicianAbsence[i].absencePercentage;
 					}
 				}
 				
