@@ -399,21 +399,20 @@ public class PoliticianTransformer extends AbstractTransformer {
 			}
 			((FederalMinister) mandate).setDepartment(department);
 		}
-		else if (description.contains("Bundespräsident")) {
+		else if (description.matches("Bundespräsident(in)?")) {
 			mandate = new FederalPresident();
 		}
-		else if (description.contains("Vizekanzler")) {
+		else if (description.matches("Vizekanzler(in)?")) {
 			mandate = new FederalViceChancellor();
 		}
-		else if (description.contains("Bundeskanzler")) {
+		else if (description.matches("Bundeskanzler(in)?")) {
 			mandate = new FederalChancellor();
 		}
 		else if (description.contains("Europäisches Parlament")) {
 			mandate = new EuropeanParliamentMember();
 			((EuropeanParliamentMember) mandate).setClub(getClub(clubShortName.trim()));
 		}
-		else if (description.contains("Präsident des Nationalrates")
-				|| description.contains("Präsidentin des Nationalrates")) {
+		else if (description.matches(".*Präsident(in)? des Nationalrates")) {
 			mandate = new NationalCouncilPresident();
 
 			Integer position = 1;

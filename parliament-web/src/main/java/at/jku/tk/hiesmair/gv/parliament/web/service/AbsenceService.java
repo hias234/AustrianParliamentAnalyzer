@@ -11,7 +11,9 @@ import at.jku.tk.hiesmair.gv.parliament.db.repositories.ParliamentClubRepository
 import at.jku.tk.hiesmair.gv.parliament.db.repositories.PoliticianRepository;
 import at.jku.tk.hiesmair.gv.parliament.db.result.AbsenceResult;
 import at.jku.tk.hiesmair.gv.parliament.db.result.ClubAbsenceResult;
+import at.jku.tk.hiesmair.gv.parliament.db.result.PoliticianAbsenceResult;
 import at.jku.tk.hiesmair.gv.parliament.entities.club.ParliamentClub;
+import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 
 @Service
 public class AbsenceService {
@@ -39,4 +41,20 @@ public class AbsenceService {
 		return clubAbsences;
 	}
 	
+	public List<PoliticianAbsenceResult> getPoliticianAbsence(Integer period) {
+		List<AbsenceResult> absences = politicianRep.countSessionAbsencesByPeriod(period, period);
+		
+		return getPoliticianAbsences(absences);
+	}
+	
+	private List<PoliticianAbsenceResult> getPoliticianAbsences(List<AbsenceResult> absences) {
+		List<PoliticianAbsenceResult> politicianAbsences = new ArrayList<PoliticianAbsenceResult>(absences.size());
+		
+		for (AbsenceResult result : absences){
+			Politician politician = politicianRep.findOne(result.getId());
+			politicianAbsences.add(new PoliticianAbsenceResult(result.getId(), result.getAbsenceCount(), result.getPresenceCount(), politician));
+		}
+		
+		return politicianAbsences;
+	}
 }
