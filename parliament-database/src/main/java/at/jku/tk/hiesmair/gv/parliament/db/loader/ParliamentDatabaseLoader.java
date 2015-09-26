@@ -22,6 +22,7 @@ import at.jku.tk.hiesmair.gv.parliament.db.repositories.SessionChairManRepositor
 import at.jku.tk.hiesmair.gv.parliament.db.repositories.SessionRepository;
 import at.jku.tk.hiesmair.gv.parliament.db.repositories.relation.PoliticianAttitudeRelationRepository;
 import at.jku.tk.hiesmair.gv.parliament.entities.LegislativePeriod;
+import at.jku.tk.hiesmair.gv.parliament.entities.club.ParliamentClub;
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.Discussion;
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.DiscussionSpeech;
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.speech.SpeechType;
@@ -122,7 +123,7 @@ public class ParliamentDatabaseLoader {
 				mandate.getDescription(), mandate.getValidFrom());
 
 		if (mandate instanceof CouncilMember) {
-			clubRepository.save(((CouncilMember) mandate).getClub());
+			loadParliamentClub(((CouncilMember) mandate).getClub());
 		}
 
 		if (mandateInDb == null) {
@@ -150,6 +151,17 @@ public class ParliamentDatabaseLoader {
 		}
 
 		return mandateInDb;
+	}
+
+	protected void loadParliamentClub(ParliamentClub club) {
+		ParliamentClub clubInDb = clubRepository.findOne(club.getShortName());
+		if (clubInDb == null){
+			clubInDb = club;
+		}
+		else{
+			clubInDb.setLongName(club.getLongName());
+		}
+		clubRepository.save(clubInDb);
 	}
 
 	public Set<NationalCouncilMember> loadNationalCouncilMembers(Set<NationalCouncilMember> ncms) {
