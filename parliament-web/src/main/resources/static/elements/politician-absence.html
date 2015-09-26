@@ -12,7 +12,7 @@
 		<div class="">
 			<template is="dom-repeat" items="{{politicianAbsence}}"> 
 				<percent-chart-item value="{{item.absencePercentage}}" max="{{computeMaxAbsence(politicianAbsence)}}" 
-								percentage-label="{{getPercentageLabel(item)}}"> 
+								percentage-label="{{getPercentageLabel(item)}}" bar-color="{{getBarColor(item)}}"> 
 					<span>{{item.politician.name.fullName}}</span>
 				</percent-chart-item> 
 			</template>
@@ -45,6 +45,16 @@
 			
 			getPercentageLabel: function(item) {
 				return (item.absencePercentage * 100).toFixed(1) + ' %';
+			},
+			
+			getBarColor: function(item) {
+				if (item.absencePercentage >= 0.1){
+					return '#F44336';
+				}
+				else if (item.absencePercentage >= 0.05){
+					return '#FF9800';
+				}
+				return '#4CAF50';
 			}
 		});
 	</script> 

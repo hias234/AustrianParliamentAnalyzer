@@ -82,33 +82,24 @@
 				},
 				percentageLabel: {
 					type: String
+				},
+				barColor: {
+					type: String,
+					value: '#555555'
 				}
 			},
 			
 			observers: [
-	            'showPercentageChart(value, max)'
+	            'showPercentageChart(value, max, barColor)'
 	        ],
 	        
-	        showPercentageChart: function(value, max) {
+	        showPercentageChart: function(value, max, barColor) {
 	        	var percentage = (value / max) * 100;
-	        	
-	        	// todo implement color map
-	        	var color;
-	        	if (percentage < 50){
-	        		color = '#4CAF50';
-	        	}
-	        	else if (percentage < 80){
-	        		color = '#FF9800';
-	        	}
-	        	else {
-	        		color = '#F44336';
-	        	}
-
 	        	var invertedPercentage = 100 - percentage;
 	        	
 	        	this.$.placeholder.setAttribute('style', 'width: ' + invertedPercentage + '%;');
-	        	this.$.bar.setAttribute('style', 'background-color: ' + color +'; width: ' + percentage + '%;');
-	        	this.$.value.setAttribute('style', 'background-color: ' + color + ';');
+	        	this.$.bar.setAttribute('style', 'background-color: ' + barColor +'; width: ' + percentage + '%;');
+	        	this.$.value.setAttribute('style', 'background-color: ' + barColor + ';');
 	        }
 			
 		});
