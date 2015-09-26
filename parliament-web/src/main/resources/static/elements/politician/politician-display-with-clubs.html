@@ -1,0 +1,46 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/paper-styles/color.html">
+<link rel="import" href="../club/club-tag.html">
+
+<dom-module name="politician-display-with-clubs"> 
+	<template>
+		<style is="custom-style">
+			.politician-display-container {
+				@apply(--layout-horizontal);
+			}
+			.club-container {
+				@apply(--layout-horizontal);
+			}
+		</style>
+		<div class="politician-display-container" style="{{style}}">
+			<span style="whitespace: nowrap;">{{politician.name.fullName}}</span>
+			<span>&nbsp;</span>
+			<div class="club-container">
+				<template is="dom-repeat" items="{{clubsOfPolitician}}">
+					<club-tag club="{{item}}"></club-tag>
+				</template>
+			</div>
+		</div>
+	</template>
+	<script>
+		Polymer({
+			is : 'politician-display-with-clubs',
+	
+			properties: {
+				politician: {
+					type: Object
+				},
+				clubsOfPolitician: {
+					type: Array,
+					computed: 'computeClubsOfPolitician(politician)'
+				}
+			},
+			
+			computeClubsOfPolitician: function(politician) {
+				return getClubsFromPolitician(politician);
+			}
+		});
+	</script> 
+</dom-module>

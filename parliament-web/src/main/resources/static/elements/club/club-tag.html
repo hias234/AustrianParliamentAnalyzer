@@ -1,0 +1,61 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/paper-styles/color.html">
+
+<dom-module name="club-tag"> 
+	<template>
+		<style is="custom-style">
+			.club-tag-container {
+				-webkit-border-radius: 2px 2px 2px 2px;
+				border-radius: 2px 2px 2px 2px;
+				padding: 3px;
+				margin: 2px;
+				font-size: 10px;
+				color: white;
+				/* todo font size*/
+			}
+		</style>
+		<div id="clubtagcontainer" class="club-tag-container" style="{{style}}">
+			<span style="whitespace: nowrap;">{{visibleName}}</span>
+		</div>
+	</template>
+	<script>
+		Polymer({
+			is : 'club-tag',
+	
+			properties: {
+				club: {
+					type: Object,
+					observer: 'changeBackgroundColor'
+				},
+				visibleName: {
+					type: String,
+					computed: 'computeVisibleName(club)'
+				}
+			},
+	
+			computeVisibleName: function(club) {
+				var clubName = club.shortName;
+				if (clubName.length > 6){
+					clubName = clubName.substr(0, 6);
+				}
+				
+				return clubName.toUpperCase();
+			},
+			
+			changeBackgroundColor: function() {
+				var color = this.getColor(this.club);
+				
+				this.$.clubtagcontainer.setAttribute('style', 'background-color: ' + color + ';');
+			},
+			
+			getColor: function(club) {
+				if (club.color){
+					return club.color;
+				}
+				return '#555555;';
+			}
+		});
+	</script> 
+</dom-module>

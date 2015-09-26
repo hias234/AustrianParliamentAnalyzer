@@ -2,6 +2,7 @@
 
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../bower_components/paper-styles/color.html">
+<link rel="import" href="politician/politician-display-with-clubs.html">
 <link rel="import" href="percent-chart-item.html">
 
 <dom-module name="politician-absence"> 
@@ -13,7 +14,9 @@
 			<template is="dom-repeat" items="{{politicianAbsence}}"> 
 				<percent-chart-item value="{{item.absencePercentage}}" max="{{computeMaxAbsence(politicianAbsence)}}" 
 								percentage-label="{{getPercentageLabel(item)}}" bar-color="{{getBarColor(item)}}"> 
-					<span>{{item.politician.name.fullName}}</span>
+					<div>
+						<politician-display-with-clubs politician="{{item.politician}}"></politician-display-with-clubs>
+					</div>
 				</percent-chart-item> 
 			</template>
 		</div>
