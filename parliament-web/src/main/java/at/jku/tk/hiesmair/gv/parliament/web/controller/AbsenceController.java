@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import at.jku.tk.hiesmair.gv.parliament.db.result.ClubAbsenceResult;
+import at.jku.tk.hiesmair.gv.parliament.db.result.PoliticianAbsenceResult;
 import at.jku.tk.hiesmair.gv.parliament.web.dto.absence.ClubAbsenceDTO;
+import at.jku.tk.hiesmair.gv.parliament.web.dto.absence.PoliticianAbsenceDTO;
 import at.jku.tk.hiesmair.gv.parliament.web.service.AbsenceService;
 
 @RestController
@@ -37,6 +39,23 @@ public class AbsenceController {
 		
 		for (ClubAbsenceResult absenceResult : clubAbsences){
 			result.add(modelMapper.map(absenceResult, ClubAbsenceDTO.class));
+		}
+		
+		return result;
+	}
+	
+	@RequestMapping(value = "politician/byPeriod/{period}", method = RequestMethod.GET)
+	public List<PoliticianAbsenceDTO> getPoliticianAbsenceByPeriod(@PathVariable("period") Integer period) {
+		List<PoliticianAbsenceResult> politicianAbsences = absenceService.getPoliticianAbsence(period);
+		
+		return getPoliticianAbsenceDTOList(politicianAbsences);
+	}
+
+	private List<PoliticianAbsenceDTO> getPoliticianAbsenceDTOList(List<PoliticianAbsenceResult> politicianAbsences) {
+		List<PoliticianAbsenceDTO> result = new ArrayList<PoliticianAbsenceDTO>(politicianAbsences.size());
+		
+		for (PoliticianAbsenceResult absenceResult : politicianAbsences){
+			result.add(modelMapper.map(absenceResult, PoliticianAbsenceDTO.class));
 		}
 		
 		return result;
