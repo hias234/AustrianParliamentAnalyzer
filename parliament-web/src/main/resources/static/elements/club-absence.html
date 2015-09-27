@@ -13,7 +13,7 @@
 		<div class="">
 			<template is="dom-repeat" items="{{clubAbsence}}"> 
 				<percent-chart-item value="{{item.absencePercentage}}" max="{{computeMaxAbsence(clubAbsence)}}" 
-								percentage-label="{{getPercentageLabel(item)}}" bar-color="{{getBarColor(item)}}"> 
+								value-label="{{getPercentageLabel(item)}}" bar-color="{{getBarColor(item)}}"> 
 					<span>{{item.club.shortName}}</span>
 				</percent-chart-item> 
 			</template>

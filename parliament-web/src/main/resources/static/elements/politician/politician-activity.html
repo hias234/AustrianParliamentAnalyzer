@@ -1,0 +1,60 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/paper-styles/color.html">
+<link rel="import" href="politician-display-with-clubs.html">
+<link rel="import" href="../percent-chart-item.html">
+
+<dom-module name="politician-activity"> 
+	<template>
+		<style>
+			
+		</style>
+		<div class="">
+			<template is="dom-repeat" items="{{politicianActivity}}"> 
+				<percent-chart-item value="{{item.count}}" max="{{computeMaxActivity(politicianActivity)}}" 
+								value-label="{{getValueLabel(item)}}" bar-color="{{getBarColor(item)}}"> 
+					<div>
+						<politician-display-with-clubs politician="{{item.politician}}"></politician-display-with-clubs>
+					</div>
+				</percent-chart-item> 
+			</template>
+		</div>
+	</template>
+	<script>
+		Polymer({
+			is : 'politician-activity',
+	
+			properties : {
+				politicianActivity: {
+					type: Array
+				}
+			},
+	
+			computeMaxActivity: function(politicianActivity) {
+				var max = 0;
+				for (var i = 0; i < politicianActivity.length; i++){
+					if (max < politicianActivity[i].count){
+						max = politicianActivity[i].count;
+					}
+				}
+				
+				return max;
+			},
+			
+			getValueLabel: function(item) {
+				return item.count + '';
+			},
+			
+			getBarColor: function(item) {
+				if (item.count < 10){
+					return '#F44336';
+				}
+				else if (item.count < 50){
+					return '#FF9800';
+				}
+				return '#4CAF50';
+			}
+		});
+	</script> 
+</dom-module>

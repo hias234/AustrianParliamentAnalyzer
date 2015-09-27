@@ -13,7 +13,7 @@
 		<div class="">
 			<template is="dom-repeat" items="{{politicianAbsence}}"> 
 				<percent-chart-item value="{{item.absencePercentage}}" max="{{computeMaxAbsence(politicianAbsence)}}" 
-								percentage-label="{{getPercentageLabel(item)}}" bar-color="{{getBarColor(item)}}"> 
+								value-label="{{getPercentageLabel(item)}}" bar-color="{{getBarColor(item)}}"> 
 					<div>
 						<politician-display-with-clubs politician="{{item.politician}}"></politician-display-with-clubs>
 					</div>

@@ -159,7 +159,12 @@ public class ParliamentDatabaseLoader {
 			clubInDb = club;
 		}
 		else{
-			clubInDb.setLongName(club.getLongName());
+			if (club.getLongName() != null){
+				clubInDb.setLongName(club.getLongName());
+			}
+			if (club.getColor() != null) {
+				clubInDb.setColor(club.getColor());
+			}
 		}
 		clubRepository.save(clubInDb);
 	}

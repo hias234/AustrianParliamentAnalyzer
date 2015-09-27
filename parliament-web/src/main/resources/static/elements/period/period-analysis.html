@@ -6,6 +6,7 @@
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../club-absence.html">
 <link rel="import" href="../politician-absence.html">
+<link rel="import" href="../politician/politician-activity.html">
 <link rel="import" href="period-summary-stats.html">
 <link rel="import" href="period-card.html">
 
@@ -39,9 +40,10 @@
 				<iron-ajax auto url="{{periodStatsUrl}}" last-response="{{periodStats}}" />
 				<period-card period-stats="{{periodStats}}" hide-more-details-button></period-card>
 				
+				<iron-ajax auto url="{{politicianActivityUrl}}" last-response="{{politicianActivity}}" />
 				<paper-card class="periodcard" width="100%" heading="Most active Politicians">
 					<div class="card-content">
-						
+						<politician-activity politician-activity="{{politicianActivity}}"></politician-activity>
 					</div>
 				</paper-card>
 			</div>
@@ -55,7 +57,7 @@
 				</paper-card>
 				
 				<iron-ajax auto url="{{politicianAbsenceUrl}}" last-response="{{politicianAbsence}}" />
-				<paper-card class="periodcard" width="100%" heading="Most absent Politicians">
+				<paper-card class="periodcard" width="100%" heading="Politician Absence">
 					<div class="card-content">
 						<politician-absence politician-absence="{{politicianAbsence}}"></politician-absence>
 					</div>
@@ -85,6 +87,10 @@
 				politicianAbsenceUrl: {
 					type: String,
 					computed: 'computePoliticianAbsenceUrl(period)'
+				},
+				politicianActivityUrl: {
+					type: String,
+					computed: 'computePoliticianActivityUrl(period)'
 				}
 			},
 			
@@ -102,6 +108,10 @@
 			
 			computePoliticianAbsenceUrl: function(period) {
 				return '/absence/politician/byPeriod/' + period + '.json';
+			},
+			
+			computePoliticianActivityUrl: function(period) {
+				return '/politician/activity/' + period + '.json';
 			}
 		
 		});
