@@ -37,7 +37,7 @@
 				
 				var width = document.getElementById(this.id).children[0].offsetWidth;
 				var height = document.getElementById(this.id).children[0].offsetHeight;
-				var radius = 6;
+				var radius = 8;
 				
 				console.log(width);
 				console.log(height);
@@ -80,7 +80,14 @@
 						return l.color;
 					}
 					return '#CCCCCC';
-				}).style('opacity', function(l){
+				})
+				.attr('stroke-width', function(l){
+					if (l.weight < 0){
+						return '1px';
+					}
+					return Math.max(1, ((l.weight / graph.maxWeight) * radius)) + 'px';
+				})
+				.style('opacity', function(l){
 					if (l.weight < 0){
 						return 0.01;
 					}
