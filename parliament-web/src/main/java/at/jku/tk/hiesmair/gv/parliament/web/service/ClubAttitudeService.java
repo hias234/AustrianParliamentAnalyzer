@@ -27,7 +27,23 @@ public class ClubAttitudeService {
 	}
 	
 	public List<ClubAttitudeRelationByPeriod> getClubAttitudes(Integer period){
-		return politicianRelationRep.getClubAttitudesByPeriod(period);
+		List<ClubAttitudeRelationByPeriod> clubAttitudes = politicianRelationRep.getClubAttitudesByPeriod(period);
+		
+		// merge if ca1.getclub2 == ca1.getclub1 and vice verca
+		for (int i = 0; i < clubAttitudes.size(); i++){
+			ClubAttitudeRelationByPeriod ca1 = clubAttitudes.get(i);
+			for (int j = i + 1; j < clubAttitudes.size(); j++){
+				ClubAttitudeRelationByPeriod ca2 = clubAttitudes.get(j);
+				
+				if (ca1.getClub1().equals(ca2.getClub2()) && ca1.getClub2().equals(ca2.getClub1())){
+					ca1.setWeight(ca1.getWeight() + ca2.getWeight());
+					clubAttitudes.remove(j);
+					j--;
+				}
+			}
+		}
+		
+		return clubAttitudes;
 	}
 	
 	public D3Graph getClubAttitudeGraph(Integer period){
