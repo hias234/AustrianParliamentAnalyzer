@@ -1,6 +1,7 @@
 package at.jku.tk.hiesmair.gv.parliament.web.dto;
 
 import java.util.Date;
+import java.util.List;
 
 public class MandateDTO {
 
@@ -10,6 +11,7 @@ public class MandateDTO {
 	protected Date validUntil;
 	protected String type;
 	protected ParliamentClubDTO club;
+	protected List<SimpleLegislativePeriodDTO> periods;
 
 	public Integer getId() {
 		return id;
@@ -57,6 +59,14 @@ public class MandateDTO {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public List<SimpleLegislativePeriodDTO> getPeriods() {
+		return periods;
+	}
+
+	public void setPeriods(List<SimpleLegislativePeriodDTO> periods) {
+		this.periods = periods;
 	}
 
 }

@@ -15,7 +15,7 @@
 				<percent-chart-item value="{{item.absencePercentage}}" max="{{computeMaxAbsence(politicianAbsence)}}" 
 								value-label="{{getPercentageLabel(item)}}" bar-color="{{getBarColor(item)}}"> 
 					<div>
-						<politician-display-with-clubs politician="{{item.politician}}"></politician-display-with-clubs>
+						<politician-display-with-clubs period="{{period}}" politician="{{item.politician}}"></politician-display-with-clubs>
 					</div>
 				</percent-chart-item> 
 			</template>
@@ -29,6 +29,7 @@
 				politicianAbsence: {
 					type: Array
 				},
+				period: Number,
 				maxAbsence: {
 					type: Number,
 					compute: 'computeMaxAbsence(politicianAbsence)'

@@ -31,13 +31,19 @@
 				politician: {
 					type: Object
 				},
+				period: {
+					type: Number
+				},
 				clubsOfPolitician: {
 					type: Array,
-					computed: 'computeClubsOfPolitician(politician)'
+					computed: 'computeClubsOfPolitician(politician, period)'
 				}
 			},
 			
-			computeClubsOfPolitician: function(politician) {
+			computeClubsOfPolitician: function(politician, period) {
+				if (period){
+					return getClubsFromPolitician(politician, period);
+				}
 				return getClubsFromPolitician(politician);
 			}
 		});

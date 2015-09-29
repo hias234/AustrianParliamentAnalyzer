@@ -43,7 +43,7 @@
 				<iron-ajax auto url="{{politicianActivityUrl}}" last-response="{{politicianActivity}}" />
 				<paper-card class="periodcard" width="100%" heading="Politician Speeches">
 					<div class="card-content">
-						<politician-activity politician-activity="{{politicianActivity}}"></politician-activity>
+						<politician-activity period="{{period}}" politician-activity="{{politicianActivity}}"></politician-activity>
 					</div>
 				</paper-card>
 			</div>
@@ -59,7 +59,7 @@
 				<iron-ajax auto url="{{politicianAbsenceUrl}}" last-response="{{politicianAbsence}}" />
 				<paper-card class="periodcard" width="100%" heading="Politician Absence">
 					<div class="card-content">
-						<politician-absence politician-absence="{{politicianAbsence}}"></politician-absence>
+						<politician-absence period="{{period}}" politician-absence="{{politicianAbsence}}"></politician-absence>
 					</div>
 				</paper-card>
 			</div>

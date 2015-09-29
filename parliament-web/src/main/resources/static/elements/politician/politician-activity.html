@@ -15,7 +15,7 @@
 				<percent-chart-item value="{{item.count}}" max="{{computeMaxActivity(politicianActivity)}}" 
 								value-label="{{getValueLabel(item)}}" bar-color="{{getBarColor(item)}}"> 
 					<div>
-						<politician-display-with-clubs politician="{{item.politician}}"></politician-display-with-clubs>
+						<politician-display-with-clubs period="{{period}}" politician="{{item.politician}}"></politician-display-with-clubs>
 					</div>
 				</percent-chart-item> 
 			</template>
@@ -28,7 +28,8 @@
 			properties : {
 				politicianActivity: {
 					type: Array
-				}
+				},
+				period: Number
 			},
 	
 			computeMaxActivity: function(politicianActivity) {
