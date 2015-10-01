@@ -2,7 +2,7 @@
 
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
-<link rel="import" href="politician-cards.html">
+<link rel="import" href="politician-card.html">
 
 <dom-module name="politician-cards-by-period">
 	<template>
@@ -19,7 +19,9 @@
 	        </paper-input>
 	    </div>
 		
-		<politician-cards politicians="{{politicians}}"></politician-cards>
+		<template is="dom-repeat" items="{{politicians}}">
+			<politician-card politician="{{item}}" period="{{selectedperiod}}"></politician-card>
+		</template>
 	</template>
 	<script>
 		Polymer({

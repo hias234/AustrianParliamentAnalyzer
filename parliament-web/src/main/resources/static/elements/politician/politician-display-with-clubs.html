@@ -14,8 +14,13 @@
 			.club-container {
 				@apply(--layout-horizontal);
 			}
+			
+			[container] {
+				height: auto;
+				width: 100%;
+			}
 		</style>
-		<div style="{{style}}">
+		<div container>
 			<span style="whitespace: nowrap;" class="politician-display-container">{{politician.name.fullName}}</span>
 			<span class="politician-display-container">&nbsp;</span>
 				<template is="dom-repeat" items="{{clubsOfPolitician}}">
