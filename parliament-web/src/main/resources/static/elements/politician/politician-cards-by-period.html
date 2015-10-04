@@ -10,7 +10,7 @@
 			
 		</style>
 	
-		<iron-ajax auto url="{{url}}" handle-as="json" last-response="{{politicians}}" />
+		<iron-ajax auto url="{{url}}" handle-as="json" last-response="{{politicianStats}}" />
 		
 		<div>
 			<paper-input class="short" style="width: 300px"
@@ -19,8 +19,11 @@
 	        </paper-input>
 	    </div>
 		
-		<template is="dom-repeat" items="{{politicians}}">
-			<politician-card politician="{{item}}" period="{{selectedperiod}}"></politician-card>
+		<template is="dom-repeat" items="{{politicianStats}}">
+			<politician-card politician-stats="{{item}}" period="{{selectedperiod}}"
+					max-absence="{{computeMaxAbsence(politicianStats)}}"
+					max-speech-count="{{computeMaxSpeechCount(politicianStats)}}">
+			</politician-card>
 		</template>
 	</template>
 	<script>
@@ -28,7 +31,7 @@
 			is: 'politician-cards-by-period',
 	
 			properties: {
-				politicians: {
+				politicianStats: {
 					type: Object
 				},
 				selectedperiod: {
@@ -42,7 +45,29 @@
 			},
 			
 			computeUrl: function(selectedperiod) {
-				return '/politician/period/' + selectedperiod + '.json';
+				return '/politician/stats/period/' + selectedperiod + '.json';
+			},
+			
+			computeMaxAbsence: function(politicianStats) {
+				var max = 0;
+				for (var i = 0; i < politicianStats.length; i++){
+					if (max < politicianStats[i].absence.absencePercentage){
+						max = politicianStats[i].absence.absencePercentage;
+					}
+				}
+				
+				return max;
+			},
+			
+			computeMaxSpeechCount: function(politicianStats) {
+				var max = 0;
+				for (var i = 0; i < politicianStats.length; i++){
+					if (max < politicianStats[i].speechCount){
+						max = politicianStats[i].speechCount;
+					}
+				}
+				
+				return max;
 			}
 		});
 	</script>

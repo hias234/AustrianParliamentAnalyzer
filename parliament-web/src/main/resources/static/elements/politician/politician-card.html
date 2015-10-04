@@ -3,24 +3,45 @@
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="politician-display-with-clubs.html">
+<link rel="import" href="../percent-chart-item.html">
 
 <dom-module name="politician-card">
 	<template>
 		<style>
 			paper-card::shadow paper-material {
-				height: 200px;
+				height: 140px;
+			}
+			
+			politician-display-with-clubs::shadow .politician-display-container {
+				font-weight: bold;
+				font-size: 18px;
 			}
 			
 			.politiciancard {
 				width: 360px;
 				margin: 10px;
 			}
+			
+			[politician-card-content] {
+				@apply(--layout-vertical);
+			}
+			[politician-header] {
+				margin-bottom: 15px;
+			}
 		</style>
 		<paper-card class="politiciancard">
-			<div class="card-content">
-				<div>
-					<politician-display-with-clubs politician="{{politician}}" period="{{period}}"></politician-display-with-clubs>
+			<div politician-card-content class="card-content">
+				<div politician-header>
+					<politician-display-with-clubs politician="{{politicianStats.politician}}" period="{{period}}"></politician-display-with-clubs>
 				</div>
+				<percent-chart-item value="{{politicianStats.absence.absencePercentage}}" max="{{maxAbsence}}"
+							value-label="{{getPercentageLabel(politicianStats)}}" bar-color="{{getBarColor(politicianStats)}}">
+					<span>Sessionabsence</span>
+				</percent-chart-item>
+				<percent-chart-item value="{{politicianStats.speechCount}}" max="{{maxSpeechCount}}"
+							value-label="{{getSpeechCountLabel(politicianStats)}}" bar-color="{{getSpeechCountBarColor(politicianStats)}}">
+					<span>Speeches</span>
+				</percent-chart-item>
 			</div>
 		</paper-card>
 	</template>
@@ -29,20 +50,44 @@
 			is: 'politician-card',
 
 			properties: {
-				politician: {
+				politicianStats: {
 					type: Object
-				},
-				fullPoliticianName: {
-					type: String,
-					computed: 'computeFullPoliticianName(politician)'
 				},
 				period: {
 					type: Number
-				}
+				},
+				maxAbsence: {
+					type: Number
+				},
+				maxSpeechCount: Number
 			},
-		
-			computeFullPoliticianName: function(p) {
-				return p.name.firstName + ' ' + p.name.surName;
+			
+			getPercentageLabel: function(politicianStats) {
+				return (politicianStats.absence.absencePercentage * 100).toFixed(1) + ' %';
+			},
+			
+			getBarColor: function(politicianStats) {
+				if (politicianStats.absence.absencePercentage >= 0.1){
+					return '#F44336';
+				}
+				else if (politicianStats.absence.absencePercentage >= 0.05){
+					return '#FF9800';
+				}
+				return '#4CAF50';
+			},
+			
+			getSpeechCountLabel: function(politicianStats) {
+				return politicianStats.speechCount + '';
+			},
+			
+			getSpeechCountBarColor: function(politicianStats) {
+				if (politicianStats.speechCount < 10){
+					return '#F44336';
+				}
+				else if (politicianStats.speechCount < 50){
+					return '#FF9800';
+				}
+				return '#4CAF50';
 			}
 		
 		});
