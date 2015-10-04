@@ -3,6 +3,8 @@ package at.jku.tk.hiesmair.gv.parliament.web.dto;
 import java.util.Date;
 import java.util.List;
 
+import at.jku.tk.hiesmair.gv.parliament.web.dto.period.SimpleLegislativePeriodDTO;
+
 public class MandateDTO {
 
 	protected Integer id;

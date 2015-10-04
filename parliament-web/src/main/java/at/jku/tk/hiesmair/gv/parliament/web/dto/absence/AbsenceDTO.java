@@ -1,6 +1,6 @@
 package at.jku.tk.hiesmair.gv.parliament.web.dto.absence;
 
-public abstract class AbsenceDTO {
+public class AbsenceDTO {
 
 	private long absenceCount;
 	private long presenceCount;

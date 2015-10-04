@@ -1,4 +1,4 @@
-package at.jku.tk.hiesmair.gv.parliament.web.dto;
+package at.jku.tk.hiesmair.gv.parliament.web.dto.politician;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -9,6 +9,7 @@ import org.modelmapper.ModelMapper;
 
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Name;
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
+import at.jku.tk.hiesmair.gv.parliament.web.dto.MandateDTO;
 
 public class PoliticianDTO {
 

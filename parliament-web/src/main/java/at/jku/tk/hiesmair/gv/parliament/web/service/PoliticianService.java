@@ -15,12 +15,24 @@ public class PoliticianService {
 
 	@Inject
 	private PoliticianRepository politicianRep;
-	
+
 	public List<Politician> findNationalCouncilMembersOfPeriod(Integer period) {
 		return politicianRep.findNationalCouncilMembersOfPeriod(period);
 	}
-	
+
 	public List<PoliticianActivityResult> getPoliticianActivityResult(Integer period) {
 		return politicianRep.getActivityResult(period, period);
+	}
+
+	public Integer getSpeechCount(String politicianId, Integer period) {
+		return Long.valueOf(politicianRep.countSpeechesOfPoliticianByPeriod(politicianId, period)).intValue();
+	}
+	
+	public Long getAbsenceCount(String politicianId, Integer period) {
+		return politicianRep.countSessionAbsencesOfPoliticianByPeriod(politicianId, period);
+	}
+	
+	public Long getPresenceCount(String politicianId, Integer period) {
+		return politicianRep.countSessionPresencesOfPoliticianByPeriod(politicianId, period);
 	}
 }

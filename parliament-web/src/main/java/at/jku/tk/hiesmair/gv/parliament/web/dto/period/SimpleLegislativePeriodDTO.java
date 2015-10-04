@@ -1,4 +1,4 @@
-package at.jku.tk.hiesmair.gv.parliament.web.dto;
+package at.jku.tk.hiesmair.gv.parliament.web.dto.period;
 
 public class SimpleLegislativePeriodDTO {
 

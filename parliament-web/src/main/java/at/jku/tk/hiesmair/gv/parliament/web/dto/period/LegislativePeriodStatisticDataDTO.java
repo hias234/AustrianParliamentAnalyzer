@@ -1,6 +1,8 @@
-package at.jku.tk.hiesmair.gv.parliament.web.dto;
+package at.jku.tk.hiesmair.gv.parliament.web.dto.period;
 
 import java.util.List;
+
+import at.jku.tk.hiesmair.gv.parliament.web.dto.ClubMandateCountDTO;
 
 public class LegislativePeriodStatisticDataDTO {
 

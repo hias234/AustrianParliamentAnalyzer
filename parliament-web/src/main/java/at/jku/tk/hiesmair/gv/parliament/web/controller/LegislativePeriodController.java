@@ -19,8 +19,8 @@ import at.jku.tk.hiesmair.gv.parliament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parliament.entities.club.ParliamentClub;
 import at.jku.tk.hiesmair.gv.parliament.entities.session.Session;
 import at.jku.tk.hiesmair.gv.parliament.web.dto.ClubMandateCountDTO;
-import at.jku.tk.hiesmair.gv.parliament.web.dto.LegislativePeriodStatisticDataDTO;
 import at.jku.tk.hiesmair.gv.parliament.web.dto.ParliamentClubDTO;
+import at.jku.tk.hiesmair.gv.parliament.web.dto.period.LegislativePeriodStatisticDataDTO;
 import at.jku.tk.hiesmair.gv.parliament.web.service.LegislativePeriodService;
 
 @RestController

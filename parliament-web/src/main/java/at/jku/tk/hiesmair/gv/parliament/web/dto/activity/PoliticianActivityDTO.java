@@ -1,6 +1,6 @@
 package at.jku.tk.hiesmair.gv.parliament.web.dto.activity;
 
-import at.jku.tk.hiesmair.gv.parliament.web.dto.PoliticianDTO;
+import at.jku.tk.hiesmair.gv.parliament.web.dto.politician.PoliticianDTO;
 
 public class PoliticianActivityDTO {
 
