@@ -1,6 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="politician-display-with-clubs.html">
 <link rel="import" href="../percent-chart-item.html">
@@ -43,6 +44,11 @@
 					<span>Speeches</span>
 				</percent-chart-item>
 			</div>
+			<div class="card-actions">
+				<a class="inherit-colors" href="{{morePageUrl}}">
+					<paper-button>More Details</paper-button>
+				</a>
+			</div>
 		</paper-card>
 	</template>
 	<script>
@@ -59,7 +65,11 @@
 				maxAbsence: {
 					type: Number
 				},
-				maxSpeechCount: Number
+				maxSpeechCount: Number,
+				morePageUrl: {
+					type: String,
+					computed: 'computeMorePageUrl(politicianStats)'
+				}
 			},
 			
 			getPercentageLabel: function(politicianStats) {
@@ -88,6 +98,10 @@
 					return '#FF9800';
 				}
 				return '#4CAF50';
+			},
+			
+			computeMorePageUrl: function(politicianStats) {
+				return '/politician-analysis.html?politician=' + encodeURIComponent(politicianStats.politician.id);
 			}
 		
 		});

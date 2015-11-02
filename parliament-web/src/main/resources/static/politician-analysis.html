@@ -13,7 +13,7 @@
 		<link rel="import" href="/bower_components/polymer/polymer.html">
 
 		<link rel="import" href="elements/header.html">
-		<link rel="import" href="elements/period/period-analysis.html">
+		<link rel="import" href="elements/politician/politician-analysis.html">
 
 		<link rel="stylesheet" type="text/css" href="css/base.css" />
 		
@@ -21,22 +21,22 @@
 		<script type="text/javascript">
 			document.addEventListener('WebComponentsReady', function() {
 		      	var queryStr = window.location.search;
-		      	queryStr = queryStr.replace('?period=', '');
-		      	var period = parseInt(queryStr);
+		      	queryStr = queryStr.replace('?politician=', '');
+		      	var url = decodeURIComponent(queryStr);
 		      	
-		      	var periodAnalysisElement = document.createElement('period-analysis');
-		      	periodAnalysisElement.period = period;
+		      	var politicianAnalysisElement = document.createElement('politician-analysis');
+		      	politicianAnalysisElement.politicianid = url;
 		      	
-		      	var container = document.querySelector('#period-analysis-content');
-		      	container.appendChild(periodAnalysisElement);
+		      	var container = document.querySelector('#politician-analysis-content');
+		      	container.appendChild(politicianAnalysisElement);
 		    });
 		</script>
 	</head>
 	<body unresolved>
-		<parliament-header header-title="Austrian Parliament Analyzer - Legislative Period Analysis"
-							header-sub-title="Here you can see data of the selected Period of the Austrian Parliament">
+		<parliament-header header-title="Austrian Parliament Analyzer - Politician Analysis"
+							header-sub-title="Here you can see data of the selected Politician">
 		</parliament-header>
-		<div id="period-analysis-content" class="container page-content">
+		<div id="politician-analysis-content" class="container page-content">
 		</div>
 	</body>
 </html>

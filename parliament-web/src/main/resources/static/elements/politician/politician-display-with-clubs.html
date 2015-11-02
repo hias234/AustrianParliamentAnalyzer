@@ -23,9 +23,9 @@
 		<div container>
 			<span style="whitespace: nowrap;" class="politician-display-container">{{politician.name.fullName}}</span>
 			<span class="politician-display-container">&nbsp;</span>
-				<template is="dom-repeat" items="{{clubsOfPolitician}}">
-					<club-tag club="{{item}}" class="politician-display-container"></club-tag>
-				</template>
+			<template is="dom-repeat" items="{{clubsOfPolitician}}">
+				<club-tag club="{{item}}" class="politician-display-container"></club-tag>
+			</template>
 		</div>
 	</template>
 	<script>
