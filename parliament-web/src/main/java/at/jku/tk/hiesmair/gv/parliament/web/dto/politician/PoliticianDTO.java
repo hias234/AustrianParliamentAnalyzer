@@ -48,6 +48,7 @@ public class PoliticianDTO {
 
 	public void setMandates(List<MandateDTO> mandates) {
 		this.mandates = mandates;
+		this.mandates.sort((m1, m2) -> m1.getValidFrom().compareTo(m2.getValidFrom()));
 	}
 
 	public static PoliticianDTO fromPolitician(ModelMapper mapper, Politician politician) {

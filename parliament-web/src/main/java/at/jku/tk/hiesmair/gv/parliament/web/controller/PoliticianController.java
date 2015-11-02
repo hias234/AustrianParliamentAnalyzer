@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.ws.rs.QueryParam;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -73,4 +74,14 @@ public class PoliticianController {
 		return result;
 	}
 
+	@RequestMapping(value = "stats", method = RequestMethod.GET)
+	public PoliticianSummaryStatsItemDTO getPoliticianStats(@QueryParam("politicianId") String politicianId) {
+		Integer speechCount = politicianService.getSpeechCount(politicianId);
+		Long absenceCount = politicianService.getAbsenceCount(politicianId);
+		Long presenceCount = politicianService.getPresenceCount(politicianId);
+		
+		return new PoliticianSummaryStatsItemDTO(PoliticianDTO.fromPolitician(mapper, politicianService.findById(politicianId)),
+				new AbsenceDTO(absenceCount, presenceCount), speechCount);
+	}
+	
 }

@@ -44,11 +44,13 @@
 					<span>Speeches</span>
 				</percent-chart-item>
 			</div>
-			<div class="card-actions">
-				<a class="inherit-colors" href="{{morePageUrl}}">
-					<paper-button>More Details</paper-button>
-				</a>
-			</div>
+			<template is="dom-if" if="{{!hideMoreDetailsButton}}">
+				<div class="card-actions">
+					<a class="inherit-colors" href="{{morePageUrl}}">
+						<paper-button>More Details</paper-button>
+					</a>
+				</div>
+			</template>
 		</paper-card>
 	</template>
 	<script>
@@ -69,7 +71,11 @@
 				morePageUrl: {
 					type: String,
 					computed: 'computeMorePageUrl(politicianStats)'
-				}
+				},
+				hideMoreDetailsButton: {
+					type: Boolean,
+					value: false
+				},
 			},
 			
 			getPercentageLabel: function(politicianStats) {

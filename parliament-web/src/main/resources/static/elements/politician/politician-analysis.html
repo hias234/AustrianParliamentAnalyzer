@@ -2,16 +2,64 @@
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../bower_components/paper-styles/color.html">
-<link rel="import" href="politician-display-with-clubs.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="politician-card.html">
 <link rel="import" href="../percent-chart-item.html">
+<link rel="import" href="../club/club-tag.html">
 
 <dom-module name="politician-analysis"> 
 	<template>
 		<style>
+			paper-card::shadow paper-material {
+				height: auto;
+			}
 			
+			[horizontal] {
+				@apply(--layout-horizontal);
+			}
+			
+			[mandate] {
+				margin-bottom: 5px;
+			}
+			
+			[date-range] {
+				font-size: 12px;
+			}
+			
+			[card] {
+				margin: 10px;
+			}
 		</style>
 		<div class="">
-		
+			<iron-ajax auto url="{{statsUrl}}" last-response="{{politicianStats}}" />
+			<politician-card politician-stats="{{politicianStats}}" period="25"
+					max-absence="1"
+					max-speech-count="1" hide-more-details-button></politician-card>
+			
+			<paper-card card heading="Related Politicians" style="width: 60%;">
+			
+			</paper-card>
+			<paper-card card heading="Mandates" style="width: 360px;">
+				<div class="card-content">
+					<template is="dom-repeat" items="{{politicianStats.politician.mandates}}">
+						<div mandate>
+							<div horizontal>
+								<span>{{item.description}}</span>
+								&nbsp;
+								<template is="dom-if" if="{{item.club}}">
+									<club-tag club="{{item.club}}"></club-tag>
+								</template>
+							</div>
+							<div date-range>
+								<span>{{item.validFrom}}</span>
+								<template is="dom-if" if="{{item.validUntil}}">
+									 until <span>{{item.validUntil}}</span>
+								</template>
+							</div>
+						</div>
+					</template>
+				</div>
+			</paper-card>
 		</div>
 	</template>
 	<script>
@@ -19,7 +67,16 @@
 			is : 'politician-analysis',
 	
 			properties : {
-				politicianid: String
+				politicianid: String,
+				statsUrl: {
+					type: String,
+					computed: 'computeStatsUrl(politicianid)'
+				},
+				politicianStats: Object
+			},
+			
+			computeStatsUrl: function(politicianid) {
+				return '/politician/stats.json?politicianId=' + encodeURIComponent(politicianid);
 			}
 	
 			
