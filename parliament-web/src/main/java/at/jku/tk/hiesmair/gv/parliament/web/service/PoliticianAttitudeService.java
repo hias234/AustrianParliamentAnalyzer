@@ -7,11 +7,14 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import at.jku.tk.hiesmair.gv.parliament.db.repositories.relation.PoliticianAttitudeRelationRepository;
 import at.jku.tk.hiesmair.gv.parliament.entities.mandate.NationalCouncilMember;
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
+import at.jku.tk.hiesmair.gv.parliament.entities.relation.PoliticianAttitudeRelation;
 import at.jku.tk.hiesmair.gv.parliament.entities.relation.PoliticianAttitudeRelationByPeriod;
 import at.jku.tk.hiesmair.gv.parliament.web.dto.graph.D3Graph;
 import at.jku.tk.hiesmair.gv.parliament.web.dto.graph.D3Link;
@@ -23,6 +26,12 @@ public class PoliticianAttitudeService {
 	@Inject
 	private PoliticianAttitudeRelationRepository politicianRelationRep;
 
+	public Page<PoliticianAttitudeRelation> getMostRelatedPoliticians(String politicianId, int offset, int length){
+		Page<PoliticianAttitudeRelation> relatedPoliticiansPage = politicianRelationRep.getMostRelatedPoliticians(politicianId, new PageRequest(offset, length));
+		
+		return relatedPoliticiansPage;
+	}
+	
 	public List<PoliticianAttitudeRelationByPeriod> getPoliticianAttitudes() {
 		return politicianRelationRep.getPoliticianAttitudesByPeriods();
 	}

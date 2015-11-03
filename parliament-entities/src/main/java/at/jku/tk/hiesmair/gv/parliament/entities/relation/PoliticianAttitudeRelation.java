@@ -35,13 +35,20 @@ public class PoliticianAttitudeRelation {
 		super();
 	}
 
-	public PoliticianAttitudeRelation(Politician politician1, Politician politician2,
-			Discussion discussion, Integer weight) {
+	public PoliticianAttitudeRelation(Politician politician1, Politician politician2, Discussion discussion,
+			Integer weight) {
 		super();
 		this.politician1 = politician1;
 		this.politician2 = politician2;
 		this.discussion = discussion;
 		this.weight = weight;
+	}
+
+	public PoliticianAttitudeRelation(Politician politician1, Politician politician2, Long weight) {
+		super();
+		this.politician1 = politician1;
+		this.politician2 = politician2;
+		this.weight = weight.intValue();
 	}
 
 	public Integer getId() {

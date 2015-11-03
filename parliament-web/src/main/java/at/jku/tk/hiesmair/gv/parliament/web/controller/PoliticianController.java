@@ -14,10 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import at.jku.tk.hiesmair.gv.parliament.db.result.PoliticianActivityResult;
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
+import at.jku.tk.hiesmair.gv.parliament.entities.relation.PoliticianAttitudeRelation;
+import at.jku.tk.hiesmair.gv.parliament.web.dto.PoliticianRelationDTO;
 import at.jku.tk.hiesmair.gv.parliament.web.dto.absence.AbsenceDTO;
 import at.jku.tk.hiesmair.gv.parliament.web.dto.activity.PoliticianActivityDTO;
 import at.jku.tk.hiesmair.gv.parliament.web.dto.politician.PoliticianDTO;
 import at.jku.tk.hiesmair.gv.parliament.web.dto.politician.PoliticianSummaryStatsItemDTO;
+import at.jku.tk.hiesmair.gv.parliament.web.service.PoliticianAttitudeService;
 import at.jku.tk.hiesmair.gv.parliament.web.service.PoliticianService;
 
 @RestController
@@ -28,11 +31,35 @@ public class PoliticianController {
 	private PoliticianService politicianService;
 
 	@Inject
+	private PoliticianAttitudeService politicianAttitudeService;
+	
+	@Inject
 	private ModelMapper mapper;
 
 	@RequestMapping(value = "period/{period}", method = RequestMethod.GET)
 	public List<PoliticianDTO> findPolticiansByPeriod(@PathVariable("period") Integer period) {
 		return PoliticianDTO.fromPoliticians(mapper, politicianService.findNationalCouncilMembersOfPeriod(period));
+	}
+	
+	@RequestMapping(value = "most_related", method = RequestMethod.GET)
+	public List<PoliticianRelationDTO> findMostRelatedPoliticians(@QueryParam("politicianId") String politicianId) {
+		List<PoliticianRelationDTO> result = new ArrayList<PoliticianRelationDTO>();
+		
+		for (PoliticianAttitudeRelation relation : politicianAttitudeService.getMostRelatedPoliticians(politicianId, 1, 10)){
+			Politician p1, p2;
+			if (relation.getPolitician1().getId().equals(politicianId)){
+				p1 = relation.getPolitician1();
+				p2 = relation.getPolitician2();
+			}
+			else{
+				p2 = relation.getPolitician1();
+				p1 = relation.getPolitician2();
+			}
+			
+			result.add(new PoliticianRelationDTO(PoliticianDTO.fromPolitician(mapper, p1), PoliticianDTO.fromPolitician(mapper, p2), relation.getWeight()));
+		}
+		
+		return result;
 	}
 
 	@RequestMapping(value = "test", method = RequestMethod.GET)

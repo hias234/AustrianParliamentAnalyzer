@@ -4,6 +4,7 @@
 <link rel="import" href="../../bower_components/paper-styles/color.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="politician-card.html">
+<link rel="import" href="politician-display-with-clubs.html">
 <link rel="import" href="../percent-chart-item.html">
 <link rel="import" href="../club/club-tag.html">
 
@@ -18,6 +19,10 @@
 				@apply(--layout-horizontal);
 			}
 			
+			[vertical] {
+				@apply(--layout-vertical);
+			}
+			
 			[mandate] {
 				margin-bottom: 5px;
 			}
@@ -30,36 +35,57 @@
 				margin: 10px;
 			}
 		</style>
-		<div class="">
+		<div>
 			<iron-ajax auto url="{{statsUrl}}" last-response="{{politicianStats}}" />
-			<politician-card politician-stats="{{politicianStats}}" period="25"
-					max-absence="1"
-					max-speech-count="1" hide-more-details-button></politician-card>
-			
-			<paper-card card heading="Related Politicians" style="width: 60%;">
-			
-			</paper-card>
-			<paper-card card heading="Mandates" style="width: 360px;">
-				<div class="card-content">
-					<template is="dom-repeat" items="{{politicianStats.politician.mandates}}">
-						<div mandate>
-							<div horizontal>
-								<span>{{item.description}}</span>
-								&nbsp;
-								<template is="dom-if" if="{{item.club}}">
-									<club-tag club="{{item.club}}"></club-tag>
-								</template>
+			<div horizontal>
+			<div style="width: 400px;">
+				<politician-card politician-stats="{{politicianStats}}" period="25"
+						max-absence="1"
+						max-speech-count="1" hide-more-details-button></politician-card>
+				<paper-card card heading="Mandates" style="width: 360px;">
+					<div class="card-content">
+						<template is="dom-repeat" items="{{politicianStats.politician.mandates}}">
+							<div mandate>
+								<div horizontal>
+									<span>{{item.description}}</span>
+									&nbsp;
+									<template is="dom-if" if="{{item.club}}">
+										<club-tag club="{{item.club}}"></club-tag>
+									</template>
+								</div>
+								<div date-range>
+									<span>{{item.validFrom}}</span>
+									<template is="dom-if" if="{{item.validUntil}}">
+										 until <span>{{item.validUntil}}</span>
+									</template>
+								</div>
 							</div>
-							<div date-range>
-								<span>{{item.validFrom}}</span>
-								<template is="dom-if" if="{{item.validUntil}}">
-									 until <span>{{item.validUntil}}</span>
-								</template>
+						</template>
+					</div>
+				</paper-card>
+			</div>
+			
+			<div>
+				<iron-ajax auto url="{{mostRelatedPoliticiansUrl}}" last-response="{{mostRelatedPoliticians}}" />
+				<paper-card card heading="Politicians with similar Attitudes" style="width: 60%;">
+					<div class="card-content" vertical>
+						<template is="dom-repeat" items="{{mostRelatedPoliticians}}">
+							<div>
+								<percent-chart-item value="{{item.weight}}" max="{{computeMaxWeight(mostRelatedPoliticians)}}" 
+									value-label="{{getValueLabel(item)}}" bar-color="{{getBarColor(item)}}">
+									<div>
+										<politician-display-with-clubs  politician="{{item.politician2}}" period="25"></politician-display-with-clubs>
+									</div>	
+								</percent-chart-item>
 							</div>
-						</div>
-					</template>
-				</div>
-			</paper-card>
+						</template>
+					</div>
+				</paper-card>
+				<paper-card card heading="Politicians with contrary Attitudes" style="width: 60%;">
+				
+				</paper-card>
+			</div>
+			</div>
 		</div>
 	</template>
 	<script>
@@ -72,14 +98,46 @@
 					type: String,
 					computed: 'computeStatsUrl(politicianid)'
 				},
-				politicianStats: Object
+				politicianStats: Object,
+				mostRelatedPoliticians: Array,
+				mostRelatedPoliticiansUrl: {
+					type: String,
+					computed: 'computeMostRelatedPoliticiansUrl(politicianid)'
+				}
 			},
 			
 			computeStatsUrl: function(politicianid) {
 				return '/politician/stats.json?politicianId=' + encodeURIComponent(politicianid);
-			}
-	
+			},
 			
+			computeMostRelatedPoliticiansUrl: function(politicianid) {
+				return '/politician/most_related.json?politicianId=' + encodeURIComponent(politicianid);
+			},
+			
+			computeMaxWeight: function(relations) {
+				var max = 0;
+				for (var i = 0; i < relations.length; i++){
+					if (max < Math.abs(relations[i].weight)){
+						max = Math.abs(relations[i].weight);
+					}
+				}
+				
+				return max;
+			},
+			
+			getValueLabel: function(item) {
+				return item.weight + '';
+			},
+			
+			getBarColor: function(item) {
+				if (item.weight < 10){
+					return '#F44336';
+				}
+				else if (item.weight < 50){
+					return '#FF9800';
+				}
+				return '#4CAF50';
+			}
 		});
 	</script> 
 </dom-module>
