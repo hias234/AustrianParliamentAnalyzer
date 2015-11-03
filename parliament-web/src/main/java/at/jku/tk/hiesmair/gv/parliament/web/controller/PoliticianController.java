@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import javax.ws.rs.QueryParam;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -43,9 +44,21 @@ public class PoliticianController {
 	
 	@RequestMapping(value = "most_related", method = RequestMethod.GET)
 	public List<PoliticianRelationDTO> findMostRelatedPoliticians(@QueryParam("politicianId") String politicianId) {
+		Page<PoliticianAttitudeRelation> mostRelatedPoliticians = politicianAttitudeService.getMostRelatedPoliticians(politicianId, 1, 10);
+		return getPoliticianRelationDTOs(politicianId, mostRelatedPoliticians);
+	}
+	
+	@RequestMapping(value = "least_related", method = RequestMethod.GET)
+	public List<PoliticianRelationDTO> findLeastRelatedPoliticians(@QueryParam("politicianId") String politicianId) {
+		Page<PoliticianAttitudeRelation> leastRelatedPoliticians = politicianAttitudeService.getLeastRelatedPoliticians(politicianId, 1, 10);
+		return getPoliticianRelationDTOs(politicianId, leastRelatedPoliticians);
+	}
+
+	protected List<PoliticianRelationDTO> getPoliticianRelationDTOs(String politicianId,
+			Page<PoliticianAttitudeRelation> mostRelatedPoliticians) {
 		List<PoliticianRelationDTO> result = new ArrayList<PoliticianRelationDTO>();
 		
-		for (PoliticianAttitudeRelation relation : politicianAttitudeService.getMostRelatedPoliticians(politicianId, 1, 10)){
+		for (PoliticianAttitudeRelation relation : mostRelatedPoliticians){
 			Politician p1, p2;
 			if (relation.getPolitician1().getId().equals(politicianId)){
 				p1 = relation.getPolitician1();

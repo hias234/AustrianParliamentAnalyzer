@@ -25,6 +25,14 @@ public interface PoliticianAttitudeRelationRepository extends CrudRepository<Pol
 			+ "ORDER BY SUM(par.weight) DESC")
 	public Page<PoliticianAttitudeRelation> getMostRelatedPoliticians(@Param("politician_id") String politicianId, Pageable page);
 	
+	@Query("SELECT new PoliticianAttitudeRelation(par.politician1, par.politician2, SUM(par.weight)) "
+			+ "FROM PoliticianAttitudeRelation par "
+			+ "WHERE par.politician1.id = :politician_id "
+			+ "OR par.politician2.id = :politician_id "
+			+ "GROUP BY par.politician1, par.politician2 "
+			+ "ORDER BY SUM(par.weight) ASC")
+	public Page<PoliticianAttitudeRelation> getLeastRelatedPoliticians(@Param("politician_id") String politicianId, Pageable page);
+	
 	@Query("SELECT new PoliticianAttitudeRelationByPeriod(par.politician1, par.politician2, par.discussion.session.period, SUM(par.weight)) "
 			+ "FROM PoliticianAttitudeRelation par "
 			+ "WHERE par.discussion.session.period.period = :period "

@@ -32,6 +32,12 @@ public class PoliticianAttitudeService {
 		return relatedPoliticiansPage;
 	}
 	
+	public Page<PoliticianAttitudeRelation> getLeastRelatedPoliticians(String politicianId, int offset, int length){
+		Page<PoliticianAttitudeRelation> relatedPoliticiansPage = politicianRelationRep.getLeastRelatedPoliticians(politicianId, new PageRequest(offset, length));
+		
+		return relatedPoliticiansPage;
+	}
+	
 	public List<PoliticianAttitudeRelationByPeriod> getPoliticianAttitudes() {
 		return politicianRelationRep.getPoliticianAttitudesByPeriods();
 	}

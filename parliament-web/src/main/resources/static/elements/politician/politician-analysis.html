@@ -82,8 +82,21 @@
 						</template>
 					</div>
 				</paper-card>
+				<iron-ajax auto url="{{leastRelatedPoliticiansUrl}}" last-response="{{leastRelatedPoliticians}}" />
 				<paper-card card heading="Politicians with contrary Attitudes" style="width: 60%;">
-				
+					<div class="card-content" vertical>
+						<template is="dom-repeat" items="{{leastRelatedPoliticians}}">
+							<div>
+								<percent-chart-item value="{{abs(item.weight)}}" max="{{computeMaxWeight(leastRelatedPoliticians)}}" 
+									value-label="{{getValueLabel(item)}}" bar-color="{{getBarColor(item)}}">
+									<div>
+										<politician-display-with-clubs politician="{{item.politician2}}"
+											></politician-display-with-clubs>
+									</div>	
+								</percent-chart-item>
+							</div>
+						</template>
+					</div>
 				</paper-card>
 			</div>
 			</div>
@@ -104,6 +117,10 @@
 				mostRelatedPoliticiansUrl: {
 					type: String,
 					computed: 'computeMostRelatedPoliticiansUrl(politicianid)'
+				},
+				leastRelatedPoliticiansUrl: {
+					type: String,
+					computed: 'computeLeastRelatedPoliticiansUrl(politicianid)'
 				}
 			},
 			
@@ -113,6 +130,10 @@
 			
 			computeMostRelatedPoliticiansUrl: function(politicianid) {
 				return '/politician/most_related.json?politicianId=' + encodeURIComponent(politicianid);
+			},
+			
+			computeLeastRelatedPoliticiansUrl: function(politicianid) {
+				return '/politician/least_related.json?politicianId=' + encodeURIComponent(politicianid);
 			},
 			
 			computeMaxWeight: function(relations) {
@@ -138,6 +159,10 @@
 					return '#FF9800';
 				}
 				return '#4CAF50';
+			},
+			
+			abs: function(value) {
+				return Math.abs(value);
 			}
 		});
 	</script> 
