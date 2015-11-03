@@ -37,7 +37,8 @@
 					type: Object
 				},
 				period: {
-					type: Number
+					type: Number,
+					value: 0
 				},
 				clubsOfPolitician: {
 					type: Array,
@@ -46,8 +47,8 @@
 			},
 			
 			computeClubsOfPolitician: function(politician, period) {
-				if (period){
-					return getClubsFromPolitician(politician, period);
+				if (period > 0){
+					return getClubsFromPoliticianByPeriod(politician, period);
 				}
 				return getClubsFromPolitician(politician);
 			}

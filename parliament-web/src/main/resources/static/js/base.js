@@ -13,7 +13,7 @@ function getClubsFromPolitician(p) {
 	return distinctClubs;
 }
 
-function getClubsFromPolitician(p, period) {
+function getClubsFromPoliticianByPeriod(p, period) {
 	var distinctClubs = [];
 	var distinctClubNames = [];
 	for (var i = 0; i < p.mandates.length; i++){
