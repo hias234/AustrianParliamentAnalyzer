@@ -32,6 +32,9 @@ public class AbsenceDTO {
 	}
 
 	public double getAbsencePercentage(){
+		if (absenceCount + presenceCount == 0){
+			return 0;
+		}
 		return Double.valueOf(absenceCount) / (absenceCount + presenceCount);
 	}
 }

@@ -74,7 +74,7 @@
 											 since
 										</template>
 										<span>{{item.validFrom}}</span>
-										<template is="dom-if" if="{{item.validUntil && item.validFrom != item.validUntil}}">
+										<template is="dom-if" if="{{item.validUntil}}">
 											 until <span>{{item.validUntil}}</span>
 										</template>
 									</div>
