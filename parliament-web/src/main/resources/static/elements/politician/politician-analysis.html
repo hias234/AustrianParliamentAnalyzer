@@ -11,6 +11,15 @@
 <dom-module name="politician-analysis"> 
 	<template>
 		<style>
+			.politician-fact-label {
+				margin: 3px;
+				width: 100%;
+			}
+			
+			.politician-fact {
+				white-space: nowrap;
+			}
+		
 			paper-card::shadow paper-material {
 				height: auto;
 			}
@@ -38,41 +47,51 @@
 		<div>
 			<iron-ajax auto url="{{statsUrl}}" last-response="{{politicianStats}}" />
 			<div horizontal>
-			<div style="width: 400px;">
-				<politician-card politician-stats="{{politicianStats}}" period="25"
-						max-absence="1"
-						max-speech-count="1" hide-more-details-button></politician-card>
-				<paper-card card heading="Mandates" style="width: 360px;">
-					<div class="card-content">
-						<template is="dom-repeat" items="{{politicianStats.politician.mandates}}">
-							<div mandate>
-								<div horizontal>
-									<span>{{item.description}}</span>
-									&nbsp;
-									<template is="dom-if" if="{{item.club}}">
-										<club-tag club="{{item.club}}"></club-tag>
-									</template>
+				<div style="width: 400px;">
+					<politician-card politician-stats="{{politicianStats}}"
+							max-absence="1"
+							max-speech-count="1" hide-more-details-button>
+						<div horizontal style="margin-bottom: 15px;">
+							<span class="politician-fact-label">Birthdate</span>
+							<span class="politician-fact">
+								<span>{{politicianStats.politician.birthDate}}</span> (<span>{{age}}</span> years old)
+							</span>
+						</div>
+					</politician-card>
+					<paper-card card heading="Mandates" style="width: 360px;">
+						<div class="card-content">
+							<template is="dom-repeat" items="{{politicianStats.politician.mandates}}">
+								<div mandate>
+									<div horizontal>
+										<span>{{item.description}}</span>
+										&nbsp;
+										<template is="dom-if" if="{{item.club}}">
+											<club-tag club="{{item.club}}"></club-tag>
+										</template>
+									</div>
+									<div date-range>
+										<template is="dom-if" if="{{!item.validUntil}}">
+											 since
+										</template>
+										<span>{{item.validFrom}}</span>
+										<template is="dom-if" if="{{item.validUntil && item.validFrom != item.validUntil}}">
+											 until <span>{{item.validUntil}}</span>
+										</template>
+									</div>
 								</div>
-								<div date-range>
-									<span>{{item.validFrom}}</span>
-									<template is="dom-if" if="{{item.validUntil}}">
-										 until <span>{{item.validUntil}}</span>
-									</template>
-								</div>
-							</div>
-						</template>
-					</div>
-				</paper-card>
-			</div>
-			
-			<div>
+							</template>
+						</div>
+					</paper-card>
+				</div>
+				
+				<div style="width: 750px;">
 				<iron-ajax auto url="{{mostRelatedPoliticiansUrl}}" last-response="{{mostRelatedPoliticians}}" />
-				<paper-card card heading="Politicians with similar Attitudes" style="width: 60%;">
+				<paper-card card heading="Politicians with similar Attitudes" style="width: 100%;">
 					<div class="card-content" vertical>
 						<template is="dom-repeat" items="{{mostRelatedPoliticians}}">
 							<div>
 								<percent-chart-item value="{{item.weight}}" max="{{computeMaxWeight(mostRelatedPoliticians)}}" 
-									value-label="{{getValueLabel(item)}}" bar-color="{{getBarColor(item)}}">
+									value-label="{{getValueLabel(item)}}" bar-color="#4CAF50">
 									<div>
 										<politician-display-with-clubs politician="{{item.politician2}}"
 											></politician-display-with-clubs>
@@ -83,12 +102,12 @@
 					</div>
 				</paper-card>
 				<iron-ajax auto url="{{leastRelatedPoliticiansUrl}}" last-response="{{leastRelatedPoliticians}}" />
-				<paper-card card heading="Politicians with contrary Attitudes" style="width: 60%;">
+				<paper-card card heading="Politicians with contrary Attitudes" style="width: 100%;">
 					<div class="card-content" vertical>
 						<template is="dom-repeat" items="{{leastRelatedPoliticians}}">
 							<div>
 								<percent-chart-item value="{{abs(item.weight)}}" max="{{computeMaxWeight(leastRelatedPoliticians)}}" 
-									value-label="{{getValueLabel(item)}}" bar-color="{{getBarColor(item)}}">
+									value-label="{{getValueLabel(item)}}" bar-color="#F44336">
 									<div>
 										<politician-display-with-clubs politician="{{item.politician2}}"
 											></politician-display-with-clubs>
@@ -113,6 +132,10 @@
 					computed: 'computeStatsUrl(politicianid)'
 				},
 				politicianStats: Object,
+				age:{
+					type: Number,
+					computed: 'computeAge(politicianStats)'
+				},
 				mostRelatedPoliticians: Array,
 				mostRelatedPoliticiansUrl: {
 					type: String,
@@ -151,18 +174,12 @@
 				return item.weight + '';
 			},
 			
-			getBarColor: function(item) {
-				if (item.weight < 10){
-					return '#F44336';
-				}
-				else if (item.weight < 50){
-					return '#FF9800';
-				}
-				return '#4CAF50';
-			},
-			
 			abs: function(value) {
 				return Math.abs(value);
+			},
+			
+			computeAge: function(politicianStats) {
+				return calcAgeFromDateString(politicianStats.politician.birthDate);
 			}
 		});
 	</script> 

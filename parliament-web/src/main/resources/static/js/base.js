@@ -13,6 +13,24 @@ function getClubsFromPolitician(p) {
 	return distinctClubs;
 }
 
+// formatted yyyy-MM-dd
+function calcAgeFromDateString(birthdayStr) {
+	birthday = toDate(birthdayStr);
+	
+	return calcAge(birthday);
+}
+
+function toDate(dateStr) {
+	var parts = dateStr.split("-");
+	return new Date(parts[0], parts[1] - 1, parts[2]);
+}
+
+function calcAge(birthday) { // birthday is a date
+    var ageDifMs = Date.now() - birthday.getTime();
+    var ageDate = new Date(ageDifMs); // miliseconds from epoch
+    return Math.abs(ageDate.getUTCFullYear() - 1970);
+}
+
 function getClubsFromPoliticianByPeriod(p, period) {
 	var distinctClubs = [];
 	var distinctClubNames = [];

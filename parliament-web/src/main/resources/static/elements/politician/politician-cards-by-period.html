@@ -1,17 +1,18 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="politician-card.html">
 
 <dom-module name="politician-cards-by-period">
 	<template>
 		<style>
-			
+			[centered] {
+				@apply(--layout-center);
+			}
 		</style>
 	
-		<iron-ajax auto url="{{url}}" handle-as="json" last-response="{{politicianStats}}" />
-		
 		<div>
 			<paper-input class="short" style="width: 300px"
 					label="Show politicians for period" 
@@ -19,6 +20,13 @@
 	        </paper-input>
 	    </div>
 		
+		<template is="dom-if" if="{{!statsLoading}}">
+			<div centered>
+				<img src="/icons/loading.gif" />
+			</div>
+		</template>
+		
+		<iron-ajax auto url="{{url}}" handle-as="json" last-response="{{politicianStats}}" loading="{{statsLoading}}" />
 		<template is="dom-repeat" items="{{politicianStats}}">
 			<politician-card politician-stats="{{item}}" period="{{selectedperiod}}"
 					max-absence="{{computeMaxAbsence(politicianStats)}}"
@@ -38,6 +46,7 @@
 					type: Number,
 					value: 25
 				},
+				statsLoading: Boolean,
 				url: {
 					type: String,
 					computed: 'computeUrl(selectedperiod)'

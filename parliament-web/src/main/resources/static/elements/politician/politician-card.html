@@ -35,6 +35,7 @@
 				<div politician-header>
 					<politician-display-with-clubs politician="{{politicianStats.politician}}" period="{{period}}"></politician-display-with-clubs>
 				</div>
+				<content></content>
 				<percent-chart-item value="{{politicianStats.absence.absencePercentage}}" max="{{maxAbsence}}"
 							value-label="{{getPercentageLabel(politicianStats)}}" bar-color="{{getBarColor(politicianStats)}}">
 					<span>Sessionabsence</span>
@@ -62,7 +63,8 @@
 					type: Object
 				},
 				period: {
-					type: Number
+					type: Number,
+					value: 0
 				},
 				maxAbsence: {
 					type: Number
