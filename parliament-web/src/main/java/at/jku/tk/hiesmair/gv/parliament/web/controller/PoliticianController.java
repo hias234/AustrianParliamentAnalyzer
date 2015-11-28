@@ -69,7 +69,7 @@ public class PoliticianController {
 				p1 = relation.getPolitician2();
 			}
 			
-			result.add(new PoliticianRelationDTO(PoliticianDTO.fromPolitician(mapper, p1), PoliticianDTO.fromPolitician(mapper, p2), relation.getWeight()));
+			result.add(new PoliticianRelationDTO(PoliticianDTO.fromPolitician(mapper, p1), PoliticianDTO.fromPolitician(mapper, p2), relation.getWeight(), relation.getCount()));
 		}
 		
 		return result;

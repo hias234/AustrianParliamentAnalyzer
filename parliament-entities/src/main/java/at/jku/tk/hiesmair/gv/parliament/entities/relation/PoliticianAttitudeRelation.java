@@ -7,6 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import at.jku.tk.hiesmair.gv.parliament.entities.discussion.Discussion;
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
@@ -30,6 +31,9 @@ public class PoliticianAttitudeRelation {
 
 	@Column(nullable = false)
 	protected Integer weight;
+	
+	@Transient
+	protected Integer count;
 
 	public PoliticianAttitudeRelation() {
 		super();
@@ -44,11 +48,12 @@ public class PoliticianAttitudeRelation {
 		this.weight = weight;
 	}
 
-	public PoliticianAttitudeRelation(Politician politician1, Politician politician2, Long weight) {
+	public PoliticianAttitudeRelation(Politician politician1, Politician politician2, Long weight, Long count) {
 		super();
 		this.politician1 = politician1;
 		this.politician2 = politician2;
 		this.weight = weight.intValue();
+		this.count = count.intValue();
 	}
 
 	public Integer getId() {
@@ -89,6 +94,18 @@ public class PoliticianAttitudeRelation {
 
 	public void setWeight(Integer weight) {
 		this.weight = weight;
+	}
+	
+	public Double getNormalizedWeight(){
+		return weight / (double) count;
+	}
+
+	public Integer getCount() {
+		return count;
+	}
+
+	public void setCount(Integer count) {
+		this.count = count;
 	}
 
 	@Override

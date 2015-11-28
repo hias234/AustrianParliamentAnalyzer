@@ -7,16 +7,18 @@ public class PoliticianRelationDTO {
 	private PoliticianDTO politician1;
 	private PoliticianDTO politician2;
 	private Integer weight;
+	private Integer count;
 
 	public PoliticianRelationDTO() {
 		super();
 	}
 
-	public PoliticianRelationDTO(PoliticianDTO politician1, PoliticianDTO politician2, Integer weight) {
+	public PoliticianRelationDTO(PoliticianDTO politician1, PoliticianDTO politician2, Integer weight, Integer count) {
 		super();
 		this.politician1 = politician1;
 		this.politician2 = politician2;
 		this.weight = weight;
+		this.count = count;
 	}
 
 	public PoliticianDTO getPolitician1() {
@@ -43,4 +45,15 @@ public class PoliticianRelationDTO {
 		this.weight = weight;
 	}
 
+	public Integer getCount() {
+		return count;
+	}
+
+	public void setCount(Integer count) {
+		this.count = count;
+	}
+
+	public Double getNormalizedWeight(){
+		return weight / (double) count;
+	}
 }
