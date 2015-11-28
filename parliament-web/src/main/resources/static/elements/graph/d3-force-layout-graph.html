@@ -24,7 +24,7 @@
 				},
 				charge: {
 					type: Number,
-					value: -3000
+					value: -1500
 				},
 				showTooltips: {
 					type: Boolean,
@@ -78,11 +78,11 @@
 					});
 				};
 				
-				var maxLinkWidth = height;
+				var maxLinkWidth = height * 0.8;
 				var graph = this.graph;
 				
 				var force = d3.layout.force().size([width, height]).nodes(nodes).links(links).gravity(0.1).charge(this.charge).linkDistance(function(x) {
-					return maxLinkWidth - (maxLinkWidth * ((x.weight + graph.maxAbsWeight) / (graph.maxAbsWeight * 2)));
+					return Math.max(20, maxLinkWidth - (maxLinkWidth * ((x.weight + graph.maxAbsWeight) / (graph.maxAbsWeight * 2))));
 				});
 				
 				force.start();
