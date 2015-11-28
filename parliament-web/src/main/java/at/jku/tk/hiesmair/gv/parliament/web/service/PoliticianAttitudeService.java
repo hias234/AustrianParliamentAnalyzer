@@ -69,7 +69,7 @@ public class PoliticianAttitudeService {
 		List<D3Link> links = getLinks(clubAttitudes, nodes, period);
 
 		D3Graph graph = new D3Graph(nodes, links);
-		graph.removeLinks(0.1);
+		graph.removeLinks(0.5);
 
 		return graph;
 	}
@@ -113,7 +113,7 @@ public class PoliticianAttitudeService {
 	protected D3Link getLink(PoliticianAttitudeRelationByPeriod politicianRelation, List<D3Node> nodes, Integer period) {
 		Integer sourceIndex = getNodeIndex(politicianRelation.getPolitician1(), nodes, period);
 		Integer targetIndex = getNodeIndex(politicianRelation.getPolitician2(), nodes, period);
-		Double weight = Double.valueOf(politicianRelation.getWeight());
+		Double weight = politicianRelation.getNormalizedWeight();
 
 		String color = null;
 		String color1 = getNodeColor(politicianRelation.getPolitician1(), period);

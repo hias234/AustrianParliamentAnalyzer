@@ -29,7 +29,7 @@ public class ClubAttitudeService {
 	public List<ClubAttitudeRelationByPeriod> getClubAttitudes(Integer period){
 		List<ClubAttitudeRelationByPeriod> clubAttitudes = politicianRelationRep.getClubAttitudesByPeriod(period);
 		
-		// merge if ca1.getclub2 == ca1.getclub1 and vice verca
+		// merge if ca1.getclub2 == ca2.getclub1 and vice verca
 		for (int i = 0; i < clubAttitudes.size(); i++){
 			ClubAttitudeRelationByPeriod ca1 = clubAttitudes.get(i);
 			for (int j = i + 1; j < clubAttitudes.size(); j++){
@@ -37,6 +37,7 @@ public class ClubAttitudeService {
 				
 				if (ca1.getClub1().equals(ca2.getClub2()) && ca1.getClub2().equals(ca2.getClub1())){
 					ca1.setWeight(ca1.getWeight() + ca2.getWeight());
+					ca1.setCount(ca1.getCount() + ca2.getCount());
 					clubAttitudes.remove(j);
 					j--;
 				}
@@ -84,9 +85,7 @@ public class ClubAttitudeService {
 	protected D3Link getLink(ClubAttitudeRelationByPeriod clubRelation, List<D3Node> nodes, Integer maxAbsWeight){
 		Integer sourceIndex = getNodeIndex(clubRelation.getClub1(), nodes);
 		Integer targetIndex = getNodeIndex(clubRelation.getClub2(), nodes);
-		
-//		Double weight = 1.0 - (clubRelation.getWeight() + maxAbsWeight) / Double.valueOf(maxAbsWeight * 2);
-		Double weight = Double.valueOf(clubRelation.getWeight());
+		Double weight = clubRelation.getNormalizedWeight();
 		
 		return new D3Link(sourceIndex, targetIndex, weight);
 	}

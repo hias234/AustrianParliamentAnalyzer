@@ -7,6 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import at.jku.tk.hiesmair.gv.parliament.entities.LegislativePeriod;
 import at.jku.tk.hiesmair.gv.parliament.entities.club.ParliamentClub;
@@ -31,8 +32,9 @@ public class ClubAttitudeRelationByPeriod {
 	@Column(nullable = false)
 	protected Integer weight;
 
-	
-	
+	@Transient
+	protected Integer count;
+
 	public ClubAttitudeRelationByPeriod(LegislativePeriod period, Long weight) {
 		super();
 		this.period = period;
@@ -40,22 +42,25 @@ public class ClubAttitudeRelationByPeriod {
 	}
 
 	public ClubAttitudeRelationByPeriod(ParliamentClub club1, ParliamentClub club2, LegislativePeriod period,
-			Integer weight) {
+			Integer weight, Integer count) {
 		super();
 		this.club1 = club1;
 		this.club2 = club2;
 		this.period = period;
 		this.weight = weight;
+		this.count = count;
 	}
 
 	public ClubAttitudeRelationByPeriod(ParliamentClub club1, ParliamentClub club2, LegislativePeriod period,
-			Long weight) {
+			Long weight, Long count) {
 		super();
 		this.club1 = club1;
 		this.club2 = club2;
 		this.period = period;
 		this.weight = weight.intValue();
+		this.count = count.intValue();
 	}
+
 	public Integer getId() {
 		return id;
 	}
@@ -94,6 +99,18 @@ public class ClubAttitudeRelationByPeriod {
 
 	public void setWeight(Integer weight) {
 		this.weight = weight;
+	}
+
+	public Integer getCount() {
+		return count;
+	}
+
+	public void setCount(Integer count) {
+		this.count = count;
+	}
+
+	public Double getNormalizedWeight() {
+		return weight / (double) count;
 	}
 
 }

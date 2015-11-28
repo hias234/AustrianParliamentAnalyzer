@@ -37,7 +37,7 @@
 				
 				var width = document.getElementById(this.id).children[0].offsetWidth;
 				var height = document.getElementById(this.id).children[0].offsetHeight;
-				var radius = 8;
+				var radius = 6;
 				
 				console.log(width);
 				console.log(height);
@@ -89,13 +89,13 @@
 					if (l.weight < 0){
 						return '1px';
 					}
-					return Math.max(1, ((l.weight / graph.maxWeight) * radius)) + 'px';
+					return Math.max(1, ((l.weight / graph.maxWeight) * radius / 2)) + 'px';
 				})
 				.style('opacity', function(l){
 					if (l.weight < 0){
 						return 0.01;
 					}
-					return 0.5;
+					return 0.3;
 				})
 				.on('mouseover', function(l){
 					if (l.weight > 0){

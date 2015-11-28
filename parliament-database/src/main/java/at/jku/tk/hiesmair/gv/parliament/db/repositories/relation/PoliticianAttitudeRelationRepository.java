@@ -14,7 +14,7 @@ import at.jku.tk.hiesmair.gv.parliament.entities.relation.PoliticianAttitudeRela
 
 public interface PoliticianAttitudeRelationRepository extends CrudRepository<PoliticianAttitudeRelation, Integer> {
 
-	@Query("SELECT new PoliticianAttitudeRelationByPeriod(par.politician1, par.politician2, par.discussion.session.period, SUM(par.weight)) FROM PoliticianAttitudeRelation par GROUP BY par.politician1, par.politician2, par.discussion.session.period")
+	@Query("SELECT new PoliticianAttitudeRelationByPeriod(par.politician1, par.politician2, par.discussion.session.period, SUM(par.weight), COUNT(par.weight)) FROM PoliticianAttitudeRelation par GROUP BY par.politician1, par.politician2, par.discussion.session.period")
 	public List<PoliticianAttitudeRelationByPeriod> getPoliticianAttitudesByPeriods();
 
 	@Query("SELECT new PoliticianAttitudeRelation(par.politician1, par.politician2, SUM(par.weight)) "
@@ -33,13 +33,13 @@ public interface PoliticianAttitudeRelationRepository extends CrudRepository<Pol
 			+ "ORDER BY SUM(par.weight) ASC")
 	public Page<PoliticianAttitudeRelation> getLeastRelatedPoliticians(@Param("politician_id") String politicianId, Pageable page);
 	
-	@Query("SELECT new PoliticianAttitudeRelationByPeriod(par.politician1, par.politician2, par.discussion.session.period, SUM(par.weight)) "
+	@Query("SELECT new PoliticianAttitudeRelationByPeriod(par.politician1, par.politician2, par.discussion.session.period, SUM(par.weight), COUNT(par.weight)) "
 			+ "FROM PoliticianAttitudeRelation par "
 			+ "WHERE par.discussion.session.period.period = :period "
 			+ "GROUP BY par.politician1, par.politician2, par.discussion.session.period")
 	public List<PoliticianAttitudeRelationByPeriod> getPoliticianAttitudesByPeriod(@Param("period") Integer period);
 
-	@Query("SELECT new PoliticianAttitudeRelationByPeriod(par.politician1, par.politician2, par.discussion.session.period, SUM(par.weight)) "
+	@Query("SELECT new PoliticianAttitudeRelationByPeriod(par.politician1, par.politician2, par.discussion.session.period, SUM(par.weight), COUNT(par.weight)) "
 			+ "FROM PoliticianAttitudeRelation par "
 			+ "WHERE par.discussion.session.period.period = :period "
 			+ "AND LOWER(par.discussion.topic) LIKE CONCAT('%', LOWER(:topic), '%') "
@@ -47,7 +47,7 @@ public interface PoliticianAttitudeRelationRepository extends CrudRepository<Pol
 	public List<PoliticianAttitudeRelationByPeriod> getPoliticianAttitudesByPeriodAndDiscussionTopic(
 			@Param("period") Integer period, @Param("topic") String topic);
 
-	@Query("SELECT new ClubAttitudeRelationByPeriod(ncm1.club, ncm2.club, par.discussion.session.period, SUM(par.weight)) FROM PoliticianAttitudeRelation par "
+	@Query("SELECT new ClubAttitudeRelationByPeriod(ncm1.club, ncm2.club, par.discussion.session.period, SUM(par.weight), COUNT(par.weight)) FROM PoliticianAttitudeRelation par "
 			+ " INNER JOIN TREAT(par.politician1.mandates as NationalCouncilMember) ncm1 "
 			+ " INNER JOIN TREAT(par.politician2.mandates as NationalCouncilMember) ncm2 "
 			+ " INNER JOIN ncm1.periods periods1 INNER JOIN ncm2.periods periods2 "
@@ -55,7 +55,7 @@ public interface PoliticianAttitudeRelationRepository extends CrudRepository<Pol
 			+ "GROUP BY ncm1.club, ncm2.club, par.discussion.session.period")
 	public List<ClubAttitudeRelationByPeriod> getClubAttitudesByPeriods();
 
-	@Query("SELECT new ClubAttitudeRelationByPeriod(ncm1.club, ncm2.club, par.discussion.session.period, SUM(par.weight)) FROM PoliticianAttitudeRelation par "
+	@Query("SELECT new ClubAttitudeRelationByPeriod(ncm1.club, ncm2.club, par.discussion.session.period, SUM(par.weight), COUNT(par.weight)) FROM PoliticianAttitudeRelation par "
 			+ " INNER JOIN TREAT(par.politician1.mandates as NationalCouncilMember) ncm1 "
 			+ " INNER JOIN TREAT(par.politician2.mandates as NationalCouncilMember) ncm2 "
 			+ " INNER JOIN ncm1.periods periods1 INNER JOIN ncm2.periods periods2 "

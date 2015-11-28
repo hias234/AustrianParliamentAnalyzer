@@ -7,9 +7,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import at.jku.tk.hiesmair.gv.parliament.entities.LegislativePeriod;
-import at.jku.tk.hiesmair.gv.parliament.entities.discussion.Discussion;
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 
 @Entity
@@ -31,27 +31,32 @@ public class PoliticianAttitudeRelationByPeriod {
 
 	@Column(nullable = false)
 	protected Integer weight;
+	
+	@Transient
+	protected Integer count;
 
 	public PoliticianAttitudeRelationByPeriod() {
 		super();
 	}
 
 	public PoliticianAttitudeRelationByPeriod(Politician politician1, Politician politician2, LegislativePeriod period,
-			Integer weight) {
+			Integer weight, Integer count) {
 		super();
 		this.politician1 = politician1;
 		this.politician2 = politician2;
 		this.period = period;
 		this.weight = weight;
+		this.count = count;
 	}
 	
 	public PoliticianAttitudeRelationByPeriod(Politician politician1, Politician politician2, LegislativePeriod period,
-			Long weight) {
+			Long weight, Long count) {
 		super();
 		this.politician1 = politician1;
 		this.politician2 = politician2;
 		this.period = period;
 		this.weight = weight.intValue();
+		this.count = count.intValue();
 	}
 
 	public Integer getId() {
@@ -92,6 +97,10 @@ public class PoliticianAttitudeRelationByPeriod {
 
 	public void setWeight(Integer weight) {
 		this.weight = weight;
+	}
+	
+	public Double getNormalizedWeight(){
+		return weight / (double) count;
 	}
 
 	@Override
