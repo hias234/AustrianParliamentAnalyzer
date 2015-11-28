@@ -25,6 +25,10 @@
 				charge: {
 					type: Number,
 					value: -3000
+				},
+				showTooltips: {
+					type: Boolean,
+					value: false
 				}
 			},
 			
@@ -96,24 +100,27 @@
 						return 0.01;
 					}
 					return 0.3;
-				})
-				.on('mouseover', function(l){
-					if (l.weight > 0){
-						div.style('display', 'block');
-					}
-				})
-				.on('mouseout', function(l){
-					if (l.weight > 0){
-						div.style('display', 'none');
-					}
-				})
-				.on("mousemove", function(l){
-					if (l.weight > 0){
-						div	.html('Weight: ' + l.weight)
-							.style("left", (d3.event.pageX + radius) + "px")			 
-							.style("top", (d3.event.pageY + radius) + "px");
-					}
 				});
+
+				if (this.showTooltips){
+					link.on('mouseover', function(l){
+						if (l.weight > 0){
+							div.style('display', 'block');
+						}
+					})
+					.on('mouseout', function(l){
+						if (l.weight > 0){
+							div.style('display', 'none');
+						}
+					})
+					.on("mousemove", function(l){
+						if (l.weight > 0){
+							div	.html('Weight: ' + l.weight.toFixed(2))
+								.style("left", (d3.event.pageX + radius) + "px")			 
+								.style("top", (d3.event.pageY + radius) + "px");
+						}
+					});
+				}
 
 				var node = graphElement.selectAll("g.node").data(force.nodes()).enter().append("svg:g").attr("class", "node");
 				node.append("svg:circle").attr("r", radius).style("stroke", "#FFF").style("stroke-width", 3).style("fill", function(n){
