@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -51,25 +52,27 @@ public class PoliticianAttitudeService {
 		return politicianRelationRep.getPoliticianAttitudesByPeriodAndDiscussionTopic(period, discussionTopic);
 	}
 
-	public D3Graph getPoliticianAttitudeGraph(Integer period, String discussionTopic) {
-		List<PoliticianAttitudeRelationByPeriod> clubAttitudes = getPoliticianAttitudesByPeriodAndDiscussionTopic(
+	public D3Graph getPoliticianAttitudeGraph(Integer period, Integer minCount, String discussionTopic) {
+		List<PoliticianAttitudeRelationByPeriod> politicianAttitudes = getPoliticianAttitudesByPeriodAndDiscussionTopic(
 				period, discussionTopic);
 
-		return getPoliticianAttitudeGraph(period, clubAttitudes);
+		politicianAttitudes = politicianAttitudes.stream().filter(pa -> pa.getCount() >= minCount).collect(Collectors.toList());
+		return getPoliticianAttitudeGraph(period, politicianAttitudes);
 	}
 
-	public D3Graph getPoliticianAttitudeGraph(Integer period) {
-		List<PoliticianAttitudeRelationByPeriod> clubAttitudes = getPoliticianAttitudesByPeriod(period);
-
-		return getPoliticianAttitudeGraph(period, clubAttitudes);
+	public D3Graph getPoliticianAttitudeGraph(Integer period, Integer minCount) {
+		List<PoliticianAttitudeRelationByPeriod> politicianAttitudes = getPoliticianAttitudesByPeriod(period);
+		
+		politicianAttitudes = politicianAttitudes.stream().filter(pa -> pa.getCount() >= minCount).collect(Collectors.toList());	
+		return getPoliticianAttitudeGraph(period, politicianAttitudes);
 	}
 
-	protected D3Graph getPoliticianAttitudeGraph(Integer period, List<PoliticianAttitudeRelationByPeriod> clubAttitudes) {
-		List<D3Node> nodes = getNodes(clubAttitudes, period);
-		List<D3Link> links = getLinks(clubAttitudes, nodes, period);
+	protected D3Graph getPoliticianAttitudeGraph(Integer period, List<PoliticianAttitudeRelationByPeriod> politicianAttitudes) {
+		List<D3Node> nodes = getNodes(politicianAttitudes, period);
+		List<D3Link> links = getLinks(politicianAttitudes, nodes, period);
 
 		D3Graph graph = new D3Graph(nodes, links);
-		graph.removeLinks(0.5);
+//		graph.removeLinks(0.2);
 
 		return graph;
 	}

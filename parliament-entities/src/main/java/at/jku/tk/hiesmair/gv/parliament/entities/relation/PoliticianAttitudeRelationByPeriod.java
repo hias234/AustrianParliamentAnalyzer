@@ -31,7 +31,7 @@ public class PoliticianAttitudeRelationByPeriod {
 
 	@Column(nullable = false)
 	protected Integer weight;
-	
+
 	@Transient
 	protected Integer count;
 
@@ -48,7 +48,7 @@ public class PoliticianAttitudeRelationByPeriod {
 		this.weight = weight;
 		this.count = count;
 	}
-	
+
 	public PoliticianAttitudeRelationByPeriod(Politician politician1, Politician politician2, LegislativePeriod period,
 			Long weight, Long count) {
 		super();
@@ -98,8 +98,16 @@ public class PoliticianAttitudeRelationByPeriod {
 	public void setWeight(Integer weight) {
 		this.weight = weight;
 	}
-	
-	public Double getNormalizedWeight(){
+
+	public Integer getCount() {
+		return count;
+	}
+
+	public void setCount(Integer count) {
+		this.count = count;
+	}
+
+	public Double getNormalizedWeight() {
 		return weight / (double) count;
 	}
 
@@ -126,23 +134,20 @@ public class PoliticianAttitudeRelationByPeriod {
 			if (other.period != null)
 				return false;
 		}
-		else
-			if (!period.equals(other.period))
-				return false;
+		else if (!period.equals(other.period))
+			return false;
 		if (politician1 == null) {
 			if (other.politician1 != null)
 				return false;
 		}
-		else
-			if (!politician1.equals(other.politician1))
-				return false;
+		else if (!politician1.equals(other.politician1))
+			return false;
 		if (politician2 == null) {
 			if (other.politician2 != null)
 				return false;
 		}
-		else
-			if (!politician2.equals(other.politician2))
-				return false;
+		else if (!politician2.equals(other.politician2))
+			return false;
 		return true;
 	}
 
