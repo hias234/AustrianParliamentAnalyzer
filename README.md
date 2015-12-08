@@ -27,3 +27,5 @@ With the then available data there will be lots of possibilities for analysis: H
 ### Visualization of the Analysis
 The analysis will be visualized in form of a web application.
 
+Graph example:
+![club graph](https://github.com/hias234/AustrianParliamentAnalyzer/blob/master/parliament-web/src/main/resources/static/img/club-network.png?raw=true)
