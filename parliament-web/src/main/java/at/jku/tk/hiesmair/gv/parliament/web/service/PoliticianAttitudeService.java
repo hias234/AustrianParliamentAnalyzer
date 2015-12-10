@@ -106,6 +106,8 @@ public class PoliticianAttitudeService {
 
 	protected String getNodeColor(Politician politician, Integer period) {
 		List<NationalCouncilMember> ncMandates = politician.getNationalCouncilMemberMandates(period);
+		ncMandates.sort((ncm1, ncm2) -> ncm1.getValidFrom().compareTo(ncm2.getValidFrom()));
+		
 		String color = null;
 		if (!ncMandates.isEmpty()) {
 			color = ncMandates.get(0).getClub().getColor();
