@@ -19,11 +19,12 @@ public class PoliticianAttitudeController {
 	private PoliticianAttitudeService politicianAttitudeService;
 	
 	@RequestMapping(value = "period/{period}", method = RequestMethod.GET)
-	public D3Graph getClubAttitudeGraph(@PathVariable("period") Integer period, @QueryParam("topic") String discussionTopic){
-		if (discussionTopic != null && !discussionTopic.isEmpty()){
-			return politicianAttitudeService.getPoliticianAttitudeGraph(period, discussionTopic);
+	public D3Graph getClubAttitudeGraph(@PathVariable("period") Integer period, @QueryParam("minCount") Integer minCount, @QueryParam("topic") String topic){
+		System.out.println(topic);
+		if (topic != null && !topic.isEmpty()){
+			return politicianAttitudeService.getPoliticianAttitudeGraph(period, minCount, topic);
 		}
-		return politicianAttitudeService.getPoliticianAttitudeGraph(period);
+		return politicianAttitudeService.getPoliticianAttitudeGraph(period, minCount);
 	}
 	
 }

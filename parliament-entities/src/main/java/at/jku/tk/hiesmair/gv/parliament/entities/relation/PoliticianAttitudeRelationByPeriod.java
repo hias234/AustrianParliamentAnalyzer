@@ -7,9 +7,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import at.jku.tk.hiesmair.gv.parliament.entities.LegislativePeriod;
-import at.jku.tk.hiesmair.gv.parliament.entities.discussion.Discussion;
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 
 @Entity
@@ -32,26 +32,31 @@ public class PoliticianAttitudeRelationByPeriod {
 	@Column(nullable = false)
 	protected Integer weight;
 
+	@Transient
+	protected Integer count;
+
 	public PoliticianAttitudeRelationByPeriod() {
 		super();
 	}
 
 	public PoliticianAttitudeRelationByPeriod(Politician politician1, Politician politician2, LegislativePeriod period,
-			Integer weight) {
+			Integer weight, Integer count) {
 		super();
 		this.politician1 = politician1;
 		this.politician2 = politician2;
 		this.period = period;
 		this.weight = weight;
+		this.count = count;
 	}
-	
+
 	public PoliticianAttitudeRelationByPeriod(Politician politician1, Politician politician2, LegislativePeriod period,
-			Long weight) {
+			Long weight, Long count) {
 		super();
 		this.politician1 = politician1;
 		this.politician2 = politician2;
 		this.period = period;
 		this.weight = weight.intValue();
+		this.count = count.intValue();
 	}
 
 	public Integer getId() {
@@ -94,6 +99,18 @@ public class PoliticianAttitudeRelationByPeriod {
 		this.weight = weight;
 	}
 
+	public Integer getCount() {
+		return count;
+	}
+
+	public void setCount(Integer count) {
+		this.count = count;
+	}
+
+	public Double getNormalizedWeight() {
+		return weight / (double) count;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -117,23 +134,20 @@ public class PoliticianAttitudeRelationByPeriod {
 			if (other.period != null)
 				return false;
 		}
-		else
-			if (!period.equals(other.period))
-				return false;
+		else if (!period.equals(other.period))
+			return false;
 		if (politician1 == null) {
 			if (other.politician1 != null)
 				return false;
 		}
-		else
-			if (!politician1.equals(other.politician1))
-				return false;
+		else if (!politician1.equals(other.politician1))
+			return false;
 		if (politician2 == null) {
 			if (other.politician2 != null)
 				return false;
 		}
-		else
-			if (!politician2.equals(other.politician2))
-				return false;
+		else if (!politician2.equals(other.politician2))
+			return false;
 		return true;
 	}
 

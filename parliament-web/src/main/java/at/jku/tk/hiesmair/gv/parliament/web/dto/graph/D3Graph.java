@@ -24,7 +24,11 @@ public class D3Graph {
 	public void removeLinks(Double thresholdWeightPercentage){
 		final Double maxAbsWeight = getMaxAbsWeight();
 		
+		System.out.println(links.size());
+		
 		links.removeIf(l -> Math.abs(l.getWeight()) < maxAbsWeight * thresholdWeightPercentage);
+		
+		System.out.println(links.size());
 	}
 
 	public List<D3Node> getNodes() {

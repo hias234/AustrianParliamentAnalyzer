@@ -5,7 +5,7 @@
 		<style>
 			.graphContainer {
 				width: 100%;
-				height: 700px;
+				height: 1000px;
 			}
 		</style>
 		<div id="{{id}}" class="graphContainer"></div>
@@ -24,11 +24,28 @@
 				},
 				charge: {
 					type: Number,
-					value: -3000
+					value: -1500
+				},
+				showTooltips: {
+					type: Boolean,
+					value: false
+				},
+				showNegativeLinks: {
+					type: Boolean,
+					value: false,
+					observer: '_createGraph'
+				},
+				maxLinkWidthFactor: {
+					type: Number,
+					value: 0.8
 				}
 			},
 			
 			_createGraph: function() {
+				if (!this.graph){
+					return;
+				}
+				
 				console.log('createGraph');
 				document.getElementById(this.id).children[0].innerHTML = '';
 				
@@ -37,7 +54,7 @@
 				
 				var width = document.getElementById(this.id).children[0].offsetWidth;
 				var height = document.getElementById(this.id).children[0].offsetHeight;
-				var radius = 8;
+				var radius = 6;
 				
 				console.log(width);
 				console.log(height);
@@ -46,6 +63,8 @@
 				var labelAnchorLinks = [];
 				var nodes = this.graph.nodes;
 				var links = this.graph.links;
+				
+				var showNegativeLinks = this.showNegativeLinks;
 
 				for(var i = 0; i < nodes.length; i++) {
 					labelAnchors.push({
@@ -63,11 +82,11 @@
 					});
 				};
 				
-				var maxLinkWidth = height;
+				var maxLinkWidth = height * this.maxLinkWidthFactor;
 				var graph = this.graph;
 				
 				var force = d3.layout.force().size([width, height]).nodes(nodes).links(links).gravity(0.1).charge(this.charge).linkDistance(function(x) {
-					return maxLinkWidth - (maxLinkWidth * ((x.weight + graph.maxAbsWeight) / (graph.maxAbsWeight * 2)));
+					return Math.max(30, maxLinkWidth - (maxLinkWidth * ((x.weight + graph.maxAbsWeight) / (graph.maxAbsWeight * 2))));
 				});
 				
 				force.start();
@@ -80,40 +99,46 @@
 					.attr("class", "tooltip");
 				
 				var link = graphElement.selectAll("line.link").data(links).enter().append("svg:line").attr("class", "link").style("stroke", function(l){
+					if (showNegativeLinks && l.weight < 0){
+						return '#ff6666';
+					}
 					if (l.color){
 						return l.color;
 					}
-					return '#CCCCCC';
+					return '#7c7c7c';
 				})
 				.attr('stroke-width', function(l){
-					if (l.weight < 0){
+					if (!showNegativeLinks && l.weight < 0){
 						return '1px';
 					}
-					return Math.max(1, ((l.weight / graph.maxWeight) * radius)) + 'px';
+					return Math.max(1, ((Math.abs(l.weight) / graph.maxWeight) * radius)) + 'px';
 				})
 				.style('opacity', function(l){
-					if (l.weight < 0){
-						return 0.01;
+					if (!showNegativeLinks && l.weight < 0){
+						return 0;
 					}
-					return 0.5;
-				})
-				.on('mouseover', function(l){
-					if (l.weight > 0){
-						div.style('display', 'block');
-					}
-				})
-				.on('mouseout', function(l){
-					if (l.weight > 0){
-						div.style('display', 'none');
-					}
-				})
-				.on("mousemove", function(l){
-					if (l.weight > 0){
-						div	.html('Weight: ' + l.weight)
-							.style("left", (d3.event.pageX + radius) + "px")			 
-							.style("top", (d3.event.pageY + radius) + "px");
-					}
+					return 0.4;
 				});
+
+				if (this.showTooltips){
+					link.on('mouseover', function(l){
+						if (showNegativeLinks || l.weight > 0){
+							div.style('display', 'block');
+						}
+					})
+					.on('mouseout', function(l){
+						if (showNegativeLinks || l.weight > 0){
+							div.style('display', 'none');
+						}
+					})
+					.on("mousemove", function(l){
+						if (showNegativeLinks || l.weight > 0){
+							div	.html('Weight: ' + l.weight.toFixed(2))
+								.style("left", (d3.event.pageX + radius) + "px")			 
+								.style("top", (d3.event.pageY + radius) + "px");
+						}
+					});
+				}
 
 				var node = graphElement.selectAll("g.node").data(force.nodes()).enter().append("svg:g").attr("class", "node");
 				node.append("svg:circle").attr("r", radius).style("stroke", "#FFF").style("stroke-width", 3).style("fill", function(n){
@@ -146,7 +171,7 @@
 
 				var updateNode = function() {
 					this.attr("transform", function(d) {
-						return "translate(" + Math.max(radius, Math.min(width - radius, d.x)) + "," + Math.max(radius, Math.min(width - radius, d.y)) + ")";
+						return "translate(" + d.x + "," + d.y + ")";
 					});
 				}
 					

@@ -171,7 +171,8 @@
 			},
 			
 			getValueLabel: function(item) {
-				return item.weight + '';
+				var positive = item.count - (item.count - item.weight) / 2;
+				return positive + ' (+) | ' + (item.count - positive) + ' (-)';
 			},
 			
 			abs: function(value) {
