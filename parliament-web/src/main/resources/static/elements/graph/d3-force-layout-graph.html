@@ -105,19 +105,19 @@
 					if (l.color){
 						return l.color;
 					}
-					return '#CCCCCC';
+					return '#7c7c7c';
 				})
 				.attr('stroke-width', function(l){
 					if (!showNegativeLinks && l.weight < 0){
 						return '1px';
 					}
-					return Math.max(1, ((Math.abs(l.weight) / graph.maxWeight) * radius / 2)) + 'px';
+					return Math.max(1, ((Math.abs(l.weight) / graph.maxWeight) * radius)) + 'px';
 				})
 				.style('opacity', function(l){
 					if (!showNegativeLinks && l.weight < 0){
 						return 0;
 					}
-					return 0.3;
+					return 0.4;
 				});
 
 				if (this.showTooltips){
@@ -171,7 +171,7 @@
 
 				var updateNode = function() {
 					this.attr("transform", function(d) {
-						return "translate(" + Math.max(radius, Math.min(width - radius, d.x)) + "," + Math.max(radius, Math.min(width - radius, d.y)) + ")";
+						return "translate(" + d.x + "," + d.y + ")";
 					});
 				}
 					
