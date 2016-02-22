@@ -1,6 +1,8 @@
 package at.jku.tk.hiesmair.gv.parliament.communities;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
@@ -15,18 +17,50 @@ public class CommunityDetector {
 
 	private static Logger logger = Logger.getLogger(CommunityDetector.class.getSimpleName());
 	
+	/**
+	 * Returns a map -> key = node, value = communityNode
+	 * 
+	 * @param graph
+	 * @param iterations
+	 * @return
+	 */
 	public Map<Node, Node> detectCommunities(Graph graph, int iterations) {
 		Map<Node, Node> communityMap = getInitialCommunityMap(graph);
 
 		for (int i = 0; i < iterations; i++) {
-			logger.info("ITERATION " + i + " --------------------------------------");
+			//logger.info("ITERATION " + i + " --------------------------------------");
 			communityMap = getIterationCommunityMap(communityMap);
-			logger.info("communityMap ");
-			logger.info(communityMap);
-			logger.info("----------------------------------------------------------");
+//			logger.info("communityMap ");
+//			logger.info(communityMap);
+//			logger.info("----------------------------------------------------------");
 		}
 
 		return communityMap;
+	}
+	
+	public Map<Long, List<Node>> detectCommunitiesList(Graph graph, int iterations) {
+		Map<Node, Node> communityMap = detectCommunities(graph, iterations);
+		
+		return getCommunityList(communityMap);
+	}
+
+	protected Map<Long, List<Node>> getCommunityList(Map<Node, Node> communityMap) {
+		Map<Long, List<Node>> communities = new HashMap<>();
+		
+		for (Entry<Node, Node> communityEntry : communityMap.entrySet()) {
+			Node communityNode = communityEntry.getValue();
+			Node node = communityEntry.getKey();
+			
+			List<Node> communityNodes = communities.get(communityNode.getId());
+			if (communityNodes == null) {
+				communityNodes = new ArrayList<>();
+			}
+			communityNodes.add(node);
+			
+			communities.put(communityNode.getId(), communityNodes);
+		}
+		
+		return communities;
 	}
 
 	private Map<Node, Node> getIterationCommunityMap(Map<Node, Node> communityMap) {
