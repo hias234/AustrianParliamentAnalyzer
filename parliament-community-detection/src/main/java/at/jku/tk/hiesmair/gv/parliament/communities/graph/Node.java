@@ -1,5 +1,6 @@
 package at.jku.tk.hiesmair.gv.parliament.communities.graph;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class Node {
@@ -12,15 +13,11 @@ public class Node {
 		super();
 	}
 
-	
-	
 	public Node(Long id, String label) {
 		super();
 		this.id = id;
 		this.label = label;
 	}
-
-
 
 	public Long getId() {
 		return id;
@@ -44,6 +41,14 @@ public class Node {
 
 	public void setAdjacentNodes(Map<Node, Double> adjacentNodes) {
 		this.adjacentNodes = adjacentNodes;
+	}
+	
+	public void addAdjacentNode(Node node, Double weight) {
+		if (adjacentNodes == null) {
+			adjacentNodes = new HashMap<>();
+		}
+		
+		adjacentNodes.put(node, weight);
 	}
 
 	@Override
@@ -74,6 +79,6 @@ public class Node {
 
 	@Override
 	public String toString() {
-		return Long.toString(id);
+		return label;
 	}
 }

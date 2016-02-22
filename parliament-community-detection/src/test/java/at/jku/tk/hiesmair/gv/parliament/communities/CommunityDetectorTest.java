@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -95,7 +96,7 @@ public class CommunityDetectorTest {
 		node9.setAdjacentNodes(Arrays.asList(node5, node6, node10).stream().collect(Collectors.toMap(Function.identity(), n -> 1.0)));
 		node10.setAdjacentNodes(Arrays.asList(node9, node8, node6).stream().collect(Collectors.toMap(Function.identity(), n -> 1.0)));
 
-		graph.setNodes(Arrays.asList(node0, node1, node2, node3, node4, node5, node6, node7, node8, node9, node10));
+		graph.setNodes(new HashSet<Node>(Arrays.asList(node0, node1, node2, node3, node4, node5, node6, node7, node8, node9, node10)));
 		return graph;
 	}
 	

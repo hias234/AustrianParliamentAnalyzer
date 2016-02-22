@@ -1,16 +1,16 @@
 package at.jku.tk.hiesmair.gv.parliament.communities.graph;
 
-import java.util.List;
+import java.util.Set;
 
 public class Graph {
 
-	private List<Node> nodes;
+	private Set<Node> nodes;
 
-	public List<Node> getNodes() {
+	public Set<Node> getNodes() {
 		return nodes;
 	}
 
-	public void setNodes(List<Node> nodes) {
+	public void setNodes(Set<Node> nodes) {
 		this.nodes = nodes;
 	}
 	
