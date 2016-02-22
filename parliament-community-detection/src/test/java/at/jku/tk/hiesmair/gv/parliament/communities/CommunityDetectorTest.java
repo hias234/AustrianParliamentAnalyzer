@@ -21,7 +21,7 @@ public class CommunityDetectorTest {
 	@Test
 	public void testGraph1Interation1() {
 		Graph graph = setupGraph1();
-		Map<Node, Node> communityMap = detector.detectCommunities(graph, 1);
+		Map<Node, Node> communityMap = detector.getCommunityMap(graph, 1);
 		
 		Map<Long, Long> idResult = new HashMap<>();
 		idResult.put(0L, 1L);
@@ -51,7 +51,7 @@ public class CommunityDetectorTest {
 	@Test
 	public void testGraph1Interation2() {
 		Graph graph = setupGraph1();
-		Map<Node, Node> communityMap = detector.detectCommunities(graph, 2);
+		Map<Node, Node> communityMap = detector.getCommunityMap(graph, 2);
 		
 		Map<Long, Long> idResult = new HashMap<>();
 		idResult.put(0L, 0L);

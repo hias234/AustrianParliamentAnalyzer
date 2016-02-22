@@ -35,12 +35,15 @@ public class CommunityDetectorApp implements CommandLineRunner {
 	
 	@Override
 	public void run(String... arg0) throws Exception {
+		int period = 20;
+		
 		System.out.println("clubs");
-		getClubCommunities(25);
+		getClubCommunities(period);
 		
 		System.out.println();
 		System.out.println("politicians");
-		getPoliticianCommunities(25);
+		getPoliticianCommunities(period);
+		System.out.println();
 	}
 
 	private void getPoliticianCommunities(int period) {

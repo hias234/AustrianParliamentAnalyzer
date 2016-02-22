@@ -18,13 +18,11 @@ public class CommunityDetector {
 	private static Logger logger = Logger.getLogger(CommunityDetector.class.getSimpleName());
 	
 	/**
-	 * Returns a map -> key = node, value = communityNode
+	 * main computation method for the community detection.
 	 * 
-	 * @param graph
-	 * @param iterations
-	 * @return
+	 * @return map -> key = node, value = communityNode
 	 */
-	public Map<Node, Node> detectCommunities(Graph graph, int iterations) {
+	protected Map<Node, Node> getCommunityMap(Graph graph, int iterations) {
 		Map<Node, Node> communityMap = getInitialCommunityMap(graph);
 
 		for (int i = 0; i < iterations; i++) {
@@ -38,8 +36,14 @@ public class CommunityDetector {
 		return communityMap;
 	}
 	
+	/**
+	 * Returns the computed communities of the Graph.
+	 * 
+	 * @return Map with community-ID and List of containing nodes.
+	 * 
+	 */
 	public Map<Long, List<Node>> detectCommunitiesList(Graph graph, int iterations) {
-		Map<Node, Node> communityMap = detectCommunities(graph, iterations);
+		Map<Node, Node> communityMap = getCommunityMap(graph, iterations);
 		
 		return getCommunityList(communityMap);
 	}
