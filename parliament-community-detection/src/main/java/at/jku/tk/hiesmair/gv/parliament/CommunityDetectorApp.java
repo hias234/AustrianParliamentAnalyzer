@@ -1,7 +1,9 @@
 package at.jku.tk.hiesmair.gv.parliament;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -15,8 +17,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import at.jku.tk.hiesmair.gv.parliament.communities.CommunityDetector;
 import at.jku.tk.hiesmair.gv.parliament.communities.graph.Graph;
 import at.jku.tk.hiesmair.gv.parliament.communities.graph.Node;
+import at.jku.tk.hiesmair.gv.parliament.db.repositories.MandateRepository;
 import at.jku.tk.hiesmair.gv.parliament.db.repositories.relation.PoliticianAttitudeRelationRepository;
 import at.jku.tk.hiesmair.gv.parliament.entities.club.ParliamentClub;
+import at.jku.tk.hiesmair.gv.parliament.entities.mandate.NationalCouncilMember;
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 import at.jku.tk.hiesmair.gv.parliament.entities.relation.ClubAttitudeRelationByPeriod;
 import at.jku.tk.hiesmair.gv.parliament.entities.relation.PoliticianAttitudeRelationByPeriod;
@@ -31,12 +35,22 @@ public class CommunityDetectorApp implements CommandLineRunner {
 	@Inject
 	private PoliticianAttitudeRelationRepository politicianRelationRep;
 	
+	@Inject
+	private MandateRepository mandateRepository;
+	
 	public static void main(String[] args) {
 		SpringApplication.run(CommunityDetectorApp.class, args);
 	}
 	
 	@Override
 	public void run(String... arg0) throws Exception {
+		Map<Integer, List<String>> governmentParties = new HashMap<>();
+		governmentParties.put(20, Arrays.asList("ÖVP", "SPÖ"));
+		governmentParties.put(21, Arrays.asList("ÖVP", "F"));
+		governmentParties.put(22, Arrays.asList("ÖVP", "F", "F-BZÖ"));
+		governmentParties.put(23, Arrays.asList("ÖVP", "SPÖ"));
+		governmentParties.put(24, Arrays.asList("ÖVP", "SPÖ"));
+		governmentParties.put(25, Arrays.asList("ÖVP", "SPÖ"));
 		
 		
 		for (int period = 20; period <= 25; period++) {
@@ -48,6 +62,8 @@ public class CommunityDetectorApp implements CommandLineRunner {
 			System.out.println();
 			System.out.println("politicians");
 			Map<Long, List<Node<Politician>>> pCommunities = getPoliticianCommunities(period);
+			Double percentage = getPercentage(pCommunities, governmentParties.get(period), period);
+			System.out.println("Correctness: " + percentage);
 			System.out.println("----------------------------------------------------------------");
 			System.out.println();
 			System.out.println();
@@ -132,6 +148,54 @@ public class CommunityDetectorApp implements CommandLineRunner {
 		return communities;
 	}
 
-	
+	protected Double getPercentage(Map<Long, List<Node<Politician>>> pCommunities, List<String> governingParties, Integer period) {
+		
+		if (pCommunities.size() != 2) {
+			return 0.0;
+		}
+		
+		Iterator<List<Node<Politician>>> communityIter = pCommunities.values().iterator();
+		List<Node<Politician>> community1 = communityIter.next();
+		List<Node<Politician>> community2 = communityIter.next();
+		
+		Double percentOfGovernmentPoliticiansInCommunity1 = getPercentOfGovernmentPoliticians(community1, governingParties, period);
+		Double percentOfGovernmentPoliticiansInCommunity2 = getPercentOfGovernmentPoliticians(community2, governingParties, period);
+		
+		if (percentOfGovernmentPoliticiansInCommunity1 > percentOfGovernmentPoliticiansInCommunity2) {
+			return percentOfGovernmentPoliticiansInCommunity1 - percentOfGovernmentPoliticiansInCommunity2;
+		}
+		
+		return percentOfGovernmentPoliticiansInCommunity2 - percentOfGovernmentPoliticiansInCommunity1;
+	}
+
+	private Double getPercentOfGovernmentPoliticians(List<Node<Politician>> community, List<String> governingParties, Integer period) {
+		Integer inGov = 0;
+		Integer inNcm = 0;
+		
+		for (Node<Politician> node : community) {
+			Politician politician = node.getObject();
+			List<NationalCouncilMember> ncmMandatesInPeriod = mandateRepository.findNationalCouncilMembersOfPoliticianAndPeriod(politician.getId(), period);
+			
+			if (!ncmMandatesInPeriod.isEmpty()) {
+				inNcm++;
+			}
+
+			boolean shouldBreak = false;
+			for (NationalCouncilMember ncm : ncmMandatesInPeriod) {
+				for (String governingParty : governingParties) {
+					if (ncm.getClub().getShortName().equals(governingParty)) {
+						inGov++;
+						shouldBreak = true;
+						break;
+					}
+				}
+				if (shouldBreak) {
+					break;
+				}
+			}
+		}
+		
+		return inGov / (double)inNcm;
+	}
 	
 }
