@@ -1,5 +1,6 @@
 package at.jku.tk.hiesmair.gv.parliament;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -172,28 +173,50 @@ public class CommunityDetectorApp implements CommandLineRunner {
 		Integer inGov = 0;
 		Integer inNcm = 0;
 		
+		List<Politician> politiciansInGov = new ArrayList<>();
+		List<Politician> politiciansInOpp = new ArrayList<>();
+		
 		for (Node<Politician> node : community) {
 			Politician politician = node.getObject();
 			List<NationalCouncilMember> ncmMandatesInPeriod = mandateRepository.findNationalCouncilMembersOfPoliticianAndPeriod(politician.getId(), period);
 			
-			if (!ncmMandatesInPeriod.isEmpty()) {
-				inNcm++;
-			}
+			
 
-			boolean shouldBreak = false;
+			boolean foundGovParty = false;
 			for (NationalCouncilMember ncm : ncmMandatesInPeriod) {
 				for (String governingParty : governingParties) {
 					if (ncm.getClub().getShortName().equals(governingParty)) {
 						inGov++;
-						shouldBreak = true;
+						foundGovParty = true;
 						break;
 					}
 				}
-				if (shouldBreak) {
+				if (foundGovParty) {
 					break;
 				}
 			}
+			
+			if (!ncmMandatesInPeriod.isEmpty()) {
+				inNcm++;
+				
+				if (foundGovParty) {
+					politiciansInGov.add(politician);
+				}
+				else {
+					politiciansInOpp.add(politician);
+				}
+			}
 		}
+		
+		if (politiciansInGov.size() > politiciansInOpp.size()) {
+			System.out.print("Wrong in Gov: ");
+			politiciansInOpp.forEach(p -> System.out.print(p.getFullName() + ", "));
+		}
+		else {
+			System.out.print("Wrong in Opp: ");
+			politiciansInGov.forEach(p -> System.out.print(p.getFullName() + ", "));
+		}
+		System.out.println();
 		
 		return inGov / (double)inNcm;
 	}
