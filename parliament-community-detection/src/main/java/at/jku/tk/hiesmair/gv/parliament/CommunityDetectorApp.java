@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -53,6 +54,14 @@ public class CommunityDetectorApp implements CommandLineRunner {
 		governmentParties.put(24, Arrays.asList("ÖVP", "SPÖ"));
 		governmentParties.put(25, Arrays.asList("ÖVP", "SPÖ"));
 		
+		Map<Integer, Integer> thresholdWeights = new HashMap<>();
+		thresholdWeights.put(20, 3);
+		thresholdWeights.put(21, 3);
+		thresholdWeights.put(22, 3);
+		thresholdWeights.put(23, 3);
+		thresholdWeights.put(24, 3);
+		thresholdWeights.put(25, 3);
+		
 		
 		for (int period = 20; period <= 25; period++) {
 		
@@ -62,7 +71,7 @@ public class CommunityDetectorApp implements CommandLineRunner {
 			
 			System.out.println();
 			System.out.println("politicians");
-			Map<Long, List<Node<Politician>>> pCommunities = getPoliticianCommunities(period);
+			Map<Long, List<Node<Politician>>> pCommunities = getPoliticianCommunities(period, thresholdWeights.get(period));
 			Double percentage = getPercentage(pCommunities, governmentParties.get(period), period);
 			System.out.println("Correctness: " + percentage);
 			System.out.println("----------------------------------------------------------------");
@@ -71,8 +80,11 @@ public class CommunityDetectorApp implements CommandLineRunner {
 		}
 	}
 
-	private Map<Long, List<Node<Politician>>> getPoliticianCommunities(int period) {
+	private Map<Long, List<Node<Politician>>> getPoliticianCommunities(int period, int thresholdWeight) {
 		List<PoliticianAttitudeRelationByPeriod> politicianAttitudes = politicianRelationRep.getPoliticianAttitudesByPeriod(period);
+		
+		// filter by weight
+		politicianAttitudes = politicianAttitudes.stream().filter(pa -> pa.getWeight() >= thresholdWeight).collect(Collectors.toList());
 		
 		Map<String, Node<Politician>> nodes = new HashMap<>();
 		Long currentId = 0L;
@@ -99,7 +111,7 @@ public class CommunityDetectorApp implements CommandLineRunner {
 		Graph<Politician> graph = new Graph<Politician>();
 		graph.setNodes(new HashSet<>(nodes.values()));
 
-		Map<Long, List<Node<Politician>>> communities = detector.detectCommunitiesList(graph, 10); // wieviel iterationen? kanten threshold?
+		Map<Long, List<Node<Politician>>> communities = detector.detectCommunitiesList(graph, 30); // wieviel iterationen? kanten threshold?
 		showCommunities(communities);
 		
 		return communities;
@@ -180,8 +192,6 @@ public class CommunityDetectorApp implements CommandLineRunner {
 			Politician politician = node.getObject();
 			List<NationalCouncilMember> ncmMandatesInPeriod = mandateRepository.findNationalCouncilMembersOfPoliticianAndPeriod(politician.getId(), period);
 			
-			
-
 			boolean foundGovParty = false;
 			for (NationalCouncilMember ncm : ncmMandatesInPeriod) {
 				for (String governingParty : governingParties) {
