@@ -3,11 +3,12 @@ package at.jku.tk.hiesmair.gv.parliament.communities.graph;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Node {
+public class Node<T> {
 
 	private Long id;
 	private String label;
-	private Map<Node, Double> adjacentNodes;
+	private T object;
+	private Map<Node<T>, Double> adjacentNodes;
 
 	public Node() {
 		super();
@@ -17,6 +18,13 @@ public class Node {
 		super();
 		this.id = id;
 		this.label = label;
+	}
+
+	public Node(Long id, String label, T object) {
+		super();
+		this.id = id;
+		this.label = label;
+		this.object = object;
 	}
 
 	public Long getId() {
@@ -35,19 +43,27 @@ public class Node {
 		this.label = label;
 	}
 
-	public Map<Node, Double> getAdjacentNodes() {
+	public T getObject() {
+		return object;
+	}
+
+	public void setObject(T object) {
+		this.object = object;
+	}
+
+	public Map<Node<T>, Double> getAdjacentNodes() {
 		return adjacentNodes;
 	}
 
-	public void setAdjacentNodes(Map<Node, Double> adjacentNodes) {
+	public void setAdjacentNodes(Map<Node<T>, Double> adjacentNodes) {
 		this.adjacentNodes = adjacentNodes;
 	}
-	
-	public void addAdjacentNode(Node node, Double weight) {
+
+	public void addAdjacentNode(Node<T> node, Double weight) {
 		if (adjacentNodes == null) {
 			adjacentNodes = new HashMap<>();
 		}
-		
+
 		adjacentNodes.put(node, weight);
 	}
 
@@ -67,7 +83,7 @@ public class Node {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Node other = (Node) obj;
+		Node<T> other = (Node<T>) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;

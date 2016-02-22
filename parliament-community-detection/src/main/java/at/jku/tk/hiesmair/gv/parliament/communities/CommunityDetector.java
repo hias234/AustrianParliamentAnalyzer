@@ -22,8 +22,8 @@ public class CommunityDetector {
 	 * 
 	 * @return map -> key = node, value = communityNode
 	 */
-	protected Map<Node, Node> getCommunityMap(Graph graph, int iterations) {
-		Map<Node, Node> communityMap = getInitialCommunityMap(graph);
+	protected <T> Map<Node<T>, Node<T>> getCommunityMap(Graph<T> graph, int iterations) {
+		Map<Node<T>, Node<T>> communityMap = getInitialCommunityMap(graph);
 
 		for (int i = 0; i < iterations; i++) {
 			//logger.info("ITERATION " + i + " --------------------------------------");
@@ -42,20 +42,20 @@ public class CommunityDetector {
 	 * @return Map with community-ID and List of containing nodes.
 	 * 
 	 */
-	public Map<Long, List<Node>> detectCommunitiesList(Graph graph, int iterations) {
-		Map<Node, Node> communityMap = getCommunityMap(graph, iterations);
+	public <T> Map<Long, List<Node<T>>> detectCommunitiesList(Graph<T> graph, int iterations) {
+		Map<Node<T>, Node<T>> communityMap = getCommunityMap(graph, iterations);
 		
 		return getCommunityList(communityMap);
 	}
 
-	protected Map<Long, List<Node>> getCommunityList(Map<Node, Node> communityMap) {
-		Map<Long, List<Node>> communities = new HashMap<>();
+	protected <T> Map<Long, List<Node<T>>> getCommunityList(Map<Node<T>, Node<T>> communityMap) {
+		Map<Long, List<Node<T>>> communities = new HashMap<>();
 		
-		for (Entry<Node, Node> communityEntry : communityMap.entrySet()) {
-			Node communityNode = communityEntry.getValue();
-			Node node = communityEntry.getKey();
+		for (Entry<Node<T>, Node<T>> communityEntry : communityMap.entrySet()) {
+			Node<T> communityNode = communityEntry.getValue();
+			Node<T> node = communityEntry.getKey();
 			
-			List<Node> communityNodes = communities.get(communityNode.getId());
+			List<Node<T>> communityNodes = communities.get(communityNode.getId());
 			if (communityNodes == null) {
 				communityNodes = new ArrayList<>();
 			}
@@ -67,11 +67,11 @@ public class CommunityDetector {
 		return communities;
 	}
 
-	private Map<Node, Node> getIterationCommunityMap(Map<Node, Node> communityMap) {
-		Map<Node, Node> newCommunityMap = new HashMap<>();
+	private <T> Map<Node<T>, Node<T>> getIterationCommunityMap(Map<Node<T>, Node<T>> communityMap) {
+		Map<Node<T>, Node<T>> newCommunityMap = new HashMap<>();
 
-		for (Node node : communityMap.keySet()) {
-			Node communityNode = getCommunityNode(node, communityMap);
+		for (Node<T> node : communityMap.keySet()) {
+			Node<T> communityNode = getCommunityNode(node, communityMap);
 
 			newCommunityMap.put(node, communityNode);
 		}
@@ -79,14 +79,14 @@ public class CommunityDetector {
 		return newCommunityMap;
 	}
 
-	private Node getCommunityNode(Node node, Map<Node, Node> communityMap) {
-		Map<Node, Double> adjacentMap = new HashMap<>();
+	private <T> Node<T> getCommunityNode(Node<T> node, Map<Node<T>, Node<T>> communityMap) {
+		Map<Node<T>, Double> adjacentMap = new HashMap<>();
 
-		for (Entry<Node, Double> adjacent : node.getAdjacentNodes().entrySet()) {
-			Node adjacentNode = adjacent.getKey();
+		for (Entry<Node<T>, Double> adjacent : node.getAdjacentNodes().entrySet()) {
+			Node<T> adjacentNode = adjacent.getKey();
 			Double edgeWeight = adjacent.getValue();
 			
-			Node currentAdjacentCommunityNode = communityMap.get(adjacentNode);
+			Node<T> currentAdjacentCommunityNode = communityMap.get(adjacentNode);
 
 			Double currentValue = adjacentMap.get(currentAdjacentCommunityNode);
 			if (currentValue == null) {
@@ -96,14 +96,14 @@ public class CommunityDetector {
 			adjacentMap.put(currentAdjacentCommunityNode, currentValue + edgeWeight);
 		}
 
-		Map.Entry<Node, Double> maxEntry = getMaxMapEntry(adjacentMap);
+		Map.Entry<Node<T>, Double> maxEntry = getMaxMapEntry(adjacentMap);
 
 		return maxEntry.getKey();
 	}
 
-	protected Map.Entry<Node, Double> getMaxMapEntry(Map<Node, Double> adjacentMap) {
-		Map.Entry<Node, Double> maxEntry = null;
-		for (Map.Entry<Node, Double> entry : adjacentMap.entrySet()) {
+	protected <T> Map.Entry<Node<T>, Double> getMaxMapEntry(Map<Node<T>, Double> adjacentMap) {
+		Map.Entry<Node<T>, Double> maxEntry = null;
+		for (Map.Entry<Node<T>, Double> entry : adjacentMap.entrySet()) {
 			if (maxEntry == null || compareEntries(entry, maxEntry) > 0) {
 				maxEntry = entry;
 			}
@@ -111,7 +111,7 @@ public class CommunityDetector {
 		return maxEntry;
 	}
 
-	private int compareEntries(Entry<Node, Double> entry, Entry<Node, Double> maxEntry) {
+	private <T> int compareEntries(Entry<Node<T>, Double> entry, Entry<Node<T>, Double> maxEntry) {
 		if (entry.getValue().equals(maxEntry.getValue())) {
 			return -entry.getKey().getId().compareTo(maxEntry.getKey().getId());
 		}
@@ -119,7 +119,7 @@ public class CommunityDetector {
 		return entry.getValue().compareTo(maxEntry.getValue());
 	}
 
-	private Map<Node, Node> getInitialCommunityMap(Graph graph) {
+	private <T> Map<Node<T>, Node<T>> getInitialCommunityMap(Graph<T> graph) {
 		return graph.getNodes().stream().collect(Collectors.toMap(Function.identity(), Function.identity()));
 	}
 

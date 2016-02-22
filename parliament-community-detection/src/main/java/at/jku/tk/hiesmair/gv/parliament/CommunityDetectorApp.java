@@ -16,6 +16,8 @@ import at.jku.tk.hiesmair.gv.parliament.communities.CommunityDetector;
 import at.jku.tk.hiesmair.gv.parliament.communities.graph.Graph;
 import at.jku.tk.hiesmair.gv.parliament.communities.graph.Node;
 import at.jku.tk.hiesmair.gv.parliament.db.repositories.relation.PoliticianAttitudeRelationRepository;
+import at.jku.tk.hiesmair.gv.parliament.entities.club.ParliamentClub;
+import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
 import at.jku.tk.hiesmair.gv.parliament.entities.relation.ClubAttitudeRelationByPeriod;
 import at.jku.tk.hiesmair.gv.parliament.entities.relation.PoliticianAttitudeRelationByPeriod;
 
@@ -49,19 +51,19 @@ public class CommunityDetectorApp implements CommandLineRunner {
 	private void getPoliticianCommunities(int period) {
 		List<PoliticianAttitudeRelationByPeriod> politicianAttitudes = politicianRelationRep.getPoliticianAttitudesByPeriod(period);
 		
-		Map<String, Node> nodes = new HashMap<>();
+		Map<String, Node<Politician>> nodes = new HashMap<>();
 		Long currentId = 0L;
 		for (PoliticianAttitudeRelationByPeriod politicianAttitude : politicianAttitudes) {
 			String politician1 = politicianAttitude.getPolitician1().getId();
 			String politician2 = politicianAttitude.getPolitician2().getId();
 
-			Node politicianNode1 = nodes.get(politician1);
+			Node<Politician> politicianNode1 = nodes.get(politician1);
 			if (politicianNode1 == null) {
-				politicianNode1 = new Node(currentId++, politicianAttitude.getPolitician1().getFullName());
+				politicianNode1 = new Node<Politician>(currentId++, politicianAttitude.getPolitician1().getFullName(), politicianAttitude.getPolitician1());
 			}
-			Node politicianNode2 = nodes.get(politician2);
+			Node<Politician> politicianNode2 = nodes.get(politician2);
 			if (politicianNode2 == null) {
-				politicianNode2 = new Node(currentId++, politicianAttitude.getPolitician2().getFullName());
+				politicianNode2 = new Node<Politician>(currentId++, politicianAttitude.getPolitician2().getFullName(), politicianAttitude.getPolitician2());
 			}
 			
 			politicianNode1.addAdjacentNode(politicianNode2, politicianAttitude.getNormalizedWeight());
@@ -71,17 +73,17 @@ public class CommunityDetectorApp implements CommandLineRunner {
 			nodes.put(politician2, politicianNode2);
 		}
 		
-		Graph graph = new Graph();
+		Graph<Politician> graph = new Graph<Politician>();
 		graph.setNodes(new HashSet<>(nodes.values()));
 
-		Map<Long, List<Node>> communities = detector.detectCommunitiesList(graph, 10); // wieviel iterationen? kanten threshold?
+		Map<Long, List<Node<Politician>>> communities = detector.detectCommunitiesList(graph, 10); // wieviel iterationen? kanten threshold?
 		showCommunities(communities);
 	}
 
-	private void showCommunities(Map<Long, List<Node>> communities) {
+	private <T> void showCommunities(Map<Long, List<Node<T>>> communities) {
 		for (Long id : communities.keySet()) {
 			System.out.print(id + " ");
-			for (Node node : communities.get(id)) {
+			for (Node<T> node : communities.get(id)) {
 				System.out.print(node.getLabel() + ", ");
 			}
 			System.out.println();
@@ -91,19 +93,19 @@ public class CommunityDetectorApp implements CommandLineRunner {
 	protected void getClubCommunities(int period) {
 		List<ClubAttitudeRelationByPeriod> clubAttitudes = politicianRelationRep.getClubAttitudesByPeriod(period);
 		
-		Map<String, Node> nodes = new HashMap<>();
+		Map<String, Node<ParliamentClub>> nodes = new HashMap<>();
 		Long currentId = 0L;
 		for (ClubAttitudeRelationByPeriod clubAttitude : clubAttitudes) {
 			String club1 = clubAttitude.getClub1().getShortName();
 			String club2 = clubAttitude.getClub2().getShortName();
 
-			Node clubNode1 = nodes.get(club1);
+			Node<ParliamentClub> clubNode1 = nodes.get(club1);
 			if (clubNode1 == null) {
-				clubNode1 = new Node(currentId++, club1);
+				clubNode1 = new Node<ParliamentClub>(currentId++, club1, clubAttitude.getClub1());
 			}
-			Node clubNode2 = nodes.get(club2);
+			Node<ParliamentClub> clubNode2 = nodes.get(club2);
 			if (clubNode2 == null) {
-				clubNode2 = new Node(currentId++, club2);
+				clubNode2 = new Node<ParliamentClub>(currentId++, club2, clubAttitude.getClub2());
 			}
 			
 			clubNode1.addAdjacentNode(clubNode2, clubAttitude.getNormalizedWeight());
@@ -113,10 +115,10 @@ public class CommunityDetectorApp implements CommandLineRunner {
 			nodes.put(club2, clubNode2);
 		}
 		
-		Graph graph = new Graph();
+		Graph<ParliamentClub> graph = new Graph<ParliamentClub>();
 		graph.setNodes(new HashSet<>(nodes.values()));
 
-		Map<Long, List<Node>> communities = detector.detectCommunitiesList(graph, 100);
+		Map<Long, List<Node<ParliamentClub>>> communities = detector.detectCommunitiesList(graph, 100);
 		showCommunities(communities);
 	}
 
