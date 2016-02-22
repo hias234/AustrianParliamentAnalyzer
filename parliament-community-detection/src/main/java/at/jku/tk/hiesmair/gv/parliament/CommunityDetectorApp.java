@@ -37,18 +37,24 @@ public class CommunityDetectorApp implements CommandLineRunner {
 	
 	@Override
 	public void run(String... arg0) throws Exception {
-		int period = 20;
 		
-		System.out.println("clubs");
-		getClubCommunities(period);
 		
-		System.out.println();
-		System.out.println("politicians");
-		getPoliticianCommunities(period);
-		System.out.println();
+		for (int period = 20; period <= 25; period++) {
+		
+			System.out.println("PERIOD " + period);
+			System.out.println("clubs");
+			getClubCommunities(period);
+			
+			System.out.println();
+			System.out.println("politicians");
+			Map<Long, List<Node<Politician>>> pCommunities = getPoliticianCommunities(period);
+			System.out.println("----------------------------------------------------------------");
+			System.out.println();
+			System.out.println();
+		}
 	}
 
-	private void getPoliticianCommunities(int period) {
+	private Map<Long, List<Node<Politician>>> getPoliticianCommunities(int period) {
 		List<PoliticianAttitudeRelationByPeriod> politicianAttitudes = politicianRelationRep.getPoliticianAttitudesByPeriod(period);
 		
 		Map<String, Node<Politician>> nodes = new HashMap<>();
@@ -78,6 +84,8 @@ public class CommunityDetectorApp implements CommandLineRunner {
 
 		Map<Long, List<Node<Politician>>> communities = detector.detectCommunitiesList(graph, 10); // wieviel iterationen? kanten threshold?
 		showCommunities(communities);
+		
+		return communities;
 	}
 
 	private <T> void showCommunities(Map<Long, List<Node<T>>> communities) {
@@ -90,7 +98,7 @@ public class CommunityDetectorApp implements CommandLineRunner {
 		}
 	}
 
-	protected void getClubCommunities(int period) {
+	protected Map<Long, List<Node<ParliamentClub>>> getClubCommunities(int period) {
 		List<ClubAttitudeRelationByPeriod> clubAttitudes = politicianRelationRep.getClubAttitudesByPeriod(period);
 		
 		Map<String, Node<ParliamentClub>> nodes = new HashMap<>();
@@ -120,6 +128,8 @@ public class CommunityDetectorApp implements CommandLineRunner {
 
 		Map<Long, List<Node<ParliamentClub>>> communities = detector.detectCommunitiesList(graph, 100);
 		showCommunities(communities);
+		
+		return communities;
 	}
 
 	
