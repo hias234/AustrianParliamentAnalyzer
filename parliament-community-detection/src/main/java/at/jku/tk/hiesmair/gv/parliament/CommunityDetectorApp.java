@@ -175,10 +175,10 @@ public class CommunityDetectorApp implements CommandLineRunner {
 		Double percentOfGovernmentPoliticiansInCommunity2 = getPercentOfGovernmentPoliticians(community2, governingParties, period);
 		
 		if (percentOfGovernmentPoliticiansInCommunity1 > percentOfGovernmentPoliticiansInCommunity2) {
-			return percentOfGovernmentPoliticiansInCommunity1 - percentOfGovernmentPoliticiansInCommunity2;
+			return (percentOfGovernmentPoliticiansInCommunity1 + 1 - percentOfGovernmentPoliticiansInCommunity2) / 2;
 		}
 		
-		return percentOfGovernmentPoliticiansInCommunity2 - percentOfGovernmentPoliticiansInCommunity1;
+		return (percentOfGovernmentPoliticiansInCommunity2 + 1 - percentOfGovernmentPoliticiansInCommunity1) / 2;
 	}
 
 	private Double getPercentOfGovernmentPoliticians(List<Node<Politician>> community, List<String> governingParties, Integer period) {
