@@ -38,8 +38,8 @@ public class PoliticianAttitudeService {
 	private List<String> communityColors = new ArrayList<>();
 	
 	public PoliticianAttitudeService() {
-		communityColors.add("#FF0000");
-		communityColors.add("#00FF00");
+		communityColors.add("#444444");
+		communityColors.add("#FFFFFF");
 		communityColors.add("#0000FF");
 		communityColors.add("#00FFFF");
 		communityColors.add("#FF00FF");

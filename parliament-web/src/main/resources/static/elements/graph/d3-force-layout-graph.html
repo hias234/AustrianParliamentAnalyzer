@@ -35,6 +35,11 @@
 					value: false,
 					observer: '_createGraph'
 				},
+				showCommunityColors: {
+					type: Boolean,
+					value: true,
+					observer: '_createGraph'
+				},
 				maxLinkWidthFactor: {
 					type: Number,
 					value: 0.8
@@ -48,6 +53,8 @@
 				
 				console.log('createGraph');
 				document.getElementById(this.id).children[0].innerHTML = '';
+				
+				console.log('showCommunityColors: ' + this.showCommunityColors);
 				
 				var graphContainer = d3.select('#' + this.id + ' > div');
 				var graphElement = graphContainer.append('svg:svg').attr('width', '100%').attr('height', '100%');
@@ -65,6 +72,7 @@
 				var links = this.graph.links;
 				
 				var showNegativeLinks = this.showNegativeLinks;
+				var showCommunityColors = this.showCommunityColors;
 
 				for(var i = 0; i < nodes.length; i++) {
 					labelAnchors.push({
@@ -102,7 +110,7 @@
 					if (showNegativeLinks && l.weight < 0){
 						return '#ff6666';
 					}
-					if (l.color){
+					if (!showCommunityColors && l.color) {
 						return l.color;
 					}
 					return '#7c7c7c';
@@ -142,6 +150,12 @@
 
 				var node = graphElement.selectAll("g.node").data(force.nodes()).enter().append("svg:g").attr("class", "node");
 				node.append("svg:circle").attr("r", radius).style("stroke", "#FFF").style("stroke-width", 3).style("fill", function(n){
+					if (showCommunityColors) {
+						if (n.communityColor) {
+							return n.communityColor;
+						}
+						return '#555555';
+					}
 					if (n.color){
 						return n.color;
 					}

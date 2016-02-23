@@ -23,9 +23,12 @@
 	        </paper-input>
 	        <div style="width: 50px; height: 10px;"></div>
 	        <paper-checkbox checked="{{showNegativeLinks}}">Show Negative Links</paper-checkbox>
+	        <br/>
+	        <paper-checkbox checked="{{showCommunityColors}}">Show Computed Communities By Color</paper-checkbox>
 		</div>
 		<d3-force-layout-graph graph="{{graph}}" id="politicianGraph" charge="-500" show-tooltips 
-			max-link-width-factor="{{maxLinkWidthFactor}}" show-negative-links="{{showNegativeLinks}}"></d3-force-layout-graph>
+			max-link-width-factor="{{maxLinkWidthFactor}}" show-negative-links="{{showNegativeLinks}}" 
+			show-community-colors="{{showCommunityColors}}"></d3-force-layout-graph>
 	</template>
 	<script>
 		Polymer({
