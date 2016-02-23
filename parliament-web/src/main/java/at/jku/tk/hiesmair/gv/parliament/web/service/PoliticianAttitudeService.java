@@ -1,8 +1,10 @@
 package at.jku.tk.hiesmair.gv.parliament.web.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -12,6 +14,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import at.jku.tk.hiesmair.gv.parliament.communities.CommunityDetector;
+import at.jku.tk.hiesmair.gv.parliament.communities.graph.Graph;
+import at.jku.tk.hiesmair.gv.parliament.communities.graph.Node;
 import at.jku.tk.hiesmair.gv.parliament.db.repositories.relation.PoliticianAttitudeRelationRepository;
 import at.jku.tk.hiesmair.gv.parliament.entities.mandate.NationalCouncilMember;
 import at.jku.tk.hiesmair.gv.parliament.entities.politician.Politician;
@@ -27,6 +32,20 @@ public class PoliticianAttitudeService {
 	@Inject
 	private PoliticianAttitudeRelationRepository politicianRelationRep;
 
+	@Inject
+	private CommunityDetector detector;
+	
+	private List<String> communityColors = new ArrayList<>();
+	
+	public PoliticianAttitudeService() {
+		communityColors.add("#FF0000");
+		communityColors.add("#00FF00");
+		communityColors.add("#0000FF");
+		communityColors.add("#00FFFF");
+		communityColors.add("#FF00FF");
+		communityColors.add("#FFFF00");
+	}
+	
 	public Page<PoliticianAttitudeRelation> getMostRelatedPoliticians(String politicianId, int offset, int length){
 		Page<PoliticianAttitudeRelation> relatedPoliticiansPage = politicianRelationRep.getMostRelatedPoliticians(politicianId, new PageRequest(offset, length));
 		
@@ -89,19 +108,60 @@ public class PoliticianAttitudeService {
 		return links;
 	}
 
+	protected Graph<Politician> getPoliticianCommunityGraph(List<PoliticianAttitudeRelationByPeriod> politicianAttitudes) {
+		Map<String, Node<Politician>> nodes = new HashMap<>();
+		Long currentId = 0L;
+		for (PoliticianAttitudeRelationByPeriod politicianAttitude : politicianAttitudes) {
+			String politician1 = politicianAttitude.getPolitician1().getId();
+			String politician2 = politicianAttitude.getPolitician2().getId();
+
+			Node<Politician> politicianNode1 = nodes.get(politician1);
+			if (politicianNode1 == null) {
+				politicianNode1 = new Node<Politician>(currentId++, politicianAttitude.getPolitician1().getId(), politicianAttitude.getPolitician1());
+			}
+			Node<Politician> politicianNode2 = nodes.get(politician2);
+			if (politicianNode2 == null) {
+				politicianNode2 = new Node<Politician>(currentId++, politicianAttitude.getPolitician2().getId(), politicianAttitude.getPolitician2());
+			}
+			
+			politicianNode1.addAdjacentNode(politicianNode2, politicianAttitude.getNormalizedWeight());
+			politicianNode2.addAdjacentNode(politicianNode1, politicianAttitude.getNormalizedWeight());
+			
+			nodes.put(politician1, politicianNode1);
+			nodes.put(politician2, politicianNode2);
+		}
+		
+		Graph<Politician> graph = new Graph<Politician>();
+		graph.setNodes(new HashSet<>(nodes.values()));
+		return graph;
+	}
+	
+	protected Map<Long, List<Node<Politician>>> computeCommunities(Graph<Politician> graph) {
+		return detector.detectCommunitiesList(graph, 30);
+	}
+	
 	protected List<D3Node> getNodes(List<PoliticianAttitudeRelationByPeriod> politicianAttitudes, Integer period) {
+		Graph<Politician> communityGraph = getPoliticianCommunityGraph(politicianAttitudes);
+		
+		
 		Set<D3Node> nodes = new HashSet<D3Node>();
 		for (PoliticianAttitudeRelationByPeriod politicianAttitude : politicianAttitudes) {
-			nodes.add(getNode(politicianAttitude.getPolitician1(), period));
-			nodes.add(getNode(politicianAttitude.getPolitician2(), period));
+			nodes.add(getNode(politicianAttitude.getPolitician1(), period, communityGraph));
+			nodes.add(getNode(politicianAttitude.getPolitician2(), period, communityGraph));
 		}
 		return new ArrayList<D3Node>(nodes);
 	}
 
-	protected D3Node getNode(Politician politician, Integer period) {
+	protected D3Node getNode(Politician politician, Integer period, Graph<Politician> communityGraph) {
 		String color = getNodeColor(politician, period);
+		String communityColor = getCommunityNodeColor(politician, communityGraph);
 
-		return new D3Node(politician.getId(), politician.getSurName(), color);
+		return new D3Node(politician.getId(), politician.getSurName(), color, communityColor);
+	}
+
+	private String getCommunityNodeColor(Politician politician, Graph<Politician> communityGraph) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	protected String getNodeColor(Politician politician, Integer period) {
@@ -115,9 +175,9 @@ public class PoliticianAttitudeService {
 		return color;
 	}
 
-	protected D3Link getLink(PoliticianAttitudeRelationByPeriod politicianRelation, List<D3Node> nodes, Integer period) {
-		Integer sourceIndex = getNodeIndex(politicianRelation.getPolitician1(), nodes, period);
-		Integer targetIndex = getNodeIndex(politicianRelation.getPolitician2(), nodes, period);
+	protected D3Link getLink(PoliticianAttitudeRelationByPeriod politicianRelation, List<D3Node> nodes, Integer period, Graph<Politician> communityGraph) {
+		Integer sourceIndex = getNodeIndex(politicianRelation.getPolitician1(), nodes, period, communityGraph);
+		Integer targetIndex = getNodeIndex(politicianRelation.getPolitician2(), nodes, period, communityGraph);
 		Double weight = politicianRelation.getNormalizedWeight();
 
 		String color = null;
@@ -130,7 +190,7 @@ public class PoliticianAttitudeService {
 		return new D3Link(sourceIndex, targetIndex, weight, color);
 	}
 
-	protected Integer getNodeIndex(Politician politician, List<D3Node> nodes, Integer period) {
-		return nodes.indexOf(getNode(politician, period));
+	protected Integer getNodeIndex(Politician politician, List<D3Node> nodes, Integer period, Graph<Politician> communityGraph) {
+		return nodes.indexOf(getNode(politician, period, communityGraph));
 	}
 }

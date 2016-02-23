@@ -9,10 +9,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import at.jku.tk.hiesmair.gv.parliament.communities.graph.Graph;
 import at.jku.tk.hiesmair.gv.parliament.communities.graph.Node;
 
+@Component
 public class CommunityDetector {
 
 	private static Logger logger = Logger.getLogger(CommunityDetector.class.getSimpleName());
