@@ -5,6 +5,7 @@ public class D3Node {
 	private String id;
 	private String label;
 	private String color;
+	private String communityColor;
 
 	public D3Node(String id, String label) {
 		super();
@@ -17,6 +18,14 @@ public class D3Node {
 		this.id = id;
 		this.label = label;
 		this.color = color;
+	}
+
+	public D3Node(String id, String label, String color, String communityColor) {
+		super();
+		this.id = id;
+		this.label = label;
+		this.color = color;
+		this.communityColor = communityColor;
 	}
 
 	public String getId() {
@@ -41,6 +50,14 @@ public class D3Node {
 
 	public void setColor(String color) {
 		this.color = color;
+	}
+
+	public String getCommunityColor() {
+		return communityColor;
+	}
+
+	public void setCommunityColor(String communityColor) {
+		this.communityColor = communityColor;
 	}
 
 	@Override

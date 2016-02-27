@@ -51,12 +51,12 @@
 		<!-- own projects -->
 		<dependency>
 			<groupId>at.jku.tk.hiesmair.gv</groupId>
-			<artifactId>parliament-entities</artifactId>
-			<version>0.0.2-SNAPSHOT</version>
+			<artifactId>parliament-database</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>at.jku.tk.hiesmair.gv</groupId>
-			<artifactId>parliament-database</artifactId>
+			<artifactId>parliament-community-detection</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<!-- <dependency> <groupId>at.jku.tk.hiesmair.gv</groupId> <artifactId>parliament-sentiment-analysis</artifactId> 

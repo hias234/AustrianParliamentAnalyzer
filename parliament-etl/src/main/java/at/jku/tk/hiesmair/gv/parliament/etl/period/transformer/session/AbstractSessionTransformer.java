@@ -75,17 +75,17 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer imp
 		session.setEndDate(getEndDate(sessionDate, protocolText));
 		session.setChairMen(getChairMen(protocol, session));
 		session.setDiscussions(discussionTransformer.getDiscussions(index, protocol, session));
-
+		
 		if (sessionDate != null) {
 			Set<NationalCouncilMember> membersWhoShouldBePresent = period.getNationalCouncilMembersAt(sessionDate);
-
+			
 			if (membersWhoShouldBePresent.size() != 183) {
 				logger.info("members who sould be present: " + membersWhoShouldBePresent.size());
 			}
 
 			Set<NationalCouncilMember> absentMembers = getAbsentNationalCouncilMembers(protocol,
 					sessionDate, membersWhoShouldBePresent);
-
+			
 			membersWhoShouldBePresent.removeAll(absentMembers);
 
 			session.setAbsentNationalCouncilMembers(absentMembers);
@@ -134,6 +134,11 @@ public abstract class AbstractSessionTransformer extends AbstractTransformer imp
 		elementText = elementText.replaceAll(" ?\\(.{3,}\\) ?", "");
 		elementText = elementText.replaceAll(" und jene Abgeordneten, die am Europa-Konvent teilnehmen:", ",");
 		elementText = elementText.replaceAll(" ,", ",");
+		
+		// prevents endless running regex
+		if (!elementText.endsWith(".")) {
+			elementText += ".";
+		}
 
 		return elementText;
 	}
